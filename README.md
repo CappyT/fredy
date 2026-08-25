@@ -194,8 +194,10 @@ Two portals here run unsorted. Tecnocasa's server ignores the ordering its own i
 and Idealista's robots.txt disallows the sort-by-date URL. Keep a search on either one narrow
 enough for a new advert to reach the first page.
 
-Idealista also needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service
-such as [TRAWL](https://github.com/germondai/trawl). Without it that one provider finds nothing.
+Idealista needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service such as
+[TRAWL](https://github.com/germondai/trawl). Without it that provider finds nothing. Immobiliare.it
+asks the same service only when its own pages come back walled, which is what a search run from a
+datacenter address meets; a search drawn on the map needs no service at all.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
