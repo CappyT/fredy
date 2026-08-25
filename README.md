@@ -58,8 +58,8 @@ On top of the listing itself, Fredy answers two questions:
 
 ## ✨ Key Features
 
--   🏠 Scrapes **19 portals** across 🇩🇪 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
-    willhaben, Flatfox and [13 more](#provider-)
+-   🏠 Scrapes **23 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
+    Immobiliare.it, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
 -   ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
     Discord, Mattermost, Pushover, Apprise and more
 -   🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
@@ -173,7 +173,7 @@ the platform into Fredy.\
 ⚠️ Always make sure the search results are sorted by **date**, so Fredy picks up the newest
 listings first.
 
-Fredy ships with 19 providers:
+Fredy ships with 23 providers:
 
 **🇩🇪 Germany**
 
@@ -186,8 +186,12 @@ Fredy ships with 19 providers:
 | InBerlinWohnen | Kleinanzeigen | Sparkasse Immobilien |
 | McMakler | Wg gesucht | |
 
+**🇮🇹 Italy** · Immobiliare.it · Casa.it · Subito · Tecnocasa  
 **🇦🇹 Austria** · willhaben  
 **🇨🇭 Switzerland** · Flatfox
+
+Tecnocasa is the one portal here that cannot be sorted: its server ignores the ordering its own
+interface offers. Keep a Tecnocasa search narrow enough for a new advert to reach the first page.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
