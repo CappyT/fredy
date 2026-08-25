@@ -189,15 +189,20 @@ export function buildFetchMock() {
     }
 
     // Immobiliare reads its results out of the endpoint the search page calls, so the fixture is
-    // json rather than a page. The recording holds the first page of a search the live portal
-    // counts in hundreds, so `maxPages` is answered as one: the provider walks the pages it is
-    // told about, and there is only ever this one to serve.
+    // json rather than a page. The recording holds one page of a search the live portal counts in
+    // hundreds, so every page answers as the last one there is - and a page after the recorded one
+    // answers empty, which is what stops the walk instead of serving the same adverts again.
     if (urlStr.includes('immobiliare.it/api-next/search-list/listings')) {
       if (immobiliareListData == null) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immobiliare_list.json'));
-        immobiliareListData = { ...(raw ? JSON.parse(raw) : { results: [] }), currentPage: 1, maxPages: 1 };
+        immobiliareListData = raw ? JSON.parse(raw) : { results: [] };
       }
-      return { ok: true, status: 200, json: () => Promise.resolve(immobiliareListData) };
+      const page = Number(new URL(urlStr).searchParams.get('pag')) || 1;
+      const data =
+        page === 1
+          ? { ...immobiliareListData, currentPage: 1, maxPages: 1 }
+          : { ...immobiliareListData, results: [], currentPage: page, maxPages: page };
+      return { ok: true, status: 200, json: () => Promise.resolve(data) };
     }
 
     if (urlStr.includes('api.mobile.immobilienscout24.de/search/list')) {

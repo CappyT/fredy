@@ -168,4 +168,48 @@ describe('#immobiliare provider configuration()', () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  /**
+   * A town is named by the path, so the criteria for the pages after the first cannot be lifted off
+   * the url. They come from what the rendered page reports having searched for.
+   */
+  it('reads the search a rendered page ran, which is what its later pages are asked with', () => {
+    const html = `<script id="__NEXT_DATA__" type="application/json">${JSON.stringify({
+      props: {
+        pageProps: {
+          dehydratedState: {
+            queries: [
+              {
+                queryKey: ['real-estate-list', { idComune: '8042', criterio: 'data' }, '1', false],
+                state: { data: { results: [{ realEstate: { id: 1 } }], maxPages: 7 } },
+              },
+            ],
+          },
+        },
+      },
+    })}</script>`;
+
+    expect(provider.parseSearch(html)).toEqual({
+      results: [{ realEstate: { id: 1 } }],
+      criteria: { idComune: '8042', criterio: 'data' },
+      maxPages: 7,
+    });
+    expect(provider.parseListings(html)).toEqual([{ realEstate: { id: 1 } }]);
+  });
+
+  it('carries a town search over to the endpoint, criteria and page both', () => {
+    const endpoint = new URL(
+      provider.convertTownSearchToApi('https://www.immobiliare.it/vendita-case/milano/?criterio=data', {
+        idComune: '8042',
+        idContratto: '1',
+        criterio: 'data',
+        ordine: 'desc',
+      }),
+    );
+
+    expect(endpoint.origin + endpoint.pathname).toBe('https://www.immobiliare.it/api-next/search-list/listings/');
+    expect(endpoint.searchParams.get('path')).toBe('/vendita-case/milano/');
+    expect(endpoint.searchParams.get('idComune')).toBe('8042');
+    expect(endpoint.searchParams.get('ordine')).toBe('desc');
+  });
 });
