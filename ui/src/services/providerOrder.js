@@ -59,6 +59,7 @@ export const PROVIDER_SIZE_ORDER = [
   // Italy
   'immobiliare',
   'casa',
+  'subito',
   // Austria
   'willhaben',
   // Switzerland
