@@ -19,6 +19,13 @@ import * as provider from '../../lib/provider/idealista.js';
  */
 const TEST_TIMEOUT = 120_000;
 
+/**
+ * The search the tests of the website reader use, because the api sells no land: it is the shortest
+ * url that cannot be asked of the api, and so is the one read off the website. Every other search
+ * here goes to the api instead.
+ */
+const LAND_SEARCH = 'https://www.idealista.it/vendita-terreni/roma-roma/';
+
 describe('#idealista provider testsuite()', () => {
   /** @type {any[]} */
   let listings;
@@ -162,7 +169,7 @@ describe('the wall idealista puts in front of a plain request', () => {
     });
 
     try {
-      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/affitto-case/roma-roma/' }, []);
+      const runConfig = provider.createConfig({ url: LAND_SEARCH }, []);
       expect(await runConfig.getListings(runConfig.url)).toEqual([]);
     } finally {
       globalThis.fetch = originalFetch;
@@ -188,7 +195,7 @@ describe('the wall idealista puts in front of a plain request', () => {
   });
 });
 
-describe('the result pages idealista spreads a search over', () => {
+describe('the result pages idealista falls back to reading', () => {
   it('hangs the page off the search path, however the url arrives', () => {
     const search = 'https://www.idealista.it/vendita-case/roma-roma/';
 
@@ -222,7 +229,7 @@ describe('the result pages idealista spreads a search over', () => {
     // The walk waits between pages, which a real run wants and a test does not.
     vi.useFakeTimers();
     try {
-      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/vendita-case/roma-roma/' }, []);
+      const runConfig = provider.createConfig({ url: LAND_SEARCH }, []);
       const walk = runConfig.getListings(runConfig.url);
       await vi.runAllTimersAsync();
       const adverts = await walk;
@@ -259,7 +266,7 @@ describe('the result pages idealista spreads a search over', () => {
 
     vi.useFakeTimers();
     try {
-      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/vendita-case/roma-roma/' }, []);
+      const runConfig = provider.createConfig({ url: LAND_SEARCH }, []);
       const walk = runConfig.getListings(runConfig.url);
       await vi.runAllTimersAsync();
 

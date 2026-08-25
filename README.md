@@ -21,7 +21,6 @@
   <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fghcr-badge.elias.eu.org%2Fapi%2Forangecoding%2Ffredy%2Ffredy&query=%24.downloadCount&label=Docker%20Pulls" alt="Docker Pulls" />
 </p>
 
-
 # Fredy 🏡 - Your Self-Hosted Real Estate Finder for Europe
 
 **Fredy** scrapes **European real estate portals** (ImmoScout24, Immowelt, Kleinanzeigen,
@@ -40,7 +39,7 @@ On top of the listing itself, Fredy answers two questions:
   network, marks every stop and shows the next departures. See [Travel Time](#travel-time) and
   [Public Transport](#public-transport).
 
-------------------------------------------------------------------------
+---
 
 ## 📖 Contents
 
@@ -54,27 +53,27 @@ On top of the listing itself, Fredy answers two questions:
 [Contributing](#-contributing) · [Credits & Data](#-credits--data) ·
 [License](#-license) · [Support](#-support)
 
-------------------------------------------------------------------------
+---
 
 ## ✨ Key Features
 
--   🏠 Scrapes **24 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
-    Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
--   ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
-    Discord, Mattermost, Pushover, Apprise and more
--   🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
--   🖥️ **Web UI** to create and manage searches
--   🔄 **Deduplication across platforms**: the same flat advertised on ImmoScout, Immowelt and
-    Kleinanzeigen reaches you once, matched on living space, rooms and location rather than on
-    the headline - no two portals write that the same way
--   ⏱️ Configurable search intervals and working hours
--   💶 **Financing calculator**: which listings you can afford, for renting and for buying
--   🚆 **Real travel times** from your addresses by public transport, car, bike or on foot,
-    plus a filter to match
--   🗺️ **Public transport on the map**: the network, every stop, and live departures
--   🌍 Runs anywhere: Docker, Node.js, self-hosted
+- 🏠 Scrapes **24 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
+  Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
+- ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
+  Discord, Mattermost, Pushover, Apprise and more
+- 🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
+- 🖥️ **Web UI** to create and manage searches
+- 🔄 **Deduplication across platforms**: the same flat advertised on ImmoScout, Immowelt and
+  Kleinanzeigen reaches you once, matched on living space, rooms and location rather than on
+  the headline - no two portals write that the same way
+- ⏱️ Configurable search intervals and working hours
+- 💶 **Financing calculator**: which listings you can afford, for renting and for buying
+- 🚆 **Real travel times** from your addresses by public transport, car, bike or on foot,
+  plus a filter to match
+- 🗺️ **Public transport on the map**: the network, every stop, and live departures
+- 🌍 Runs anywhere: Docker, Node.js, self-hosted
 
-------------------------------------------------------------------------
+---
 
 ## 🤝 Sponsorship
 
@@ -94,12 +93,13 @@ I build and maintain Fredy in my free time. If it saves you some, consider chipp
 
 Fredy is supported by the **JetBrains Open Source Support Program**.
 
-------------------------------------------------------------------------
+---
 
 ## 👨‍🏫 Demo
+
 You can try out Fredy here: [Fredy Demo](https://fredy-demo.orange-coding.net/)
 
-------------------------------------------------------------------------
+---
 
 ## 🚀 Quick Start
 
@@ -108,7 +108,7 @@ You can try out Fredy here: [Fredy Demo](https://fredy-demo.orange-coding.net/)
 > [!NOTE]
 > No configuration file is needed to start. Fredy creates `/conf/config.json` on first run if it is missing. That file only holds the database path, everything else is configured in the Web UI and stored in the database.
 
-``` bash
+```bash
 docker run -d --name fredy \
   -v fredy_conf:/conf \
   -v fredy_db:/db \
@@ -127,16 +127,16 @@ rely on.
 
 Logs:
 
-``` bash
+```bash
 docker logs fredy -f
 ```
 
 ### Manual (Node.js)
 
--   Requirement: **Node.js 22.22.0 or higher** (see `engines` in `package.json`)
--   Install dependencies and start:
+- Requirement: **Node.js 22.22.0 or higher** (see `engines` in `package.json`)
+- Install dependencies and start:
 
-``` bash
+```bash
 yarn
 yarn run build:frontend  # builds the Web UI into ui/public
 yarn run start:backend   # serves the UI and the API on port 9998
@@ -149,18 +149,19 @@ yarn run start:backend   # serves the UI and the API on port 9998
 Should you use [Unraid](https://unraid.net/), you can now install Fredy from the community store :)
 
 **Default Login:**
+
 - Username: `admin`
 - Password: `admin`
 
-------------------------------------------------------------------------
+---
 
 ## 📸 Screenshots
 
-| Fredy Maps View                                  | Dashboard                                               | Found Listings                                                              |
-|--------------------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| Fredy Maps View                                  | Dashboard                                                             | Found Listings                                                     |
+| ------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | ![Screenshot showing Fredy](doc/screenshot1.png) | ![Screenshot showing job configuration in Fredy](doc/screenshot3.png) | ![Screenshot showing found listings in Fredy](doc/screenshot2.png) |
 
-------------------------------------------------------------------------
+---
 
 ## 🧩 Core Concepts
 
@@ -177,29 +178,34 @@ Fredy ships with 24 providers:
 
 **🇩🇪 Germany**
 
-| | | |
-|---|---|---|
-| 1a Immobilien | Immo Südwest Presse | Neubau Kompass |
-| Deutsche Wohnen | Immobilien.de | OhneMakler |
-| Engel & Völkers | Immoscout | Regionalimmobilien24 |
-| IMAXX | Immowelt | Schwarzes Brett Bremen |
-| InBerlinWohnen | Kleinanzeigen | Sparkasse Immobilien |
-| McMakler | Wg gesucht | |
+|                 |                     |                        |
+| --------------- | ------------------- | ---------------------- |
+| 1a Immobilien   | Immo Südwest Presse | Neubau Kompass         |
+| Deutsche Wohnen | Immobilien.de       | OhneMakler             |
+| Engel & Völkers | Immoscout           | Regionalimmobilien24   |
+| IMAXX           | Immowelt            | Schwarzes Brett Bremen |
+| InBerlinWohnen  | Kleinanzeigen       | Sparkasse Immobilien   |
+| McMakler        | Wg gesucht          |                        |
 
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa  
 **🇦🇹 Austria** · willhaben  
 **🇨🇭 Switzerland** · Flatfox
 
-Two portals here run unsorted. Tecnocasa's server ignores the ordering its own interface offers,
-and Idealista's robots.txt disallows the sort-by-date URL. Keep a tecnocasa search narrow enough
-for a new advert to reach the first page. Idealista reads every result page of a search instead, as
-do Casa.it and a search drawn on the map on Immobiliare.it - up to twenty pages each.
+Tecnocasa's server ignores the ordering its own interface offers, so keep a tecnocasa search narrow
+enough for a new advert to reach the first page. Casa.it and a search drawn on the map on
+Immobiliare.it read every result page instead - up to twenty each.
 
-Idealista needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service such as
-[TRAWL](https://github.com/germondai/trawl). Without it that provider finds nothing. Immobiliare.it
-and Casa.it ask the same service only when their own pages come back walled, which is what a search
-run from a datacenter address meets, and what casa.it answers with from the second page of a walk
-on; a search drawn on the map on Immobiliare.it needs no service at all.
+Idealista is read through the api its mobile app talks to, which sorts by publication date and
+needs no scrape service. Paste any search url from the website, including a `/multi/` search over
+several areas. A search the api has no terms for - a filter it cannot express, a category it does
+not serve, land - is read off the website instead, and only that case needs
+`FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service such as
+[TRAWL](https://github.com/germondai/trawl). See
+[reverse-engineered-idealista.md](./reverse-engineered-idealista.md).
+
+Immobiliare.it and Casa.it ask the same service only when their own pages come back walled, which
+is what a search run from a datacenter address meets, and what casa.it answers with from the second
+page of a walk on; a search drawn on the map on Immobiliare.it needs no service at all.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
@@ -222,7 +228,7 @@ If you run a portal Fredy does not cover yet, contributions are very welcome, se
 
 ### Notification adapter 📡
 
-An **adapter** is a *kind* of connection Fredy can send through (Slack,
+An **adapter** is a _kind_ of connection Fredy can send through (Slack,
 Telegram, Email, ntfy, discord ...).\
 Each adapter decides what it needs from you, for example an API key or a webhook URL.\
 You never configure an adapter on its own. You configure a **channel**, which is one
@@ -239,7 +245,7 @@ them at once. Several channels of the same type are fine, so "Telegram → famil
 "Telegram → work chat" can both be on the same search.
 
 Every channel belongs to whoever created it. An administrator can share one with all users, or
-with other administrators only. Sharing lets other people *send* through a channel, it never
+with other administrators only. Sharing lets other people _send_ through a channel, it never
 reveals its credentials. Anyone who needs their own variant can duplicate the channel and fill
 in their own.
 
@@ -256,7 +262,7 @@ where you can also restrict them to working hours.
 ### MCP Server 🤖
 
 Starting with **V20**, Fredy ships with a built-in **MCP Server**. This allows you to connect Fredy to LLMs (like Claude, ChatGPT, or local models via LM Studio) and query your real estate data using natural language.
-The local LLM can even enrich existing listings by checking the listing online.   
+The local LLM can even enrich existing listings by checking the listing online.
 
 For more information on how to set it up and use it, please refer to the [MCP Readme](lib/mcp/README.md).
 
@@ -264,7 +270,7 @@ For more information on how to set it up and use it, please refer to the [MCP Re
 
 Set Fredy's `baseUrl` to its public HTTPS URL, then add `<baseUrl>/api/mcp` as a custom MCP server in Claude.ai or ChatGPT. Fredy advertises OAuth discovery metadata, dynamically registers the client, and asks you to sign in and approve read access. OAuth access tokens expire after one hour and refresh automatically; existing MCP tokens continue to work for local clients. Connected apps are listed under **Settings → Connections**, where access can be revoked at any time.
 
-------------------------------------------------------------------------
+---
 
 ## 💶 Financing Calculator
 
@@ -320,7 +326,7 @@ mortgage answer or a rent answer depending on the listing.
 > defaults and Bundesländer change them from time to time, so check the figure for your state
 > and get a binding offer from your bank before committing to anything.
 
-------------------------------------------------------------------------
+---
 
 ## Travel Time
 
@@ -355,7 +361,7 @@ Fredy reports two kinds of number and always labels which one you are looking at
 **Estimated** comes from the background sweep. Once per address, Fredy asks how long it takes to
 reach every stop in the region, then adds the walk from the closest stop to the front door. That is
 one request per address no matter how many listings you have, which keeps the load on a
-volunteer-run service low. Hover the *Estimated* chip to see the stops it used. Compared against
+volunteer-run service low. Hover the _Estimated_ chip to see the stops it used. Compared against
 exact routing across Berlin, it lands within a few minutes.
 
 **Exact** is fetched when you open a listing. Fredy requests the real journey, which also fills in
@@ -369,18 +375,18 @@ no worse off than before.
 
 Defaults that normally need no change:
 
-| Setting | Default | What it does |
-|---|---|---|
-| `motisBaseUrl` | `https://api.transitous.org/api` | Point at your own MOTIS instance if you outgrow the public one. |
-| `travelTimeMaxMinutes` | `90` | How far the region-wide lookup reaches, and the main size dial. |
-| `travelTimeStreetLookupsPerRun` | `15` | Ceiling on street routings per sweep. `0` turns them off. |
-| `travelTimeLimitPerRun` | `500` | Listings one sweep works through. Not a request count. |
-| `travelTimeMaxAgeDays` | `30` | When a stored travel time is looked up again. |
+| Setting                         | Default                          | What it does                                                    |
+| ------------------------------- | -------------------------------- | --------------------------------------------------------------- |
+| `motisBaseUrl`                  | `https://api.transitous.org/api` | Point at your own MOTIS instance if you outgrow the public one. |
+| `travelTimeMaxMinutes`          | `90`                             | How far the region-wide lookup reaches, and the main size dial. |
+| `travelTimeStreetLookupsPerRun` | `15`                             | Ceiling on street routings per sweep. `0` turns them off.       |
+| `travelTimeLimitPerRun`         | `500`                            | Listings one sweep works through. Not a request count.          |
+| `travelTimeMaxAgeDays`          | `30`                             | When a stored travel time is looked up again.                   |
 
 The sweep runs every two hours and never at startup. Street routing happens only where public
 transport cannot answer at all, where you asked for car or walking, and when you open a listing.
 
-------------------------------------------------------------------------
+---
 
 ## Public Transport
 
@@ -408,7 +414,7 @@ The marker popup on the map and the listing detail page both show the **three ne
 with their walking distance. Each opens the same departure board, so "how do I get to work from
 here" is answered without leaving the listing.
 
-------------------------------------------------------------------------
+---
 
 ## Immoscout
 
@@ -418,9 +424,9 @@ Paste the search URL from your browser as usual. Beside flats and houses this co
 
 Worth knowing:
 
--   A filter that Immoscout's own API does not offer for the type you are searching (a pets filter on a house purchase, say) is **dropped** and logged, because sending it makes their API reject the whole search.
--   A filter Fredy has no translation for yet is dropped as well, and says so in the log: `no translator for query parameter "..." ... please report the search URL`. Your search then runs **wider** than you set it, so if results look too broad, check the log first.
--   If a search URL cannot be mapped at all, the job fails with `Real estate type not found: <path>`. Please open an issue with the URL, it is a one line fix.
+- A filter that Immoscout's own API does not offer for the type you are searching (a pets filter on a house purchase, say) is **dropped** and logged, because sending it makes their API reject the whole search.
+- A filter Fredy has no translation for yet is dropped as well, and says so in the log: `no translator for query parameter "..." ... please report the search URL`. Your search then runs **wider** than you set it, so if results look too broad, check the log first.
+- If a search URL cannot be mapped at all, the job fails with `Real estate type not found: <path>`. Please open an issue with the URL, it is a one line fix.
 
 ## 🛡️ Bot Detection & Proxies
 
@@ -445,14 +451,14 @@ Leave the field empty to disable. The proxy applies to all headless-browser prov
 
 Residential proxies are a paid service (usually billed per GB, Fredy's traffic is small). Well-known providers offering German residential IPs include:
 
-| Provider | Notes |
-|---|---|
-| [IPRoyal](https://iproyal.com) | Pay-as-you-go, no monthly minimum, good for low volume |
-| [Webshare](https://www.webshare.io) | Cheap entry tier, has a small free plan to test with |
-| [Decodo (formerly Smartproxy)](https://decodo.com) | Easy setup, country/city targeting |
-| [SOAX](https://soax.com) | Residential + mobile, fine-grained geo-targeting |
-| [Bright Data](https://brightdata.com) | Largest pool, most features, higher complexity/price |
-| [Oxylabs](https://oxylabs.io) | Enterprise-grade, larger plans |
+| Provider                                           | Notes                                                  |
+| -------------------------------------------------- | ------------------------------------------------------ |
+| [IPRoyal](https://iproyal.com)                     | Pay-as-you-go, no monthly minimum, good for low volume |
+| [Webshare](https://www.webshare.io)                | Cheap entry tier, has a small free plan to test with   |
+| [Decodo (formerly Smartproxy)](https://decodo.com) | Easy setup, country/city targeting                     |
+| [SOAX](https://soax.com)                           | Residential + mobile, fine-grained geo-targeting       |
+| [Bright Data](https://brightdata.com)              | Largest pool, most features, higher complexity/price   |
+| [Oxylabs](https://oxylabs.io)                      | Enterprise-grade, larger plans                         |
 
 This is not an endorsement, pick whatever fits your budget. For low-volume use like Fredy, a pay-as-you-go plan (e.g. IPRoyal) or a cheap entry tier (e.g. Webshare) is usually plenty. Make sure to select **Germany** as the proxy location and keep the search interval reasonable (the higher the interval, the less you look like a bot).
 
@@ -471,10 +477,10 @@ created, nothing is promoted; an unknown name is ignored and the login form appe
 explicit session always wins, so nobody is silently switched, and `sessionTTL`, admin checks and
 MCP tokens are untouched.
 
-Set it up under *Administration → System → Reverse proxy sign-in*:
+Set it up under _Administration → System → Reverse proxy sign-in_:
 
 1. Create the Fredy user with the **same username** the proxy will send (e.g. `cedric`).
-2. Tick *Accept the identity header from trusted proxies*.
+2. Tick _Accept the identity header from trusted proxies_.
 3. Enter the proxy's address(es) - single IPs or CIDR ranges. In Docker this is usually the
    bridge network the proxy connects from, e.g. `172.16.0.0/12`; check `docker network inspect`.
 4. Leave the header at `Remote-User` unless your proxy uses another name.
@@ -545,29 +551,36 @@ a debug bundle due to privacy reasons!
 
 ### Development Mode
 
-``` bash
+```bash
 yarn run start:backend:dev
 yarn run start:frontend:dev
 ```
+
 You should now be able to access _Fredy_ from your browser. Check your Terminal to see what port the frontend is running on.
 
 ### Run Tests
 
 #### "Online" tests
+
 These tests are directly executed against the actual providers.
-``` bash
+
+```bash
 yarn run test
 ```
 
 #### "Offline" tests
+
 These tests are using the test fixtures instead of the actual providers. Much faster and "good enough" to test the core functionality.
-``` bash
+
+```bash
 yarn run test:offline
 ```
 
 #### Download new fixtures
+
 If you have to refresh the fixtures (every once in a while needed because the providers change their code), run this command:
-``` bash
+
+```bash
 yarn run test:download-fixtures
 ```
 
@@ -576,6 +589,7 @@ yarn run test:download-fixtures
 Fredy's UI is fully multilingual. Translation files live in `ui/src/locales/`. To add a new language, create a single JSON file there, no code changes required.
 
 **Example: `ui/src/locales/fr.json`**
+
 ```json
 {
   "_meta": {
@@ -592,22 +606,22 @@ Fredy's UI is fully multilingual. Translation files live in `ui/src/locales/`. T
 
 The `_meta` fields:
 
-| Field | Description |
-|---|---|
-| `flag` | Unicode flag emoji shown in the language selector |
-| `name` | Display name shown in the language selector |
-| `locale` | BCP 47 locale string used for date and number formatting (e.g. `fr-FR`) |
+| Field        | Description                                                                     |
+| ------------ | ------------------------------------------------------------------------------- |
+| `flag`       | Unicode flag emoji shown in the language selector                               |
+| `name`       | Display name shown in the language selector                                     |
+| `locale`     | BCP 47 locale string used for date and number formatting (e.g. `fr-FR`)         |
 | `semiLocale` | Semi UI locale key for component-level strings (date pickers, pagination, etc.) |
 
 > **Important:** `semiLocale` must exactly match a locale filename from the Semi UI locale sources (without the `.js` extension). See the [available Semi UI locales on GitHub](https://github.com/DouyinFE/semi-design/tree/main/packages/semi-ui/locale/source) for the full list of supported keys.
 
 After adding the file, rebuild the frontend (`yarn build:frontend` or restart the dev server) and the new language will appear automatically in **Settings → Preferences → Language**.
 
-------------------------------------------------------------------------
+---
 
 ## 📐 Architecture
 
-``` mermaid
+```mermaid
 flowchart TD
  subgraph Jobs["Jobs"]
         A1["Job 1"]
@@ -635,8 +649,10 @@ flowchart TD
     E -- No --> F1 & F2
 ```
 
-------------------------------------------------------------------------
+---
+
 ## 🤖 Using AI such as Claude Code
+
 When I started building Fredy, LLMs were still basically the wet dream of a few nerdy scientists.
 
 Nowadays, it’s easier than ever to throw a prompt into the LLM of your choice and let 'the AI' build your stuff. I’m not against that. I use Claude Code myself for smaller tasks, and I do think these tools can be really useful.
@@ -649,7 +665,7 @@ I’ve had one too many PRs full of hallucinated bullshit.
 
 **Thanks ;)**
 
-------------------------------------------------------------------------
+---
 
 ## 👐 Contributing
 
@@ -660,7 +676,7 @@ Thanks to everyone who has contributed!
 See the [Contributing
 Guide](https://github.com/orangecoding/fredy/blob/master/CONTRIBUTING.md).
 
-------------------------------------------------------------------------
+---
 
 ## 🗺️ Credits & Data
 
@@ -679,7 +695,7 @@ pointing a large instance at it. Street and map data come from
 </picture>
 </a>
 
-------------------------------------------------------------------------
+---
 
 ## 📄 License
 
@@ -693,7 +709,7 @@ pointing a large instance at it. Street and map data come from
 Because of these conditions Fredy is **source-available, not OSI open source**. Read the full
 [LICENSE](LICENSE) before building anything commercial on top of it.
 
-------------------------------------------------------------------------
+---
 
 ## 💬 Support
 
@@ -702,7 +718,7 @@ Because of these conditions Fredy is **source-available, not OSI open source**. 
 - **An Immoscout search URL Fredy cannot map**: open an issue with the URL, it is usually a one
   line fix.
 
-------------------------------------------------------------------------
+---
 
 ## ⭐ Star History
 

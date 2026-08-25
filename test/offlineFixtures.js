@@ -142,6 +142,8 @@ export async function readImmoweltFixtures() {
 const FETCHED_PAGE_HOSTS = ['subito.it', 'tecnocasa.it', 'idealista.it'];
 
 export function buildFetchMock() {
+  let idealistaCatalogue = null;
+  let idealistaListData = null;
   let listData = null;
   let detailData = null;
   let deutscheWohnenListData = null;
@@ -150,8 +152,9 @@ export function buildFetchMock() {
   let flatfoxListings = null;
   let immobiliareListData = null;
 
-  return async (url) => {
+  return async (url, init) => {
     const urlStr = String(url);
+    const requestBody = new URLSearchParams(typeof init?.body === 'string' ? init.body : '');
 
     // willhaben reads its results out of the page's __NEXT_DATA__, so this is the one fixture
     // served as text rather than json.
@@ -160,6 +163,44 @@ export function buildFetchMock() {
         willhabenHtml = (await tryReadFile(path.join(FIXTURES_DIR, 'willhaben.html'))) ?? '';
       }
       return { ok: true, status: 200, text: () => Promise.resolve(willhabenHtml) };
+    }
+
+    // Idealista is read through the api the android app talks to, so its fixtures are the answers
+    // that api gives. The token is not one of them: it is minted per install and says nothing about
+    // the search, so offline mode hands out one of its own.
+    if (urlStr.includes('app.idealista.it/api/oauth/token')) {
+      return { ok: true, status: 200, json: () => Promise.resolve({ access_token: 'offline', expires_in: 3600 }) };
+    }
+
+    // The catalogue is read one location at a time, and which one is asked for is in the body.
+    if (urlStr.includes('app.idealista.it/api/3.5/it/search/locations')) {
+      if (idealistaCatalogue == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'idealista_locations.json'));
+        idealistaCatalogue = raw ? JSON.parse(raw) : {};
+      }
+      const asked = requestBody.get('locationIds') ?? '';
+      return { ok: true, status: 200, json: () => Promise.resolve(idealistaCatalogue[asked] ?? { provinces: [] }) };
+    }
+
+    // One recorded page stands for the whole search, so it answers as the only page there is and
+    // every page after it comes back empty, which is what stops the walk.
+    if (urlStr.includes('app.idealista.it/api/3.5/it/search')) {
+      if (idealistaListData == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'idealista_list.json'));
+        idealistaListData = raw ? JSON.parse(raw) : { elementList: [] };
+      }
+      const page = Number(requestBody.get('numPage')) || 1;
+      const data =
+        page === 1
+          ? { ...idealistaListData, actualPage: 1, totalPages: 1 }
+          : { ...idealistaListData, elementList: [], actualPage: page, totalPages: page };
+      return { ok: true, status: 200, json: () => Promise.resolve(data) };
+    }
+
+    // The outline of one of the areas a `/multi/` search names. A triangle is enough: what the
+    // tests read is that the parser turns the encoding into a ring, not where the ring is.
+    if (urlStr.includes('mt1.idealista.it')) {
+      return { ok: true, status: 200, text: () => Promise.resolve('((_p~iF~ps|U_ulLnnqC_mqNvxq`@))') };
     }
 
     // The providers that read a page over plain `fetch` because their portal serves one without a

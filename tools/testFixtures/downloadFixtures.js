@@ -195,6 +195,70 @@ async function downloadIdealistaFixtures(url) {
 }
 
 /**
+ * Idealista is read through the mobile api, so the fixtures for that half of the provider are the
+ * answers it gives: the catalogue of locations the search url is looked up in, and one page of the
+ * search itself. The page fixture stands for the whole result set, so the offline mock answers
+ * every page after the first one empty.
+ *
+ * @param {string} url the search url
+ * @returns {Promise<void>}
+ */
+async function downloadIdealistaApiFixtures(url) {
+  console.log('\nDownloading idealista mobile api...');
+
+  // The catalogue only serves the list of provinces alongside the children of some location, so the
+  // resolver always opens this one first. See `lib/services/idealista/locations.js`.
+  const PROVINCE_LIST_ANCHOR = '0-EU-IT-MI';
+
+  const { call, LOCATIONS_PATH, SEARCH_PATH } = await import('../../lib/services/idealista/mobile-api.js');
+  const { translateSearchUrl } = await import('../../lib/services/idealista/web-translator.js');
+  const { resolveLocationId } = await import('../../lib/services/idealista/locations.js');
+
+  const search = translateSearchUrl(url);
+  if (search == null) {
+    console.warn(`  Skipping: ${url} is not a search the api can be asked for`);
+    return;
+  }
+
+  const locationId = await resolveLocationId(search.locationSlugs, search);
+  if (locationId == null) {
+    console.warn(`  Skipping: the api catalogue has no "${search.locationSlugs.join('/')}"`);
+    return;
+  }
+
+  const criteria = [
+    ['operation', search.operation],
+    ['propertyType', search.propertyType],
+    ['locale', 'it'],
+  ];
+  const catalogue = {};
+  for (const level of [PROVINCE_LIST_ANCHOR, locationId.split('-').slice(0, 4).join('-')]) {
+    catalogue[level] = await call(LOCATIONS_PATH, { body: [...criteria, ['locationIds', level]] });
+  }
+  await writeFile(path.join(FIXTURES_DIR, 'idealista_locations.json'), JSON.stringify(catalogue, null, 2), 'utf-8');
+  console.log(`  Saved idealista_locations.json (${Object.keys(catalogue).length} levels)`);
+
+  const listing = await call(SEARCH_PATH, {
+    query: [
+      ['adIds', ''],
+      ['searchType', 'locationIds'],
+    ],
+    body: [
+      ...criteria,
+      ['locationIds', `[${locationId}]`],
+      ['order', 'publicationDate'],
+      ['sort', 'desc'],
+      ['numPage', '1'],
+      ['maxItems', '50'],
+      ['quality', 'high'],
+      ['gallery', 'true'],
+    ],
+  });
+  await writeFile(path.join(FIXTURES_DIR, 'idealista_list.json'), JSON.stringify(listing, null, 2), 'utf-8');
+  console.log(`  Saved idealista_list.json (${listing?.elementList?.length ?? 0} adverts)`);
+}
+
+/**
  * A map search carries no results in its markup, so the fixture for that half of the provider is
  * the answer of the endpoint the page calls instead.
  *
@@ -620,6 +684,7 @@ async function main() {
         break;
       case 'idealista':
         await downloadIdealistaFixtures(runConfig.url);
+        await downloadIdealistaApiFixtures(runConfig.url);
         break;
       case 'immobiliare':
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
