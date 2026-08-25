@@ -187,3 +187,47 @@ describe('the wall idealista puts in front of a plain request', () => {
     expect(twoWordType.address).toBe('Via Giulia, Roma');
   });
 });
+
+describe('the result pages idealista spreads a search over', () => {
+  it('hangs the page off the search path, however the url arrives', () => {
+    const search = 'https://www.idealista.it/vendita-case/roma-roma/';
+
+    expect(provider.pageUrl(search, 1)).toBe(search);
+    expect(provider.pageUrl(search, 3)).toBe(`${search}lista-3.htm`);
+    // A url that already names a page is rewritten rather than appended to.
+    expect(provider.pageUrl(`${search}lista-3.htm`, 5)).toBe(`${search}lista-5.htm`);
+    expect(provider.pageUrl(`${search}lista-3.htm`, 1)).toBe(search);
+  });
+
+  /**
+   * The portal serves no ordering Fredy may ask for, so a new advert lands wherever the ranking
+   * puts it and the whole result set has to be read. A page past the last one comes back as the
+   * first one again, which is what ends the walk when the last page is a full one.
+   */
+  it('walks the result pages until one runs short', async () => {
+    const card = (id) =>
+      `<article class="item" data-element-id="${id}"><a class="item-link" href="/immobile/${id}/" title="Villa in Via Giulia, Roma"></a></article>`;
+    const cards = (from, count) => Array.from({ length: count }, (__, index) => card(from + index)).join('');
+
+    const asked = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url) => {
+      asked.push(String(url));
+      const page = Number(String(url).match(/lista-(\d+)\.htm/)?.[1] ?? 1);
+      // Two full pages and then a short one, which is where the results end.
+      const body = page <= 2 ? cards(page * 100, 30) : cards(300, 4);
+      return { status: 200, headers: undefined, text: async () => body };
+    };
+
+    try {
+      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/vendita-case/roma-roma/' }, []);
+      const adverts = await runConfig.getListings(runConfig.url);
+
+      expect(adverts).toHaveLength(64);
+      expect(asked).toHaveLength(3);
+      expect(asked[2]).toContain('/lista-3.htm');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
