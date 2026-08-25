@@ -60,6 +60,7 @@ export const PROVIDER_SIZE_ORDER = [
   'immobiliare',
   'casa',
   'subito',
+  'tecnocasa',
   // Austria
   'willhaben',
   // Switzerland

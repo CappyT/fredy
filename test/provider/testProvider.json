@@ -88,5 +88,9 @@
   "subito": {
     "url": "https://www.subito.it/annunci-lazio/affitto/appartamenti/roma/",
     "enabled": true
+  },
+  "tecnocasa": {
+    "url": "https://www.tecnocasa.it/annunci/immobili/lazio/roma/roma.html",
+    "enabled": true
   }
 }

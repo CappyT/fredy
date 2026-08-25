@@ -111,6 +111,49 @@ async function downloadWillhabenFixtures(url) {
 }
 
 /**
+ * Tecnocasa's search page and the first advert on it, both as served.
+ *
+ * Downloaded over `fetch` rather than through the browser every other html provider uses, because
+ * tecnocasa hands its data to Vue as JSON attributes and hydration takes those attributes off the
+ * elements again. A rendered fixture therefore carries the cards but not one figure the provider
+ * reads, which is also why the provider itself makes a plain request.
+ *
+ * @param {import('../../lib/types/providerConfig.js').ProviderConfig} providerConfig the initialized provider config
+ * @returns {Promise<void>}
+ */
+async function downloadTecnocasaFixtures(providerConfig) {
+  console.log('\nDownloading tecnocasa...');
+
+  const headers = { 'User-Agent': BROWSER_USER_AGENT, 'Accept-Language': 'it-IT,it;q=0.9' };
+
+  const response = await fetch(providerConfig.url, { headers });
+  if (!response.ok) {
+    console.warn(`  Failed to download tecnocasa: ${response.statusText}`);
+    return;
+  }
+
+  await writeFile(path.join(FIXTURES_DIR, 'tecnocasa.html'), await response.text(), 'utf-8');
+  console.log('  Saved tecnocasa.html');
+
+  const listings = await providerConfig.getListings(providerConfig.url);
+  const detailUrl = listings.map((listing) => providerConfig.normalize(listing)?.link).find(Boolean);
+  if (!detailUrl) {
+    console.warn('  No advert found - skipping detail fixture');
+    return;
+  }
+
+  console.log('  Downloading tecnocasa detail...');
+  const detailResponse = await fetch(detailUrl, { headers });
+  if (!detailResponse.ok) {
+    console.warn(`  Failed to download tecnocasa detail: ${detailResponse.statusText}`);
+    return;
+  }
+
+  await writeFile(path.join(FIXTURES_DIR, 'tecnocasa_detail.html'), await detailResponse.text(), 'utf-8');
+  console.log('  Saved tecnocasa_detail.html');
+}
+
+/**
  * Flatfox answers a search in two requests, so it needs two fixtures.
  *
  * The pins carry the primary keys of everything matching the search; the second call hydrates those
@@ -460,6 +503,9 @@ async function main() {
         break;
       case 'flatfox':
         await downloadFlatfoxFixtures(runConfig.url);
+        break;
+      case 'tecnocasa':
+        await downloadTecnocasaFixtures(runConfig);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
