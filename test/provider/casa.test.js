@@ -123,3 +123,27 @@ describe.each(searchShapes)('#casa provider testsuite() - $shape', ({ source }) 
     expect(provider.metaInformation.countries).toEqual(['it']);
   });
 });
+
+describe('the result pages casa.it spreads a search over', () => {
+  /** A store carrying one advert, in whichever half the search shape fills. */
+  const store = (half, totalPages) =>
+    `<script>window.__INITIAL_STATE__ = JSON.parse(${JSON.stringify(
+      JSON.stringify({ [half]: { list: [{ id: 1 }], paginator: { totalPages } } }),
+    )})</script>`;
+
+  it('counts the pages of either search shape', () => {
+    expect(provider.parseSearch(store('search', 4))).toEqual({ listings: [{ id: 1 }], totalPages: 4 });
+    expect(provider.parseSearch(store('searchMap', 8))).toEqual({ listings: [{ id: 1 }], totalPages: 8 });
+    expect(provider.parseSearch('<html></html>')).toBeNull();
+  });
+
+  it('names the page in the query, leaving a first page as the job wrote it', () => {
+    const search = 'https://www.casa.it/srp/map/?tr=vendita&geopolygon={%22polygon%22:[]}';
+
+    expect(provider.pageUrl(search, 1)).toBe(search);
+    expect(new URL(provider.pageUrl(search, 3)).searchParams.get('page')).toBe('3');
+    // A url that already names a page is rewritten rather than appended to.
+    expect(new URL(provider.pageUrl(`${search}&page=3`, 5)).searchParams.get('page')).toBe('5');
+    expect(new URL(provider.pageUrl(`${search}&page=3`, 1)).searchParams.has('page')).toBe(false);
+  });
+});
