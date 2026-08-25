@@ -80,5 +80,9 @@
   "immobiliare": {
     "url": "https://www.immobiliare.it/affitto-case/roma/",
     "enabled": true
+  },
+  "casa": {
+    "url": "https://www.casa.it/affitto/residenziale/roma/",
+    "enabled": true
   }
 }
