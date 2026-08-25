@@ -135,4 +135,31 @@ describe('#immobiliare provider configuration()', () => {
     expect(endpoint.searchParams.get('vrt')).toBe('45.1,9.1;45.2,9.2');
     expect(endpoint.searchParams.getAll('idTipologia[]')).toEqual(['12', '13']);
   });
+
+  /**
+   * The endpoint answers 25 adverts at a time and counts the pages itself, so a search of any size
+   * has to be walked rather than read once.
+   */
+  it('reads every page the endpoint counts', async () => {
+    const asked = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url) => {
+      const page = Number(new URL(String(url)).searchParams.get('pag'));
+      asked.push(page);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ maxPages: 3, currentPage: page, results: [{ realEstate: { id: page } }] }),
+      };
+    };
+
+    try {
+      const runConfig = provider.createConfig({ url: providerConfig.immobiliare.mapSearchUrl }, []);
+      const results = await runConfig.getListings(runConfig.url, undefined);
+      expect(asked).toEqual([1, 2, 3]);
+      expect(results).toHaveLength(3);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
