@@ -79,7 +79,8 @@
   },
   "immobiliare": {
     "url": "https://www.immobiliare.it/affitto-case/roma/",
-    "enabled": true
+    "enabled": true,
+    "mapSearchUrl": "https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&idNazione=IT&fkRegione=laz&idProvincia=RM&idComune=6737&__lang=it"
   },
   "casa": {
     "url": "https://www.casa.it/affitto/residenziale/roma/",

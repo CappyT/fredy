@@ -11,22 +11,29 @@ import * as provider from '../../lib/provider/immobiliare.js';
 /**
  * Immobiliare.it, Italy's largest property portal and the first provider Fredy ships for Italy.
  *
- * The results are read out of the search page's `__NEXT_DATA__` rather than out of its markup, so
- * what these tests pin is the shape of that payload: a renamed class name is harmless, a renamed
- * field is not.
+ * The portal answers a town search with a server rendered page and a map search with a payload
+ * from its own endpoint, so both shapes run through the same assertions here: what is pinned is
+ * that either one arrives as the same normalized listing. A renamed class name is harmless, a
+ * renamed field is not.
  *
- * Assertions are structural rather than literal, because the same file runs against the fixture
+ * Assertions are structural rather than literal, because the same file runs against the fixtures
  * (`yarn test:offline`) and against the live portal (`yarn test`), where every advert differs.
  */
 const TEST_TIMEOUT = 120_000;
 
-describe('#immobiliare provider testsuite()', () => {
+/** The two search shapes the provider reads, each with the source config a job would carry. */
+const searchShapes = [
+  { shape: 'town search', source: providerConfig.immobiliare },
+  { shape: 'map search', source: { url: providerConfig.immobiliare.mapSearchUrl, enabled: true } },
+];
+
+describe.each(searchShapes)('#immobiliare provider testsuite() - $shape', ({ source }) => {
   /** @type {any[]} */
   let listings;
 
   beforeAll(async () => {
     const Fredy = await mockFredy();
-    const runConfig = provider.createConfig(providerConfig.immobiliare, [], []);
+    const runConfig = provider.createConfig(source, [], []);
     const job = { id: 'immobiliare', notificationAdapter: null, spatialFilter: null, specFilter: null };
 
     const fredy = new Fredy(runConfig, job, provider.metaInformation.id, similarityCache, undefined);
@@ -96,7 +103,9 @@ describe('#immobiliare provider testsuite()', () => {
       expect(listing.longitude, `longitude of ${listing.id}`).toBeLessThan(19);
     }
   });
+});
 
+describe('#immobiliare provider configuration()', () => {
   /**
    * `dataModifica` is the criterion the portal sorted by until it stopped honouring it; it is now
    * accepted and ignored, and a search sent with it comes back with the paid placements first.
@@ -107,5 +116,23 @@ describe('#immobiliare provider testsuite()', () => {
 
   it('declares Italy, which is what sends the geocoder there', () => {
     expect(provider.metaInformation.countries).toEqual(['it']);
+  });
+
+  /**
+   * The endpoint answers 500 without `path`, and the whole search has to survive the translation -
+   * the polygon and the repeated filter keys included.
+   */
+  it('carries the map search over to the endpoint, naming the page it came from', () => {
+    const endpoint = new URL(
+      provider.convertMapSearchToApi(
+        'https://www.immobiliare.it/search-list/?idContratto=1&vrt=45.1%2C9.1%3B45.2%2C9.2&idTipologia[]=12&idTipologia[]=13',
+      ),
+    );
+
+    expect(endpoint.origin + endpoint.pathname).toBe('https://www.immobiliare.it/api-next/search-list/listings/');
+    expect(endpoint.searchParams.get('path')).toBe('/search-list/');
+    expect(endpoint.searchParams.get('idContratto')).toBe('1');
+    expect(endpoint.searchParams.get('vrt')).toBe('45.1,9.1;45.2,9.2');
+    expect(endpoint.searchParams.getAll('idTipologia[]')).toEqual(['12', '13']);
   });
 });

@@ -195,6 +195,29 @@ async function downloadIdealistaFixtures(url) {
 }
 
 /**
+ * A map search carries no results in its markup, so the fixture for that half of the provider is
+ * the answer of the endpoint the page calls instead.
+ *
+ * @param {string} mapSearchUrl the map search url from testProvider.json
+ * @returns {Promise<void>}
+ */
+async function downloadImmobiliareMapFixture(mapSearchUrl) {
+  const { convertMapSearchToApi } = await import('../../lib/provider/immobiliare.js');
+
+  const response = await fetch(convertMapSearchToApi(mapSearchUrl), {
+    headers: { 'User-Agent': BROWSER_USER_AGENT, Accept: 'application/json', 'Accept-Language': 'it-IT,it;q=0.9' },
+  });
+  if (!response.ok) {
+    console.warn(`  Failed to download immobiliare map search: ${response.status} ${response.statusText}`);
+    return;
+  }
+
+  const payload = await response.json();
+  await writeFile(path.join(FIXTURES_DIR, 'immobiliare_list.json'), JSON.stringify(payload, null, 2), 'utf-8');
+  console.log(`  Saved immobiliare_list.json (${payload?.results?.length ?? 0} listings)`);
+}
+
+/**
  * Flatfox answers a search in two requests, so it needs two fixtures.
  *
  * The pins carry the primary keys of everything matching the search; the second call hydrates those
@@ -550,6 +573,10 @@ async function main() {
         break;
       case 'idealista':
         await downloadIdealistaFixtures(runConfig.url);
+        break;
+      case 'immobiliare':
+        await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
+        await downloadImmobiliareMapFixture(cfg.mapSearchUrl);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);

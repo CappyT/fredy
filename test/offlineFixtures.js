@@ -135,6 +135,7 @@ export function buildFetchMock() {
   let willhabenHtml = null;
   let flatfoxPins = null;
   let flatfoxListings = null;
+  let immobiliareListData = null;
 
   return async (url) => {
     const urlStr = String(url);
@@ -172,6 +173,16 @@ export function buildFetchMock() {
         flatfoxListings = raw ? JSON.parse(raw) : { results: [] };
       }
       return { ok: true, status: 200, json: () => Promise.resolve(flatfoxListings) };
+    }
+
+    // Immobiliare reads its results out of the endpoint the search page calls, so the fixture is
+    // json rather than a page.
+    if (urlStr.includes('immobiliare.it/api-next/search-list/listings')) {
+      if (immobiliareListData == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immobiliare_list.json'));
+        immobiliareListData = raw ? JSON.parse(raw) : { results: [] };
+      }
+      return { ok: true, status: 200, json: () => Promise.resolve(immobiliareListData) };
     }
 
     if (urlStr.includes('api.mobile.immobilienscout24.de/search/list')) {
