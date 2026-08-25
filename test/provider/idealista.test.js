@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as similarityCache from '../../lib/services/similarity-check/similarityCache.js';
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/idealista.js';
@@ -219,14 +219,19 @@ describe('the result pages idealista spreads a search over', () => {
       return { status: 200, headers: undefined, text: async () => body };
     };
 
+    // The walk waits between pages, which a real run wants and a test does not.
+    vi.useFakeTimers();
     try {
       const runConfig = provider.createConfig({ url: 'https://www.idealista.it/vendita-case/roma-roma/' }, []);
-      const adverts = await runConfig.getListings(runConfig.url);
+      const walk = runConfig.getListings(runConfig.url);
+      await vi.runAllTimersAsync();
+      const adverts = await walk;
 
       expect(adverts).toHaveLength(64);
       expect(asked).toHaveLength(3);
       expect(asked[2]).toContain('/lista-3.htm');
     } finally {
+      vi.useRealTimers();
       globalThis.fetch = originalFetch;
     }
   });
