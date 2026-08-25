@@ -3,6 +3,11 @@ name: Build and publish Docker image
 # Reusable build shared by both release channels, so they cannot drift apart:
 #   docker.yml      -> ghcr.io/orangecoding/fredy             (master + release tags)
 #   pre-release.yml -> ghcr.io/orangecoding/fredy-pre-release (develop + *-pre.* tags)
+#
+# Each architecture builds on a runner of its own architecture and pushes an image with no tag,
+# addressed by digest; `merge` then joins those digests under the tags. The alternative is one
+# runner emulating the other architecture through QEMU, which cost five times what the native
+# half did and was most of the build.
 
 on:
   workflow_call:
@@ -20,24 +25,92 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      # One architecture failing still leaves the other's log worth reading.
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
 
+    # A newer push replaces this one. `merge` needs `build`, so it is skipped along with it.
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.platform }}
       cancel-in-progress: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+      # Names the cache scope and the digest artifact, neither of which may hold a slash.
+      - name: Name this architecture
+        run: echo "PLATFORM_SLUG=${{ matrix.platform }}" | tr '/' '-' >> "$GITHUB_ENV"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
         with:
-          platforms: linux/amd64,linux/arm64
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tags belong to the manifest list `merge` writes, so this run reads the labels only.
+      - name: Extract labels for Docker
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ inputs.image_name }}
+
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ inputs.image_name }},push-by-digest=true,name-canonical=true,push=true
+          # Per architecture, so the two builds cannot evict each other's layers.
+          cache-from: type=gha,scope=${{ env.PLATFORM_SLUG }}
+          cache-to: type=gha,mode=max,scope=${{ env.PLATFORM_SLUG }}
+
+      - name: Hand the digest to the merge job
+        run: |
+          mkdir -p /tmp/digests
+          digest='${{ steps.build.outputs.digest }}'
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_SLUG }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -56,52 +129,41 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ inputs.image_name }}
           tags: ${{ inputs.tags }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # Test container health with docker compose
-      - name: Test container with docker compose
+      - name: Join the per-architecture images under the tags
+        working-directory: /tmp/digests
         run: |
-          echo "Starting container with docker compose..."
-          mkdir -p ./db ./conf && chmod 777 ./db ./conf
-          docker compose up --build -d
-          echo "Waiting for container to be ready (60 seconds for start_period)..."
-          sleep 60
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.REGISTRY }}/${{ inputs.image_name }}@sha256:%s ' *)
 
-          echo "Monitoring container health for 30 seconds..."
-          SECONDS_ELAPSED=0
-          HEALTH_CHECK_INTERVAL=5
-          TOTAL_DURATION=30
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect \
+            ${{ env.REGISTRY }}/${{ inputs.image_name }}:${{ steps.meta.outputs.version }}
 
-          while [ $SECONDS_ELAPSED -lt $TOTAL_DURATION ]; do
-            HEALTH_STATUS=$(docker inspect --format='{{.State.Health.Status}}' fredy 2>/dev/null || echo "not_found")
-            CONTAINER_STATUS=$(docker inspect --format='{{.State.Status}}' fredy 2>/dev/null || echo "not_found")
-            echo "[$SECONDS_ELAPSED/$TOTAL_DURATION sec] Container: $CONTAINER_STATUS, Health: $HEALTH_STATUS"
+      # The published image, not a rebuild of it. The container carries its own HEALTHCHECK, so
+      # what this waits for is the same answer a deployment waits for.
+      - name: Test the published image
+        run: |
+          image="${{ env.REGISTRY }}/${{ inputs.image_name }}:${{ steps.meta.outputs.version }}"
+          docker run -d --name fredy "$image"
 
-            # Check if container is not running or unhealthy
-            if [ "$CONTAINER_STATUS" != "running" ]; then
-              echo "Container stopped running! Status: $CONTAINER_STATUS"
-              docker compose logs fredy
+          for attempt in $(seq 1 36); do
+            state=$(docker inspect --format '{{.State.Status}}' fredy 2>/dev/null || echo gone)
+            health=$(docker inspect --format '{{.State.Health.Status}}' fredy 2>/dev/null || echo none)
+            echo "[$attempt] container: $state, health: $health"
+
+            if [ "$health" = "healthy" ]; then
+              docker rm -f fredy
+              exit 0
+            fi
+            if [ "$state" != "running" ] || [ "$health" = "unhealthy" ]; then
+              docker logs fredy
               exit 1
             fi
-
-            if [ "$HEALTH_STATUS" = "unhealthy" ]; then
-              echo "Container is unhealthy!"
-              docker compose logs fredy
-              docker inspect --format='{{json .State.Health}}' fredy | jq
-              exit 1
-            fi
-
-            sleep $HEALTH_CHECK_INTERVAL
-            SECONDS_ELAPSED=$((SECONDS_ELAPSED + HEALTH_CHECK_INTERVAL))
+            sleep 5
           done
 
-          docker compose down
+          echo "The container never reported healthy."
+          docker logs fredy
+          exit 1
