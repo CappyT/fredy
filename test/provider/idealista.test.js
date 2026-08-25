@@ -235,4 +235,39 @@ describe('the result pages idealista spreads a search over', () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  /**
+   * A 429 is not a wall: no session clears it and the solver has nothing to solve. The run stops
+   * where it is rather than asking for the pages that would deepen the rate limit.
+   */
+  it('stops the walk when the portal asks for fewer requests', async () => {
+    const card = (id) =>
+      `<article class="item" data-element-id="${id}"><a class="item-link" href="/immobile/${id}/" title="Villa in Via Giulia, Roma"></a></article>`;
+
+    const asked = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url) => {
+      asked.push(String(url));
+      const page = Number(String(url).match(/lista-(\d+)\.htm/)?.[1] ?? 1);
+      if (page > 1) return { status: 429, headers: undefined, text: async () => 'Too Many Requests' };
+      return {
+        status: 200,
+        headers: undefined,
+        text: async () => Array.from({ length: 30 }, (__, index) => card(index)).join(''),
+      };
+    };
+
+    vi.useFakeTimers();
+    try {
+      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/vendita-case/roma-roma/' }, []);
+      const walk = runConfig.getListings(runConfig.url);
+      await vi.runAllTimersAsync();
+
+      expect(await walk).toHaveLength(30);
+      expect(asked).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
