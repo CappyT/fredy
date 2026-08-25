@@ -154,6 +154,37 @@ async function downloadTecnocasaFixtures(providerConfig) {
 }
 
 /**
+ * Idealista's search page, downloaded through a browser with a head on it.
+ *
+ * DataDome answers every other client with an interstitial. A headless browser runs its script and
+ * stays on the block page, so this is the one fixture that cannot be downloaded on a machine with
+ * no display. The provider clears the same wall the same way, once, and reads the portal over
+ * plain requests afterwards.
+ *
+ * @param {string} url the search url
+ * @param {Function} launchBrowser
+ * @param {Function} closeBrowser
+ * @returns {Promise<void>}
+ */
+async function downloadIdealistaFixtures(url, launchBrowser, closeBrowser) {
+  console.log('\nDownloading idealista...');
+
+  const browser = await launchBrowser(url, { puppeteerHeadless: false, acceptLanguage: 'it-IT,it;q=0.9' });
+  try {
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await page.waitForSelector('article.item', { timeout: 30_000 });
+
+    await writeFile(path.join(FIXTURES_DIR, 'idealista.html'), await page.content(), 'utf-8');
+    console.log('  Saved idealista.html');
+  } catch (error) {
+    console.warn(`  Failed to download idealista: ${error.message}`);
+  } finally {
+    await closeBrowser(browser);
+  }
+}
+
+/**
  * Flatfox answers a search in two requests, so it needs two fixtures.
  *
  * The pins carry the primary keys of everything matching the search; the second call hydrates those
@@ -506,6 +537,9 @@ async function main() {
         break;
       case 'tecnocasa':
         await downloadTecnocasaFixtures(runConfig);
+        break;
+      case 'idealista':
+        await downloadIdealistaFixtures(runConfig.url, launchBrowser, closeBrowser);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);

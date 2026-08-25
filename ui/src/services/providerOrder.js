@@ -58,6 +58,7 @@ export const PROVIDER_SIZE_ORDER = [
   'schwarzesbrett',
   // Italy
   'immobiliare',
+  'idealista',
   'casa',
   'subito',
   'tecnocasa',

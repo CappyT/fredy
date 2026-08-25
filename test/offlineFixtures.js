@@ -126,7 +126,7 @@ export async function readImmoweltFixtures() {
  * accidental live network traffic in offline mode.
  */
 /** Hosts whose providers request their pages themselves instead of going through the extractor. */
-const FETCHED_PAGE_HOSTS = ['subito.it', 'tecnocasa.it'];
+const FETCHED_PAGE_HOSTS = ['subito.it', 'tecnocasa.it', 'idealista.it'];
 
 export function buildFetchMock() {
   let listData = null;
