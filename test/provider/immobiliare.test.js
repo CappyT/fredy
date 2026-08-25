@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as similarityCache from '../../lib/services/similarity-check/similarityCache.js';
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/immobiliare.js';
@@ -153,12 +153,18 @@ describe('#immobiliare provider configuration()', () => {
       };
     };
 
+    // The walk waits between pages, which a real run wants and a test does not.
+    vi.useFakeTimers();
     try {
       const runConfig = provider.createConfig({ url: providerConfig.immobiliare.mapSearchUrl }, []);
-      const results = await runConfig.getListings(runConfig.url, undefined);
+      const walk = runConfig.getListings(runConfig.url, undefined);
+      await vi.runAllTimersAsync();
+      const results = await walk;
+
       expect(asked).toEqual([1, 2, 3]);
       expect(results).toHaveLength(3);
     } finally {
+      vi.useRealTimers();
       globalThis.fetch = originalFetch;
     }
   });
