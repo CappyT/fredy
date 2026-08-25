@@ -154,34 +154,46 @@ async function downloadTecnocasaFixtures(providerConfig) {
 }
 
 /**
- * Idealista's search page, downloaded through a browser with a head on it.
+ * Idealista's search page, rendered by the same solver the provider uses.
  *
- * DataDome answers every other client with an interstitial. A headless browser runs its script and
- * stays on the block page, so this is the one fixture that cannot be downloaded on a machine with
- * no display. The provider clears the same wall the same way, once, and reads the portal over
- * plain requests afterwards.
+ * DataDome answers every other client with an interstitial that a headless browser never clears,
+ * so this fixture needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape
+ * service. The solver's own render is what gets written: a second plain request would arrive
+ * without the session the solver earned and save a block page instead.
  *
  * @param {string} url the search url
- * @param {Function} launchBrowser
- * @param {Function} closeBrowser
  * @returns {Promise<void>}
  */
-async function downloadIdealistaFixtures(url, launchBrowser, closeBrowser) {
+async function downloadIdealistaFixtures(url) {
   console.log('\nDownloading idealista...');
 
-  const browser = await launchBrowser(url, { puppeteerHeadless: false, acceptLanguage: 'it-IT,it;q=0.9' });
-  try {
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    await page.waitForSelector('article.item', { timeout: 30_000 });
-
-    await writeFile(path.join(FIXTURES_DIR, 'idealista.html'), await page.content(), 'utf-8');
-    console.log('  Saved idealista.html');
-  } catch (error) {
-    console.warn(`  Failed to download idealista: ${error.message}`);
-  } finally {
-    await closeBrowser(browser);
+  const endpoint = process.env.FREDY_CHALLENGE_SOLVER_URL?.trim();
+  if (!endpoint) {
+    console.warn('  Skipping idealista: set FREDY_CHALLENGE_SOLVER_URL to a scrape service first');
+    return;
   }
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cmd: 'request.get', url, maxTimeout: 90_000 }),
+  });
+  if (!response.ok) {
+    console.warn(`  Failed to download idealista: ${response.status} ${response.statusText}`);
+    return;
+  }
+
+  // TRAWL's own /scrape puts the fields at the top level; the FlareSolverr /v1 shape nests them.
+  const payload = await response.json();
+  const solution = payload?.solution ?? payload ?? {};
+  const html = solution.html ?? solution.response;
+  if (typeof html !== 'string' || html.length === 0) {
+    console.warn('  The solver returned no page - skipping idealista');
+    return;
+  }
+
+  await writeFile(path.join(FIXTURES_DIR, 'idealista.html'), html, 'utf-8');
+  console.log('  Saved idealista.html');
 }
 
 /**
@@ -539,7 +551,7 @@ async function main() {
         await downloadTecnocasaFixtures(runConfig);
         break;
       case 'idealista':
-        await downloadIdealistaFixtures(runConfig.url, launchBrowser, closeBrowser);
+        await downloadIdealistaFixtures(runConfig.url);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);

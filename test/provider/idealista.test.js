@@ -148,6 +148,31 @@ describe('the wall idealista puts in front of a plain request', () => {
   });
 
   /**
+   * Fredy's own browser is headless, which DataDome never lets through, so the wall is cleared by
+   * a separate service. With none configured the provider has to give up rather than reach for a
+   * browser that cannot do the job.
+   */
+  it('finds nothing when no solver is configured, instead of opening a browser', async () => {
+    const previous = process.env.FREDY_CHALLENGE_SOLVER_URL;
+    delete process.env.FREDY_CHALLENGE_SOLVER_URL;
+    const originalFetch = globalThis.fetch;
+    // A wall on every request, which is what idealista serves a client with no session.
+    globalThis.fetch = async () => ({
+      status: 403,
+      headers: undefined,
+      text: async () => '<html><body>geo.captcha-delivery.com/interstitial/</body></html>',
+    });
+
+    try {
+      const runConfig = provider.createConfig({ url: 'https://www.idealista.it/affitto-case/roma-roma/' }, []);
+      expect(await runConfig.getListings(runConfig.url)).toEqual([]);
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (previous !== undefined) process.env.FREDY_CHALLENGE_SOLVER_URL = previous;
+    }
+  });
+
+  /**
    * An advert with no street reads "<type> a <district>, <town>". Splitting on the earlier of the
    * two separators would cut a type that contains "a" in half, so "in" is looked for first.
    */
