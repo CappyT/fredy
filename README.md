@@ -58,8 +58,8 @@ On top of the listing itself, Fredy answers two questions:
 
 ## ✨ Key Features
 
--   🏠 Scrapes **23 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
-    Immobiliare.it, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
+-   🏠 Scrapes **24 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
+    Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
 -   ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
     Discord, Mattermost, Pushover, Apprise and more
 -   🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
@@ -173,7 +173,7 @@ the platform into Fredy.\
 ⚠️ Always make sure the search results are sorted by **date**, so Fredy picks up the newest
 listings first.
 
-Fredy ships with 23 providers:
+Fredy ships with 24 providers:
 
 **🇩🇪 Germany**
 
@@ -186,12 +186,18 @@ Fredy ships with 23 providers:
 | InBerlinWohnen | Kleinanzeigen | Sparkasse Immobilien |
 | McMakler | Wg gesucht | |
 
-**🇮🇹 Italy** · Immobiliare.it · Casa.it · Subito · Tecnocasa  
+**🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa  
 **🇦🇹 Austria** · willhaben  
 **🇨🇭 Switzerland** · Flatfox
 
-Tecnocasa is the one portal here that cannot be sorted: its server ignores the ordering its own
-interface offers. Keep a Tecnocasa search narrow enough for a new advert to reach the first page.
+Two portals here run unsorted. Tecnocasa's server ignores the ordering its own interface offers,
+and Idealista's robots.txt disallows the sort-by-date URL. Keep a search on either one narrow
+enough for a new advert to reach the first page.
+
+Idealista also needs a browser with a head on it. DataDome guards the portal and answers a
+headless browser with a block page it never clears, so Fredy opens a headful browser once to get
+a session cookie and reads the portal over plain requests afterwards. In Docker this needs a
+virtual display; on a desktop it works as it is.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
