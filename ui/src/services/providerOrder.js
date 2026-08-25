@@ -23,7 +23,7 @@
  *
  * @type {string[]}
  */
-export const COUNTRY_ORDER = ['de', 'at', 'ch'];
+export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch'];
 
 /**
  * Providers by size within their market, largest first.
@@ -56,6 +56,8 @@ export const PROVIDER_SIZE_ORDER = [
   'regionalimmobilien24',
   'inberlinwohnen',
   'schwarzesbrett',
+  // Italy
+  'immobiliare',
   // Austria
   'willhaben',
   // Switzerland
