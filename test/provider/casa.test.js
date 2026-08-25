@@ -13,20 +13,28 @@ import * as provider from '../../lib/provider/casa.js';
  *
  * The results are read out of `window.__INITIAL_STATE__` rather than out of the markup, so what
  * these tests pin is the shape of that store. The store arrives escaped twice - a JSON document
- * inside a JavaScript string literal - which is the part most likely to be got wrong.
+ * inside a JavaScript string literal - which is the part most likely to be got wrong, and it keeps
+ * the results in a different half depending on the search: `search` for a town search, `searchMap`
+ * for a map search. Both shapes run through the same assertions here.
  *
- * Assertions are structural rather than literal, because the same file runs against the fixture
+ * Assertions are structural rather than literal, because the same file runs against the fixtures
  * (`yarn test:offline`) and against the live portal (`yarn test`), where every advert differs.
  */
 const TEST_TIMEOUT = 120_000;
 
-describe('#casa provider testsuite()', () => {
+/** The two search shapes the provider reads, each with the source config a job would carry. */
+const searchShapes = [
+  { shape: 'town search', source: providerConfig.casa },
+  { shape: 'map search', source: { url: providerConfig.casa.mapSearchUrl, enabled: true } },
+];
+
+describe.each(searchShapes)('#casa provider testsuite() - $shape', ({ source }) => {
   /** @type {any[]} */
   let listings;
 
   beforeAll(async () => {
     const Fredy = await mockFredy();
-    const runConfig = provider.createConfig(providerConfig.casa, [], []);
+    const runConfig = provider.createConfig(source, [], []);
     const job = { id: 'casa', notificationAdapter: null, spatialFilter: null, specFilter: null };
 
     const fredy = new Fredy(runConfig, job, provider.metaInformation.id, similarityCache, undefined);
@@ -77,10 +85,17 @@ describe('#casa provider testsuite()', () => {
     }
   });
 
+  /**
+   * An agency that keeps the street to itself leaves the town as the whole address, so the comma is
+   * what an advert publishing a street carries, not what every advert carries.
+   */
   it('names the town alongside the street', () => {
-    for (const listing of carrying('address')) {
-      expect(listing.address, `address of ${listing.id}`).toContain(',');
+    const addressed = carrying('address');
+    for (const listing of addressed) {
+      expect(listing.address.trim(), `address of ${listing.id}`).not.toBe('');
     }
+    const named = addressed.filter((listing) => listing.address.includes(', '));
+    expect(named.length, 'no listing named both a street and a town').toBeGreaterThan(0);
   });
 
   it('brings the coordinates with it', () => {

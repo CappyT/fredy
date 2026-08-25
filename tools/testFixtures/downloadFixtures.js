@@ -218,6 +218,53 @@ async function downloadImmobiliareMapFixture(mapSearchUrl) {
 }
 
 /**
+ * Casa.it's map search, cut down to the one script tag the provider reads.
+ *
+ * The map search answers with a page of its own whose store keeps the results under `searchMap`
+ * rather than under `search`, which is why it needs a fixture the town search cannot stand in for.
+ * The live page is around 850 KB of React bootstrap around a single `__INITIAL_STATE__` assignment,
+ * and keeping only that assignment exercises the same parsing path, because the provider looks it
+ * up by name rather than by position.
+ *
+ * @param {string} mapSearchUrl the map search url from testProvider.json
+ * @param {Function} launchBrowser opens the shared browser
+ * @param {Function} closeBrowser closes it again
+ * @param {Function} puppeteerExtractor the extractor the providers themselves use
+ * @returns {Promise<void>}
+ */
+async function downloadCasaMapFixture(mapSearchUrl, launchBrowser, closeBrowser, puppeteerExtractor) {
+  console.log('  Downloading casa map search...');
+
+  const browser = await launchBrowser(mapSearchUrl, {});
+  let html;
+  try {
+    html = await puppeteerExtractor(mapSearchUrl, 'body', { browser, name: 'download_fixtures' });
+  } finally {
+    await closeBrowser(browser);
+  }
+  const match = html?.match(/<script[^>]*>\s*window\.__INITIAL_STATE__[\s\S]*?<\/script>/);
+  if (!match) {
+    console.warn('  casa map search carried no __INITIAL_STATE__ - skipping fixture');
+    return;
+  }
+
+  const trimmed = [
+    '<!doctype html>',
+    '<html lang="it">',
+    '<head><title>casa map fixture</title></head>',
+    '<body>',
+    `<!-- Trimmed to the __INITIAL_STATE__ payload, downloaded from ${mapSearchUrl} -->`,
+    match[0],
+    '</body>',
+    '</html>',
+    '',
+  ].join('\n');
+
+  await writeFile(path.join(FIXTURES_DIR, 'casa_map.html'), trimmed, 'utf-8');
+  console.log('  Saved casa_map.html');
+}
+
+/**
  * Flatfox answers a search in two requests, so it needs two fixtures.
  *
  * The pins carry the primary keys of everything matching the search; the second call hydrates those
@@ -577,6 +624,10 @@ async function main() {
       case 'immobiliare':
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
         await downloadImmobiliareMapFixture(cfg.mapSearchUrl);
+        break;
+      case 'casa':
+        await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
+        await downloadCasaMapFixture(cfg.mapSearchUrl, launchBrowser, closeBrowser, puppeteerExtractor);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);

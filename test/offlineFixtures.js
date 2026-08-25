@@ -18,6 +18,9 @@ const testProviderConfig = JSON.parse(
 const hostnameToProvider = {};
 // providerName → list page pathname (for distinguishing list vs detail URLs)
 const providerListPath = {};
+// map search pathname per provider, for the portals that answer a map search with a page of their
+// own. That page carries a different payload, so it needs a fixture of its own as well.
+const providerMapPath = {};
 
 for (const [name, cfg] of Object.entries(testProviderConfig)) {
   if (!cfg.url) continue;
@@ -25,6 +28,12 @@ for (const [name, cfg] of Object.entries(testProviderConfig)) {
     const parsed = new URL(cfg.url);
     hostnameToProvider[parsed.hostname] = name;
     providerListPath[name] = parsed.pathname;
+  } catch {
+    // skip malformed URLs
+  }
+  if (!cfg.mapSearchUrl) continue;
+  try {
+    providerMapPath[name] = new URL(cfg.mapSearchUrl).pathname;
   } catch {
     // skip malformed URLs
   }
@@ -93,6 +102,10 @@ export async function readFixture(url, options) {
 
   if (providerListPath[providerName] === pathname) {
     return tryReadFile(path.join(FIXTURES_DIR, `${providerName}.html`));
+  }
+
+  if (providerMapPath[providerName] === pathname) {
+    return tryReadFile(path.join(FIXTURES_DIR, `${providerName}_map.html`));
   }
 
   // Detail page: prefer dedicated detail fixture, fall back to list fixture
