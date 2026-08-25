@@ -194,19 +194,8 @@ Two portals here run unsorted. Tecnocasa's server ignores the ordering its own i
 and Idealista's robots.txt disallows the sort-by-date URL. Keep a search on either one narrow
 enough for a new advert to reach the first page.
 
-Idealista needs one thing Fredy does not ship. DataDome guards the portal and answers a headless
-browser with a block page it never clears, so the wall is cleared by a separate
-challenge-solving scrape service - [TRAWL](https://github.com/germondai/trawl), or anything that
-answers the same shape. Point `FREDY_CHALLENGE_SOLVER_URL` at it:
-
-```bash
-FREDY_CHALLENGE_SOLVER_URL=http://trawl:8191/scrape
-```
-
-Fredy calls it only when it has no working session. The service returns the rendered page and the
-cookie that goes with it, and every run afterwards is a plain request Fredy makes itself. Leave
-the variable unset and the Idealista provider finds nothing and logs why; the other 23 providers
-are unaffected.
+Idealista also needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service
+such as [TRAWL](https://github.com/germondai/trawl). Without it that one provider finds nothing.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the

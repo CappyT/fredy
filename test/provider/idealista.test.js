@@ -11,10 +11,8 @@ import * as provider from '../../lib/provider/idealista.js';
 /**
  * Idealista.it, the Italian arm of the Spanish portal.
  *
- * DataDome guards it, so the provider reads a page over plain `fetch` and keeps a browser for the
- * one job a plain request cannot do. What these tests pin is the card markup the reader walks,
- * because that is what a redesign breaks; the wall itself is exercised by the unit tests at the
- * bottom, which need no network.
+ * What these tests pin is the card markup, because that is what a redesign breaks. The bot wall
+ * is covered by the unit tests at the bottom, which need no network.
  *
  * Assertions are structural rather than literal, because the same file runs against the fixture
  * (`yarn test:offline`) and against the live portal (`yarn test`), where every advert differs.

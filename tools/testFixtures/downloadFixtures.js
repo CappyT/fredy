@@ -154,12 +154,10 @@ async function downloadTecnocasaFixtures(providerConfig) {
 }
 
 /**
- * Idealista's search page, rendered by the same solver the provider uses.
+ * Idealista's search page, rendered by the solver named in `FREDY_CHALLENGE_SOLVER_URL`.
  *
- * DataDome answers every other client with an interstitial that a headless browser never clears,
- * so this fixture needs `FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape
- * service. The solver's own render is what gets written: a second plain request would arrive
- * without the session the solver earned and save a block page instead.
+ * What the solver returns is what gets written. A second plain request would arrive without the
+ * session it earned and save a block page instead.
  *
  * @param {string} url the search url
  * @returns {Promise<void>}
