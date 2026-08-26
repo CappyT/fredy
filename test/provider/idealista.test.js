@@ -192,6 +192,14 @@ describe('the wall idealista puts in front of a plain request', () => {
       provider.parseListings(card('Casa a schiera in Via Giulia, Roma'))[0],
     );
     expect(twoWordType.address).toBe('Via Giulia, Roma');
+
+    // A type carrying "a" and a title with no street put the trap twice over. Taking the last "a"
+    // instead would read this one right and cut a town called "Bagno a Ripoli" in half.
+    const schiera = provider.config.normalize(provider.parseListings(card('Villetta a schiera a Lovere'))[0]);
+    expect(schiera.address).toBe('Lovere');
+
+    const townWithA = provider.config.normalize(provider.parseListings(card('Appartamento a Bagno a Ripoli'))[0]);
+    expect(townWithA.address).toBe('Bagno a Ripoli');
   });
 });
 
