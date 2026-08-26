@@ -142,6 +142,9 @@ export async function readImmoweltFixtures() {
 const FETCHED_PAGE_HOSTS = ['subito.it', 'tecnocasa.it', 'idealista.it'];
 
 export function buildFetchMock() {
+  let casaPlaces = null;
+  let casaListData = null;
+  let immobiliareGeography = null;
   let idealistaCatalogue = null;
   let idealistaListData = null;
   let listData = null;
@@ -163,6 +166,46 @@ export function buildFetchMock() {
         willhabenHtml = (await tryReadFile(path.join(FIXTURES_DIR, 'willhaben.html'))) ?? '';
       }
       return { ok: true, status: 200, text: () => Promise.resolve(willhabenHtml) };
+    }
+
+    // Casa.it is read through the api its android app talks to, on hosts of its own. The place
+    // lookup turns the words a url spells a town with into the key that api searches by.
+    if (urlStr.includes('smartsuggest.casa.it')) {
+      if (casaPlaces == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'casa_places.json'));
+        casaPlaces = raw ? JSON.parse(raw) : {};
+      }
+      const asked = new URL(urlStr).searchParams.get('query') ?? '';
+      const found = casaPlaces[asked] ?? { data: { results: [] } };
+      return { ok: true, status: 200, json: () => Promise.resolve(found) };
+    }
+
+    // One recorded page stands for the whole search, so it answers as the only page there is and
+    // every page after it comes back empty, which is what stops the walk.
+    if (urlStr.includes('esapi.casa.it/listings/v2/search')) {
+      if (casaListData == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'casa_list.json'));
+        casaListData = raw ? JSON.parse(raw) : { total: 0, results: [] };
+      }
+      const page = Number(JSON.parse(init?.body ?? '{}')?.page) || 1;
+      const results = page === 1 ? casaListData.results : [];
+      return {
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ data: { total: results.length, tiers: [{ tier: 'listings', results }] } }),
+      };
+    }
+
+    // A town search on immobiliare.it names its town in words, and the endpoint wants the number
+    // the portal calls it by. That lookup is the android app's geography service, keyed by the
+    // words the url spells the place with.
+    if (urlStr.includes('ws-app.com/b2c/v1/geography/autocomplete')) {
+      if (immobiliareGeography == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immobiliare_geography.json'));
+        immobiliareGeography = raw ? JSON.parse(raw) : {};
+      }
+      const asked = new URL(urlStr).searchParams.get('query') ?? '';
+      return { ok: true, status: 200, json: () => Promise.resolve(immobiliareGeography[asked] ?? []) };
     }
 
     // Idealista is read through the api the android app talks to, so its fixtures are the answers

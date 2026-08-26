@@ -195,6 +195,99 @@ async function downloadIdealistaFixtures(url) {
 }
 
 /**
+ * Casa.it is read through the api its android app talks to, so its fixtures are the answers that api
+ * gives: the place the search url names, and one page of the search itself.
+ *
+ * @param {string} url the search url
+ * @returns {Promise<void>}
+ */
+async function downloadCasaApiFixtures(url) {
+  console.log('\nDownloading casa.it api...');
+
+  const { toQuery } = await import('../../lib/services/casa/geography.js');
+  const { translateSearchUrl } = await import('../../lib/services/casa/web-translator.js');
+  const { search } = await import('../../lib/services/casa/search-api.js');
+
+  const slugs = new URL(url).pathname.split('/').filter((segment) => segment !== '');
+  const query = toQuery(slugs[slugs.length - 1] ?? '');
+  const answer = await fetch(
+    `https://smartsuggest.casa.it/smartsuggest/v1/suggest/?query=${encodeURIComponent(query)}&site=it_casa`,
+  );
+  if (!answer.ok) {
+    console.warn(`  Failed to download casa.it places: ${answer.status} ${answer.statusText}`);
+    return;
+  }
+  await writeFile(
+    path.join(FIXTURES_DIR, 'casa_places.json'),
+    JSON.stringify({ [query]: await answer.json() }, null, 2),
+    'utf-8',
+  );
+  console.log(`  Saved casa_places.json (for "${query}")`);
+
+  const translated = await translateSearchUrl(url);
+  if (translated == null) {
+    console.warn(`  Skipping: ${url} is not a search the api can be asked for`);
+    return;
+  }
+  const page = await search({ ...translated, sort: ['date-desc'], page: 1 });
+  // The photos and the descriptions in every other language are most of the payload and none of
+  // what the tests read.
+  for (const advert of page?.results ?? []) {
+    if (advert?.media?.items?.length > 1) advert.media.items = advert.media.items.slice(0, 1);
+    if (advert?.description) advert.description = { it: advert.description.it };
+    if (advert?.title) advert.title = { it: advert.title.it };
+  }
+  await writeFile(path.join(FIXTURES_DIR, 'casa_list.json'), JSON.stringify(page, null, 2), 'utf-8');
+  console.log(`  Saved casa_list.json (${page?.results?.length ?? 0} adverts)`);
+}
+
+/**
+ * A town search names its town in words and the endpoint wants the number the portal calls it by.
+ * The fixture is the answer of the geography service that translates the one into the other, keyed
+ * by the words the url spells the place with.
+ *
+ * @param {string} url the search url
+ * @returns {Promise<void>}
+ */
+async function downloadImmobiliareGeographyFixture(url) {
+  console.log('\nDownloading immobiliare.it geography...');
+
+  const { toQuery } = await import('../../lib/services/immobiliare/geography.js');
+  const slugs = new URL(url).pathname.split('/').filter((segment) => segment !== '');
+  if (slugs.length < 2) {
+    console.warn(`  Skipping: ${url} names no place to look up`);
+    return;
+  }
+
+  // The resolver asks for the place, qualified by the one above it where the url names two.
+  const place = slugs[slugs.length - 1].replace(/-provincia$/, '');
+  const query = slugs.length > 2 ? `${toQuery(place)} ${toQuery(slugs[slugs.length - 2])}` : toQuery(place);
+
+  const response = await fetch(
+    `https://android-imm-v4.ws-app.com/b2c/v1/geography/autocomplete?query=${encodeURIComponent(query)}`,
+    {
+      headers: {
+        'user-agent':
+          'WSCommand3<Furious>|REL|PRD|1080,2410,2.625|26.13.0|ANDROID|Google Pixel 10 Pro|17|PHO|2.0-01/09/2016-16:40|0|0',
+        'accept-language': 'it-IT',
+      },
+    },
+  );
+  if (!response.ok) {
+    console.warn(`  Failed to download immobiliare.it geography: ${response.status} ${response.statusText}`);
+    return;
+  }
+
+  const places = await response.json();
+  await writeFile(
+    path.join(FIXTURES_DIR, 'immobiliare_geography.json'),
+    JSON.stringify({ [query]: places }, null, 2),
+    'utf-8',
+  );
+  console.log(`  Saved immobiliare_geography.json (${places?.length ?? 0} places for "${query}")`);
+}
+
+/**
  * Idealista is read through the mobile api, so the fixtures for that half of the provider are the
  * answers it gives: the catalogue of locations the search url is looked up in, and one page of the
  * search itself. The page fixture stands for the whole result set, so the offline mock answers
@@ -689,10 +782,12 @@ async function main() {
       case 'immobiliare':
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
         await downloadImmobiliareMapFixture(cfg.mapSearchUrl);
+        await downloadImmobiliareGeographyFixture(runConfig.url);
         break;
       case 'casa':
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);
         await downloadCasaMapFixture(cfg.mapSearchUrl, launchBrowser, closeBrowser, puppeteerExtractor);
+        await downloadCasaApiFixtures(runConfig.url);
         break;
       default:
         await downloadHtmlProvider(name, runConfig, launchBrowser, closeBrowser, puppeteerExtractor);

@@ -203,9 +203,15 @@ not serve, land - is read off the website instead, and only that case needs
 [TRAWL](https://github.com/germondai/trawl). See
 [reverse-engineered-idealista.md](./reverse-engineered-idealista.md).
 
-Immobiliare.it and Casa.it ask the same service only when their own pages come back walled, which
-is what a search run from a datacenter address meets, and what casa.it answers with from the second
-page of a walk on; a search drawn on the map on Immobiliare.it needs no service at all.
+Immobiliare.it reads a search through the endpoint its own pages call, which is not behind the wall.
+It needs no browser for a town, a province or a quarter either: the place is looked up through the
+geography service the portal's android app uses. A search it cannot read whole - a category outside
+[the confirmed table](./reverse-engineered-immobiliare.md), a place the lookup does not know - falls
+back to rendering the page, and only that case wants the scrape service.
+
+Casa.it is read the same way, through the api its android app talks to, which sorts by publication
+date and needs no browser. A url it cannot read whole falls back to rendering the page, and only
+that case wants the scrape service. See [reverse-engineered-casa.md](./reverse-engineered-casa.md).
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
