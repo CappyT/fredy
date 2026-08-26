@@ -27,14 +27,16 @@ const searchShapes = [
   { shape: 'map search', source: { url: providerConfig.immobiliare.mapSearchUrl, enabled: true } },
 ];
 
-describe.each(searchShapes)('#immobiliare provider testsuite() - $shape', ({ source }) => {
+describe.each(searchShapes)('#immobiliare provider testsuite() - $shape', ({ shape, source }) => {
   /** @type {any[]} */
   let listings;
 
   beforeAll(async () => {
     const Fredy = await mockFredy();
     const runConfig = provider.createConfig(source, [], []);
-    const job = { id: 'immobiliare', notificationAdapter: null, spatialFilter: null, specFilter: null };
+    // Both shapes are answered by the same endpoint and so by the same fixture. Deduplication is
+    // per job, so they have to run as two jobs or the second one finds nothing new.
+    const job = { id: `immobiliare-${shape}`, notificationAdapter: null, spatialFilter: null, specFilter: null };
 
     const fredy = new Fredy(runConfig, job, provider.metaInformation.id, similarityCache, undefined);
     listings = await fredy.execute();
