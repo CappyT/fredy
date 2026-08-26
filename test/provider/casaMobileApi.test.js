@@ -4,7 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { readFilters } from '../../lib/services/casa/search-filters.js';
+import queryStringMutator from '../../lib/services/queryStringMutator.js';
+import { config } from '../../lib/provider/casa.js';
+import { readFilters, toApiValue } from '../../lib/services/casa/search-filters.js';
 import { clearPlaceCache, resolvePlace, LEVELS } from '../../lib/services/casa/geography.js';
 import { translateSearchUrl } from '../../lib/services/casa/web-translator.js';
 
@@ -93,6 +95,34 @@ describe('the filters a casa.it url carries', () => {
    */
   it('refuses a url carrying a filter it has no counterpart for', () => {
     expect(readFilters('?tr=vendita&qualcosaDiNuovo=1')).toBeNull();
+  });
+
+  /**
+   * A job's url does not reach the provider as the user wrote it: the pipeline appends the sort and
+   * rewrites the query string on the way. Both halves of that broke this provider once.
+   *
+   * The sort arrives in the website's spelling, which is not a filter and must not be read as an
+   * unknown one - that refused every url and sent every run to the browser. And the rewriter turns
+   * a `+` back into `%20`, which the api accepts and matches nothing with.
+   */
+  it('survives the rewriting the pipeline does to a job url on the way here', () => {
+    const url = 'https://www.casa.it/srp/map/?tr=vendita&propertyTypes=casa+indipendente%2Cvilla&priceMax=450000';
+    const mutated = queryStringMutator(url, config.sortByDateParam);
+
+    expect(mutated, 'the rewriter is what turns the plus back into a space').toContain('casa%20indipendente');
+
+    const read = readFilters(new URL(mutated).search);
+    expect(read, 'the appended sort must not read as an unknown filter').not.toBeNull();
+    expect(read?.filters['property.types']).toEqual(['casa+indipendente', 'villa']);
+    expect(read?.filters.sortType).toBeUndefined();
+  });
+
+  it('writes a value the way casa.it writes it, however the url spelled it', () => {
+    expect(toApiValue('casa+indipendente')).toBe('casa+indipendente');
+    expect(toApiValue('casa%20indipendente')).toBe('casa+indipendente');
+    expect(toApiValue('villetta a schiera')).toBe('villetta+a+schiera');
+    // Accents are stripped and an apostrophe becomes a space, which is what its own encoder does.
+    expect(toApiValue('citt%C3%A0+studi')).toBe('citta+studi');
   });
 });
 
