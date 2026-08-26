@@ -57,8 +57,8 @@ On top of the listing itself, Fredy answers two questions:
 
 ## ✨ Key Features
 
-- 🏠 Scrapes **24 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
-  Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [13 more](#provider-)
+- 🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
+  Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [14 more](#provider-)
 - ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
   Discord, Mattermost, Pushover, Apprise and more
 - 🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
@@ -174,7 +174,7 @@ the platform into Fredy.\
 ⚠️ Always make sure the search results are sorted by **date**, so Fredy picks up the newest
 listings first.
 
-Fredy ships with 24 providers:
+Fredy ships with 25 providers:
 
 **🇩🇪 Germany**
 
@@ -187,13 +187,17 @@ Fredy ships with 24 providers:
 | InBerlinWohnen  | Kleinanzeigen       | Sparkasse Immobilien   |
 | McMakler        | Wg gesucht          |                        |
 
-**🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa  
+**🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
 **🇦🇹 Austria** · willhaben  
 **🇨🇭 Switzerland** · Flatfox
 
-Tecnocasa's server ignores the ordering its own interface offers, so keep a tecnocasa search narrow
-enough for a new advert to reach the first page. Casa.it and a search drawn on the map on
-Immobiliare.it read every result page instead - up to twenty each.
+Tecnocasa and Tecnorete are the two estate agency networks of the Tecnocasa group. They carry
+different adverts but share one website platform, so enable both to see the group's whole stock.
+Their server ignores the ordering its own interface offers, so a run reads the search out to its end
+instead - up to forty pages, which is six hundred adverts. Paste any search url from either site:
+buying or renting, a town, an area, a shape drawn on the map, a commercial search, with whatever
+filters the form set. Casa.it and a search drawn on the map on Immobiliare.it read every result page
+as well - up to twenty each.
 
 Idealista is read through the api its mobile app talks to, which sorts by publication date and
 needs no scrape service. Paste any search url from the website, including a `/multi/` search over

@@ -14,6 +14,7 @@ vi.mock('../../lib/utils.js', async (importOriginal) => ({
 }));
 
 const { config: tecnocasa } = await import('../../lib/provider/tecnocasa.js');
+const { config: tecnorete } = await import('../../lib/provider/tecnorete.js');
 const { pageUrl, readComponentData, normalize } = await import('../../lib/services/tecnocasa/network.js');
 
 /**
@@ -201,6 +202,47 @@ describe('the tecnocasa group page walk', () => {
     }));
 
     expect(await tecnocasa.getListings(SEARCH_URL)).toEqual([]);
+  });
+});
+
+describe('the two brands of the tecnocasa group', () => {
+  /**
+   * Both providers are built from one factory. Sharing the template object rather than a copy of it
+   * would let a run of one brand carry the other one's url and blacklist, which is the failure the
+   * stateless rule exists for.
+   */
+  it('read through the same platform without sharing a config object', () => {
+    expect(tecnorete).not.toBe(tecnocasa);
+    expect(tecnorete.getListings).not.toBe(tecnocasa.getListings);
+    expect(tecnorete.requiredFieldNames).toEqual(tecnocasa.requiredFieldNames);
+    expect(tecnorete.sortByDateParam).toBeNull();
+    expect(tecnocasa.sortByDateParam).toBeNull();
+  });
+
+  // Same application, same payload names: the reader is written against tecnocasa's fields and has
+  // to find tecnorete's in the same places.
+  it('normalize a tecnorete advert with the reader written for tecnocasa', () => {
+    const advert = {
+      id: 61262118,
+      title: 'Trilocale in vendita',
+      detail_url: 'https://www.tecnorete.it/vendita/appartamenti/roma/roma/61262118.html',
+      price: '€ 375.000',
+      surface: '116 Mq',
+      rooms: '3 locali',
+      subtitle: 'Roma, Via Edoardo Amaldi - Fonte Laurentina',
+      images: [{ url: { card: 'https://cdn-media.medialabtc.it/it/card.jpeg' } }],
+    };
+
+    expect(tecnorete.normalize(advert)).toMatchObject({
+      title: 'Trilocale in vendita',
+      link: 'https://www.tecnorete.it/vendita/appartamenti/roma/roma/61262118.html',
+      price: 375000,
+      size: 116,
+      rooms: 3,
+      // The card writes the town first and files the street under a quarter; Nominatim answers that
+      // whole line with nothing.
+      address: 'Via Edoardo Amaldi, Roma',
+    });
   });
 });
 
