@@ -14,7 +14,7 @@ vi.mock('../../lib/utils.js', async (importOriginal) => ({
 }));
 
 const { config: tecnocasa } = await import('../../lib/provider/tecnocasa.js');
-const { pageUrl, readComponentData } = await import('../../lib/services/tecnocasa/network.js');
+const { pageUrl, readComponentData, normalize } = await import('../../lib/services/tecnocasa/network.js');
 
 /**
  * The page walk both brands of the Tecnocasa group read their searches with.
@@ -201,6 +201,36 @@ describe('the tecnocasa group page walk', () => {
     }));
 
     expect(await tecnocasa.getListings(SEARCH_URL)).toEqual([]);
+  });
+});
+
+describe('reading an advert off a card', () => {
+  /**
+   * The card writes the place in one of three shapes, and the quarter the agency files a street
+   * under is in none of them an address Nominatim answers. The third shape is what an advert whose
+   * owner does not want the address published comes back as: a town and a quarter, no street.
+   *
+   * @type {[string, string|null][]}
+   */
+  const subtitles = [
+    ['Roma, Via Casilina - Casilina', 'Via Casilina, Roma'],
+    ['Erbusco, Via Iseo', 'Via Iseo, Erbusco'],
+    ['Brescia - Mompiano', 'Brescia'],
+    ['Rovato', 'Rovato'],
+    ['', null],
+  ];
+
+  it.each(subtitles)('read the place off %s as an address the geocoder answers', (subtitle, address) => {
+    expect(normalize({ id: 1, subtitle }).address).toBe(address);
+  });
+
+  // The same id under two prices has to hash differently, which is what makes a price change a
+  // listing the pipeline has not seen.
+  it('hash an advert on its price as well as its id', () => {
+    const advert = { id: 1, title: 'Trilocale in vendita', price: '€ 375.000' };
+    const cheaper = { ...advert, price: '€ 350.000' };
+
+    expect(normalize(advert).id).not.toBe(normalize(cheaper).id);
   });
 });
 
