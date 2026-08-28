@@ -215,6 +215,22 @@ describe('the result pages idealista falls back to reading', () => {
   });
 
   /**
+   * A drawn search pages without the `.htm` every other search carries. Asked with it, the portal
+   * answers a page with no adverts on it, and the walk would end at the first page with the rest
+   * of the results unread.
+   */
+  it('pages a drawn search without the suffix the portal would answer empty', () => {
+    const drawn = 'https://www.idealista.it/aree/vendita-case/con-prezzo_300000/?shape=%28%28abc%29%29';
+    const page = (number) =>
+      `https://www.idealista.it/aree/vendita-case/con-prezzo_300000/lista-${number}?shape=%28%28abc%29%29`;
+
+    expect(provider.pageUrl(drawn, 1)).toBe(drawn);
+    expect(provider.pageUrl(drawn, 2)).toBe(page(2));
+    expect(provider.pageUrl(page(2), 3)).toBe(page(3));
+    expect(provider.pageUrl(page(3), 1)).toBe(drawn);
+  });
+
+  /**
    * The portal serves no ordering Fredy may ask for, so a new advert lands wherever the ranking
    * puts it and the whole result set has to be read. A page past the last one comes back as the
    * first one again, which is what ends the walk when the last page is a full one.

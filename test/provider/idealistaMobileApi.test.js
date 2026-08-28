@@ -77,6 +77,56 @@ describe('the search a website url describes', () => {
   });
 
   /**
+   * A search drawn on the map names no place: the polygon travels in the query string, as the
+   * encoded polyline rings the tile host also serves borders in.
+   */
+  it('reads a drawn search, whose polygon sits in the query string', () => {
+    const drawn =
+      'https://www.idealista.it/aree/vendita-case/con-prezzo_300000,aste_no/?shape=%28%28qwnuGijvz%40%7DpH%29%29';
+
+    expect(translateSearchUrl(drawn)).toMatchObject({
+      operation: 'sale',
+      propertyType: 'homes',
+      locationSlugs: [],
+      locationCodes: [],
+      drawnShape: '((qwnuGijvz@}pH))',
+      variants: [
+        [
+          ['maxPrice', '300000'],
+          ['auction', 'excludeAuctions'],
+        ],
+      ],
+    });
+
+    // A drawn search pages without the `.htm` the other searches carry.
+    const paged = 'https://www.idealista.it/aree/vendita-case/lista-3?shape=%28%28qwnuGijvz%40%7DpH%29%29';
+    expect(translateSearchUrl(paged)?.drawnShape).toBe('((qwnuGijvz@}pH))');
+  });
+
+  /**
+   * The search that motivated the drawn translation, kept whole: a price ceiling, both energy
+   * boxes, no auctions, the "Appartamenti" box and the four house shapes, over two building
+   * conditions - eight searches whose answers merge.
+   */
+  it('carries a drawn search over whole', () => {
+    const search = translateSearchUrl(
+      'https://www.idealista.it/aree/vendita-case/con-prezzo_300000,appartamenti,case-indipendenti,' +
+        'villette-bifamiliari,villette-a-schiera,ville-indipendenti,trilocali-3,quadrilocali-4,' +
+        '5-locali-o-piu,nuova-costruzione,buono-stato,aste_no,alta-efficienza,media-efficienza/' +
+        '?shape=%28%28qwnuGijvz%40%7DpHyrB%29%29',
+    );
+
+    expect(search?.drawnShape).toBe('((qwnuGijvz@}pHyrB))');
+    expect(search?.variants).toHaveLength(8);
+    for (const variant of search?.variants ?? []) {
+      expect(variant).toContainEqual(['maxPrice', '300000']);
+      expect(variant).toContainEqual(['bedrooms', '3,4,5']);
+      expect(variant).toContainEqual(['auction', 'excludeAuctions']);
+      expect(variant).toContainEqual(['energyEfficiency', 'high,medium']);
+    }
+  });
+
+  /**
    * A url the api cannot be asked for in full is answered with nothing at all, so that the caller
    * reads the website. Answering with the part that did translate would run a wider search than the
    * user asked for and tell them about adverts they filtered out.
@@ -86,8 +136,8 @@ describe('the search a website url describes', () => {
     expect(translateSearchUrl('https://www.idealista.it/affitto-case/roma-roma/con-terrazza/')).toBeNull();
     // A category the api does not serve.
     expect(translateSearchUrl('https://www.idealista.it/vendita-terreni/roma-roma/')).toBeNull();
-    // A search drawn on the map, which names its area in the website's own encoding.
-    expect(translateSearchUrl('https://www.idealista.it/aree-vendita-case/?shape=abc')).toBeNull();
+    // A drawn search that lost its polygon says nothing about where it looks.
+    expect(translateSearchUrl('https://www.idealista.it/aree/vendita-case/')).toBeNull();
     expect(translateSearchUrl('not a url')).toBeNull();
   });
 });
@@ -131,12 +181,64 @@ describe('the filters a website url hides in its path', () => {
     ]);
   });
 
+  /**
+   * The energy boxes stack into one graded list, which unlike `preservation` the api reads as the
+   * union it means.
+   */
+  it('reads the energy boxes as one list', () => {
+    expect(readFilters('con-alta-efficienza,media-efficienza')).toEqual([[['energyEfficiency', 'high,medium']]]);
+    expect(readFilters('con-aste_no')).toEqual([[['auction', 'excludeAuctions']]]);
+  });
+
+  /**
+   * "Appartamenti" covers flats, penthouses and two-level flats together, and the api honours one
+   * shape of home per search, so the box becomes one search per shape - alongside the houses' own
+   * search where the url names those too, and once per condition like any other split.
+   */
+  it('runs the "Appartamenti" box once per shape of home', () => {
+    expect(readFilters('con-appartamenti')).toEqual([[['flat', '1']], [['penthouse', '1']], [['duplex', '1']]]);
+
+    expect(readFilters('con-appartamenti,ville-indipendenti')).toEqual([
+      [['flat', '1']],
+      [['penthouse', '1']],
+      [['duplex', '1']],
+      [['subTypology', 'villa']],
+    ]);
+
+    expect(readFilters('con-appartamenti,nuova-costruzione,buono-stato')).toEqual([
+      [
+        ['flat', '1'],
+        ['preservation', 'newdevelopment'],
+      ],
+      [
+        ['flat', '1'],
+        ['preservation', 'good'],
+      ],
+      [
+        ['penthouse', '1'],
+        ['preservation', 'newdevelopment'],
+      ],
+      [
+        ['penthouse', '1'],
+        ['preservation', 'good'],
+      ],
+      [
+        ['duplex', '1'],
+        ['preservation', 'newdevelopment'],
+      ],
+      [
+        ['duplex', '1'],
+        ['preservation', 'good'],
+      ],
+    ]);
+  });
+
   it('has nothing to say about a url that carries no filters', () => {
     expect(readFilters('')).toEqual([[]]);
   });
 
   it('refuses a filter it has no counterpart for', () => {
-    expect(readFilters('con-alta-efficienza')).toBeNull();
+    expect(readFilters('con-bassa-efficienza')).toBeNull();
     expect(readFilters('con-ascensori,terrazza')).toBeNull();
   });
 });

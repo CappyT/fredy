@@ -81,6 +81,8 @@ the table below separates the parameters that work from the ones that only look 
 | `order` / `sort`               | `publicationDate` and `desc` put the newest advert first                                                                                                                   |
 | `numPage` / `maxItems`         | pages count from one; `maxItems` is capped at 50                                                                                                                           |
 | `sinceDate`                    | `T`, `W` or `M` - today, this week, this month                                                                                                                             |
+| `auction`                      | `onlyAuctions` or `excludeAuctions`; the two split a search exactly                                                                                                        |
+| `energyEfficiency`             | `high`, `medium`, `low`, and a comma list means their union                                                                                                                |
 | `quality=high`, `gallery=true` | make the answer carry a description and a photo                                                                                                                            |
 
 `searchType` accepts `aroundMe`, `live`, `drawn`, `locationIds`, `phone`, `freeText` and `zoiId`.
@@ -115,9 +117,17 @@ instead:
 
 - `terrazza`, `terrazza-e-balcone`. Only `balcony` exists; `terrace` is ignored.
 - `giardino-privato`. `garden` covers a shared garden as well, so it is the wider search.
-- `appartamenti`. It stands for flats, penthouses and duplexes together, and the api honours one
-  property shape per search - `flat=1&penthouse=1` answers exactly what `flat=1` answers.
-- the energy classes and the letting terms.
+- the letting terms.
+
+`aste_no` is `auction=excludeAuctions`. The energy boxes map to `energyEfficiency`:
+`alta-efficienza` is `high` and `media-efficienza` is `medium`, and unlike `preservation` the
+parameter takes a comma list and answers the union. The third box and the "only auctions" tick are
+not mapped, because their url names were never seen on a page.
+
+`appartamenti` stands for flats, penthouses and two-level flats together, and the api honours one
+shape of home per search - `flat=1&penthouse=1` answers exactly what `flat=1` answers. A url naming
+it is run once per shape, alongside the houses' own `subTypology` search where the url names those
+too, and the answers merge by `propertyCode` like the building conditions do.
 
 `preservation` takes one of `good`, `renew` and `newdevelopment`. It refuses a list and answers a
 second value with a 500, while the website lets several be ticked and means their union. A url
@@ -148,6 +158,17 @@ the five-segment prefix of any municipality id, and a search for it answers with
 
 A zone has no url of its own. `https://www.idealista.it/vendita-case/sebino-franciacorta-brescia/`
 is a 404.
+
+## A search drawn on the map
+
+An area the user draws by hand is an `/aree/` url. It names no place: the polygon travels in the
+query string, as encoded polyline rings in parentheses - `?shape=((qwnuG...))` - the same encoding
+the tile host serves borders in. The api takes it decoded, as the GeoJSON MultiPolygon of a
+`searchType=drawn` search.
+
+The website pages a drawn search without the `.htm` every other search carries -
+`/aree/vendita-case/lista-2?shape=...`. Asked as `lista-2.htm`, the portal answers a page with no
+adverts on it rather than an error.
 
 ## Areas, and the codes that name them
 
