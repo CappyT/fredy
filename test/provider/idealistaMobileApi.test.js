@@ -3,12 +3,25 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { describe, it, expect } from 'vitest';
-import { formEncode, sign } from '../../lib/services/idealista/mobile-api.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  call,
+  forgetToken,
+  formEncode,
+  REQUEST_GAP_MS,
+  resetPacing,
+  sign,
+} from '../../lib/services/idealista/mobile-api.js';
 import { readCategory, readFilters } from '../../lib/services/idealista/search-filters.js';
 import { translateSearchUrl } from '../../lib/services/idealista/web-translator.js';
 import { slugify } from '../../lib/services/idealista/locations.js';
 import { decodePolyline, parseOutline, sharedLocationId, simplifyRing } from '../../lib/services/idealista/zones.js';
+
+// The device id is an installation's property and lives in the settings table; in these tests it
+// is simply a constant, so no database is ever opened.
+vi.mock('../../lib/services/idealista/device-id.js', () => ({
+  idealistaDeviceId: async () => '0123456789abcdef',
+}));
 
 /**
  * The idealista provider asks the app's api for a search that a user described by pasting a website
@@ -310,5 +323,149 @@ describe('the location a code stands for', () => {
   it('has no answer where there is nothing to read', () => {
     expect(sharedLocationId([])).toBeNull();
     expect(sharedLocationId(['0-EU-IT'])).toBeNull();
+  });
+});
+
+/**
+ * What the api's abuse wall reads in a caller is burst traffic and flapping identities, and a
+ * refusal of it - a 407, or the edge simply dropping the connection - outlasts the single error.
+ * These tests pin how the requests walk past it: one at a time, a breath apart, and silent for a
+ * while after a refusal rather than knocking harder.
+ */
+describe('the breath between requests, and the silence after a refusal', () => {
+  const PATH = '/api/3.5/it/search';
+
+  const ok = () => ({ ok: true, status: 200, json: () => Promise.resolve({ elementList: [] }) });
+  const refused = () => ({ ok: false, status: 407, text: () => Promise.resolve('{"httpStatus":407}') });
+
+  /**
+   * The api, replaced by a doorkeeper that records the moment of every knock after the token one.
+   *
+   * @param {() => any} mood what the search endpoint answers
+   * @returns {number[]} the fake-clock instants the endpoint was knocked at
+   */
+  function mockApi(mood) {
+    const knocks = [];
+    vi.stubGlobal('fetch', (url) => {
+      if (String(url).includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      knocks.push(Date.now());
+      return Promise.resolve(mood());
+    });
+    return knocks;
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetPacing();
+    forgetToken();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('walks requests out one at a time, a breath apart', async () => {
+    const knocks = mockApi(ok);
+
+    const pending = [call(PATH), call(PATH), call(PATH)];
+    await vi.runAllTimersAsync();
+
+    for (const attempt of pending) await expect(attempt).resolves.toEqual({ elementList: [] });
+    expect(knocks).toHaveLength(3);
+    expect(knocks[1] - knocks[0]).toBeGreaterThanOrEqual(REQUEST_GAP_MS);
+    expect(knocks[2] - knocks[1]).toBeGreaterThanOrEqual(REQUEST_GAP_MS);
+  });
+
+  it('goes quiet when the api answers 407, and fails fast inside the silence', async () => {
+    const knocks = mockApi(refused);
+
+    // The rejection handler is attached before the clock runs, so no rejection flies loose.
+    const refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    await vi.runAllTimersAsync();
+    await refusal;
+
+    // A minute into a quarter-hour silence the door is not knocked at all.
+    await vi.advanceTimersByTimeAsync(60_000);
+    await expect(call(PATH)).rejects.toThrow(/silent/);
+    expect(knocks).toHaveLength(1);
+  });
+
+  it('asks again once the silence has passed, and one success clears the slate', async () => {
+    let mood = refused;
+    const knocks = mockApi(() => mood());
+
+    const refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    await vi.runAllTimersAsync();
+    await refusal;
+
+    mood = ok;
+    await vi.advanceTimersByTimeAsync(15 * 60_000 + 1000);
+
+    const probe = call(PATH);
+    const after = call(PATH);
+    await vi.runAllTimersAsync();
+    await expect(probe).resolves.toEqual({ elementList: [] });
+    await expect(after).resolves.toEqual({ elementList: [] });
+    expect(knocks).toHaveLength(3);
+  });
+
+  it('doubles the silence every time the refusal outlasts it', async () => {
+    const knocks = mockApi(refused);
+
+    let refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    await vi.runAllTimersAsync();
+    await refusal;
+
+    // Fifteen minutes later the refusal is still there, so the next silence is half an hour.
+    await vi.advanceTimersByTimeAsync(15 * 60_000 + 1);
+    refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    await vi.runAllTimersAsync();
+    await refusal;
+
+    // Sixteen minutes into it the door stays unknocked...
+    await vi.advanceTimersByTimeAsync(16 * 60_000);
+    await expect(call(PATH)).rejects.toThrow(/silent/);
+    expect(knocks).toHaveLength(2);
+
+    // ...and only the full half hour opens it again.
+    await vi.advanceTimersByTimeAsync(14 * 60_000 + 1000);
+    refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    await vi.runAllTimersAsync();
+    await refusal;
+    expect(knocks).toHaveLength(3);
+  });
+
+  it('reads a slammed door only after several dropped connections in a row', async () => {
+    let knocks = 0;
+    vi.stubGlobal('fetch', (url) => {
+      if (String(url).includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      knocks += 1;
+      return Promise.reject(new TypeError('fetch failed'));
+    });
+
+    // One reset is weather, so the weather gets its retries...
+    for (let i = 0; i < 3; i++) {
+      const dropped = expect(call(PATH)).rejects.toThrow('fetch failed');
+      await vi.runAllTimersAsync();
+      await dropped;
+    }
+    expect(knocks).toBe(3);
+
+    // ...but by the third in a row the door is read as slammed, and stays unknocked.
+    await expect(call(PATH)).rejects.toThrow(/silent/);
+    expect(knocks).toBe(3);
   });
 });

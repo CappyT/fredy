@@ -41,6 +41,22 @@ A token comes from `POST /api/oauth/token` with
 `Authorization: Basic base64(urlencode(clientKey) + ":" + urlencode("idea;andr01d"))` and the form
 body `grant_type=client_credentials&scope=write`. It lasts about twelve hours.
 
+## Throttling
+
+The api reads the shape of a caller's traffic on top of its credentials. A caller that fires
+requests in bursts, or that calls in with a fresh device id every time, first has its connections
+dropped at the edge - no status, the fetch simply fails - and is then answered `407` with a body
+that points at the public developers api, signed requests included. The refusal outlives the
+single error: it holds for a quarter of an hour or more, during which every request is answered
+or dropped the same way.
+
+Two things keep this installation looking like a phone. The device id is minted once per
+installation and stored in the settings table (`idealista_device_id`, `lib/services/idealista/
+device-id.js`), where it used to be rerolled at every process start. And `call` paces the traffic
+(`lib/services/idealista/mobile-api.js`): one request at a time, four hundred milliseconds apart.
+After a refusal it stays silent for a quarter of an hour, fails fast inside the silence rather
+than knocking again, and doubles the silence every time the refusal outlasts it, up to two hours.
+
 ## Endpoints
 
 | Path                                                     | Answers                                 |
