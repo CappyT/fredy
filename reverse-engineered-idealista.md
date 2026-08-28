@@ -57,6 +57,14 @@ device-id.js`), where it used to be rerolled at every process start. And `call` 
 After a refusal it stays silent for a quarter of an hour, fails fast inside the silence rather
 than knocking again, and doubles the silence every time the refusal outlasts it, up to two hours.
 
+## Paging
+
+A run reads the three first pages of every variant, newest first: plenty for what a search
+collects between two runs, since a new advert lands at the head. A variant whose head is deeper
+than those three pages - a wide search the job has just been created for - is caught up whole the
+first time the process runs its url (twelve pages at most), because an advert skipped once never
+comes back: no date field on the advert means the walk cannot stop itself.
+
 ## Endpoints
 
 | Path                                                     | Answers                                 |
@@ -95,7 +103,7 @@ the table below separates the parameters that work from the ones that only look 
 | `locationIds`                  | `[id]`, or `[id,id,id]` for several places at once                                                                                                                         |
 | `shape`                        | a GeoJSON MultiPolygon, longitude before latitude, with `searchType=drawn`                                                                                                 |
 | `order` / `sort`               | `publicationDate` and `desc` put the newest advert first                                                                                                                   |
-| `numPage` / `maxItems`         | pages count from one; `maxItems` is capped at 50                                                                                                                           |
+| `numPage` / `maxItems`         | pages count from one; `maxItems` is capped at 50. Deep pages are served whole - a search of 239 gives 50-50-50-50-39 and an answer with `actualPage: 6` - and the adverts carry no date, so a run reading more than the head cannot tell an old advert from a new one client-side |
 | `sinceDate`                    | `T`, `W` or `M` - today, this week, this month                                                                                                                             |
 | `auction`                      | `onlyAuctions` or `excludeAuctions`; the two split a search exactly                                                                                                        |
 | `energyEfficiency`             | `high`, `medium`, `low`, and a comma list means their union                                                                                                                |

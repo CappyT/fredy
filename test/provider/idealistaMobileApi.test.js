@@ -12,6 +12,7 @@ import {
   resetPacing,
   sign,
 } from '../../lib/services/idealista/mobile-api.js';
+import { clearCaughtUpSearches, searchListings } from '../../lib/services/idealista/search.js';
 import { readCategory, readFilters } from '../../lib/services/idealista/search-filters.js';
 import { translateSearchUrl } from '../../lib/services/idealista/web-translator.js';
 import { slugify } from '../../lib/services/idealista/locations.js';
@@ -467,5 +468,60 @@ describe('the breath between requests, and the silence after a refusal', () => {
     // ...but by the third in a row the door is read as slammed, and stays unknocked.
     await expect(call(PATH)).rejects.toThrow(/silent/);
     expect(knocks).toBe(3);
+  });
+});
+
+/**
+ * A search answers newest first, and the adverts carry no date a watermark could be taken from.
+ * The head is therefore read whole the first time a search runs - anything older never comes
+ * back once skipped - and settled for a few pages from then on.
+ */
+describe('the pages a run reads', () => {
+  const DRAWN_URL =
+    'https://www.idealista.it/aree/vendita-case/con-prezzo_300000/?shape=%28%28qwnuGijvz%40%7DpHyrBwmH_oDsvEgsDqjE%7DsHoiDqeKwfAm%7ERrjBsaMlvEk%60Rh_LoyCxhF%7CgA%7CoGhxHfqH%7EaObeBfmR_KnsQexC%60nVezElyC%29%29';
+
+  /** A search that stays full for five pages, fifty adverts on each. */
+  function mockDeepSearch() {
+    vi.stubGlobal('fetch', (url, init) => {
+      if (String(url).includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      const page = Number(/numPage=(\d+)/.exec(String(init?.body))?.[1] ?? 1);
+      const elementList = page <= 5 ? Array.from({ length: 50 }, (_, i) => ({ propertyCode: `${page}-${i}` })) : [];
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ elementList, actualPage: page, totalPages: 5 }),
+      });
+    });
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetPacing();
+    forgetToken();
+    clearCaughtUpSearches();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('walks a whole search the first time, and settles for its head from then on', async () => {
+    mockDeepSearch();
+
+    const first = searchListings(DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await expect(first).resolves.toHaveLength(250);
+
+    const second = searchListings(DRAWN_URL);
+    await vi.runAllTimersAsync();
+    // Three pages of fifty: the head every other run reads.
+    await expect(second).resolves.toHaveLength(150);
   });
 });
