@@ -161,6 +161,7 @@ describe('services/connectivity/connectivityService', () => {
     expect(service.normalizeSourceSwitches({ 'de-bba': false, 'xx-made-up': true })).toEqual({
       'de-bba': false,
       'ch-bakom': true,
+      'it-navigabene': true,
     });
   });
 

@@ -18,7 +18,7 @@
  * framework along.
  * @type {string[]}
  */
-export const CONNECTIVITY_SOURCES = ['de-bba', 'ch-bakom'];
+export const CONNECTIVITY_SOURCES = ['de-bba', 'ch-bakom', 'it-navigabene'];
 
 /**
  * The downstream thresholds the overview filter offers, in Mbit/s.
@@ -64,7 +64,7 @@ export const DISPLAY_MOBILE_TECHNOLOGIES = ['5g_sa', '5g', '4g', '2g'];
  * cabinet - fastest and most future-proof to least.
  * @type {string[]}
  */
-export const DISPLAY_TECHNOLOGIES = ['ftthb', 'hfc', 'fttc'];
+export const DISPLAY_TECHNOLOGIES = ['ftthb', 'hfc', 'fttc', 'fwa'];
 
 /**
  * Who to credit for an answer, and where to send somebody who wants to check it.
@@ -85,6 +85,12 @@ export const SOURCE_ATTRIBUTION = {
     href: 'https://www.bakom.admin.ch',
     extraLabel: '© swisstopo',
     extraHref: 'https://www.geo.admin.ch/de/about-swiss-geoportal/impressum.html',
+  },
+  'it-navigabene': {
+    label: 'Copertura | Navigabene',
+    href: 'https://copertura.navigabene.it',
+    extraLabel: 'prod01.copertura.contratti.net',
+    extraHref: 'https://contratti.net',
   },
 };
 
