@@ -37,6 +37,9 @@ import {
   IconDelete,
   IconExpand,
   IconGridView,
+  IconCalendar,
+  IconBolt,
+  IconRefresh,
 } from '@douyinfe/semi-icons';
 import maplibregl from '../../components/map/maplibre.js';
 import MapCanvas, { HOME_MARKER_COLOR } from '../../components/map/Map.jsx';
@@ -45,7 +48,7 @@ import no_image from '../../assets/no_image.png';
 import * as timeService from '../../services/time/timeService.js';
 import { formatEuroPrice } from '../../services/price/priceService.js';
 import { getBoundsFromCoords } from './mapUtils.js';
-import { applyRouteLayers, buildRouteData } from './detailMapLayers.js';
+import { applyRouteLayers, buildRouteData, placeTargets } from './detailMapLayers.js';
 import { TRAVEL_MODES } from '../../components/transit/travelTimeFormat.js';
 import { getAddresses } from '../../utils.js';
 import { xhrPost, xhrGet, xhrDelete, errorMessage } from '../../services/xhr.js';
@@ -93,7 +96,7 @@ export default function ListingDetail() {
   const listing = useSelector((state) => state.listingsData.currentListing);
   const userSettings = useSelector((state) => state.userSettings.settings);
   const connectivityEnabled = useSelector((state) => state.generalSettings.settings?.connectivityEnabled === true);
-  const homeAddresses = useMemo(() => getAddresses(userSettings), [userSettings]);
+  const savedAddresses = useMemo(() => getAddresses(userSettings), [userSettings]);
   const listingDeletionPref = userSettings?.listing_deletion_preference;
   const defaultDeleteType = listingDeletionPref?.hardDelete ? 'hard' : 'soft';
   // The listing does name a provider, but the pin can be dragged anywhere the user's own searches
@@ -121,6 +124,10 @@ export default function ListingDetail() {
   // Which route the map draws. Straight line to begin with, because that is the one that needs
   // nothing fetched and so is never missing.
   const [routeMode, setRouteMode] = useState('straight');
+  // Everything the map draws a pin and a line for. A saved address is a fixed point and the same one
+  // for every listing; a place type has no point of its own, so the supermarket it actually resolved
+  // to comes from this listing's own travel times, which is where the sweep recorded it.
+  const homeAddresses = useMemo(() => [...savedAddresses, ...placeTargets(routeTimes)], [savedAddresses, routeTimes]);
 
   useEffect(() => {
     setRouteTimes(listing?.travelTimes ?? []);
@@ -302,6 +309,17 @@ export default function ListingDetail() {
     }
   };
 
+  const handleReactivate = async () => {
+    try {
+      await actions.listingsData.reactivateListings([listing.id]);
+      await actions.listingsData.getListing(listingId);
+      Toast.success(t('listings.toastReactivated'));
+    } catch (e) {
+      console.error('Failed to reactivate listing:', e);
+      Toast.error(t('listings.toastReactivateError'));
+    }
+  };
+
   const handleStatusChange = async (next) => {
     try {
       await actions.listingsData.setListingStatus(listing.id, next);
@@ -466,6 +484,26 @@ export default function ListingDetail() {
     },
   ];
 
+  // Only the detail page states these, and only for a part of the listings, so they are pushed
+  // rather than shown as another "N/A" next to the figures every listing carries.
+  if (listing.build_year) {
+    data.push({
+      key: t('listing.detail.fieldBuildYear'),
+      value: listing.build_year,
+      Icon: <IconCalendar />,
+      helpText: t('listing.detail.fieldBuildYearHelp'),
+    });
+  }
+
+  if (listing.energy_class) {
+    data.push({
+      key: t('listing.detail.fieldEnergyClass'),
+      value: listing.energy_class,
+      Icon: <IconBolt />,
+      helpText: t('listing.detail.fieldEnergyClassHelp'),
+    });
+  }
+
   // The verdict belongs next to the price, not only in the costing block further down. It comes
   // with the listing from the server, decided against the same profile and thresholds the
   // affordability filter uses, so this page can never disagree with the row the user clicked.
@@ -559,6 +597,13 @@ export default function ListingDetail() {
               <IconLink style={{ marginRight: 6 }} />
               {t('listing.detail.openListing')}
             </a>
+            {/* Sits next to "open listing" on purpose: the user clicks that first, sees the ad is
+                very much alive, and the correction is the next button along. */}
+            {listing.is_active === 0 && (
+              <Button icon={<IconRefresh />} onClick={handleReactivate} theme="light" type="secondary">
+                {t('listing.detail.reactivate')}
+              </Button>
+            )}
             <Button
               icon={<IconDelete />}
               onClick={() => {
