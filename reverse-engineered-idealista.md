@@ -71,6 +71,7 @@ comes back: no date field on the advert means the walk cannot stop itself.
 | -------------------------------------------------------- | --------------------------------------- |
 | `POST /api/oauth/token`                                  | a bearer token                          |
 | `POST /api/3.5/it/search`                                | one page of adverts                     |
+| `GET  /api/3.5/it/deeplinks/parse/search`                | a website url, read into the api's own words |
 | `POST /api/3.5/it/search/locations`                      | one level of the catalogue of locations |
 | `GET  https://mt1.idealista.it/19/paths/it/{code}`       | the outline of one area                 |
 | `GET  https://mt1.idealista.it/19/tree/all-it-tree.json` | every area code, as a tree              |
@@ -128,6 +129,24 @@ The website hides every filter in one path segment, `con-prezzo_450000,ascensori
 was read off a rendered search page, where each filter is a link, and each mapping was then
 confirmed against the api. `lib/services/idealista/search-filters.js` holds the table.
 
+**The first translator is the portal's own.** The app opens idealista.it links by handing the url
+to `GET /api/3.5/it/deeplinks/parse/search?url=...&locale=it` and reading back the search in the
+api's own words: every filter named, a `/multi/` url's codes resolved to their location ids, a
+drawn url's polygon decoded into the GeoJSON. One request replaces the whole local translation,
+and no website filter can lack a counterpart - `giardino-privato` arrived as `privateGarden` this
+way, a name no rendered page ever spelled out. Two of the answer's fields are legacy copies
+(`preservation` holding the first of `preservations`' values, a `newDevelopment` boolean) and are
+dropped. The parser names no place for a slug url, so the place of a named search is resolved
+locally as before. Fredy asks the parser first and falls back to the local table.
+
+The parser's reading of the "Appartamenti" box is `flat=1` alone, and that is the website's own
+semantics: every penthouse and two-level flat answers a `flat=1` search already - walking the two
+searches and diffing the property codes found zero outside the flat's answer - so the box is one
+search, not three. The houses' `subTypology` rides beside the `flat` in the same request, whose
+answer is their union (291 + 34 = 325, measured). What the search does refuse is two *flat* shapes
+in one body: `flat=1&penthouse=1` answers what `flat=1` answers, the second boolean ignored - an
+attic asked for on its own is its own search.
+
 Two of the website's names are traps. `con-prezzo_N` is the **maximum** price, not the minimum -
 its links sit in the dropdown whose placeholder is "Max" - while `con-dimensione_N` is the
 **minimum** size and `con-dimensione-max_N` the maximum. The minimum price is `con-prezzo-min_N`.
@@ -139,28 +158,31 @@ its links sit in the dropdown whose placeholder is "Max" - while `con-dimensione
 Filters with no counterpart in the api, which is why the url carrying one is read off the website
 instead:
 
-- `terrazza`, `terrazza-e-balcone`. Only `balcony` exists; `terrace` is ignored.
-- `giardino-privato`. `garden` covers a shared garden as well, so it is the wider search.
+- `terrazza-e-balcone`. The box means their union, and the api takes `terrance` and `balcony` as
+  two searches' worth of conditions.
 - the letting terms.
 
-`aste_no` is `auction=excludeAuctions`. The energy boxes map to `energyEfficiency`:
-`alta-efficienza` is `high` and `media-efficienza` is `medium`, and unlike `preservation` the
-parameter takes a comma list and answers the union. The third box and the "only auctions" tick are
-not mapped, because their url names were never seen on a page.
+`aste_no` is `auction=excludeAuctions`. The energy boxes map to `energyEfficiency` - `high`,
+`medium`, `low` - a parameter the android app never sends (no field of it exists in the app) but
+the search endpoint reads as a comma list meaning their union. The terrace box is `terrance`, the
+app's own spelling of the word; `terrace` is ignored in silence. The private-garden box is
+`privateGarden`, which the parser names and the search honours.
 
-`appartamenti` stands for flats, penthouses and two-level flats together, and the api honours one
-shape of home per search - `flat=1&penthouse=1` answers exactly what `flat=1` answers. A url naming
-it is run once per shape, alongside the houses' own `subTypology` search where the url names those
-too, and the answers merge by `propertyCode` like the building conditions do.
+`preservations` (plural) is the parameter the app sends: a comma list whose values are `good`,
+`renew` and `newDevelopment` - the last in camel case, where the singular `preservation` takes the
+lowercase `newdevelopment` the website's url spells. The list is read as their union, but it is a
+shade wider than running the singular once per value: 324 against the split's 321 on the reference
+search below. Fredy's fallback keeps the singular split for that reason; the parser path sends the
+list, because it is what the portal itself would run for the url.
 
-`preservation` takes one of `good`, `renew` and `newdevelopment`. It refuses a list and answers a
-second value with a 500, while the website lets several be ticked and means their union. A url
-naming two is therefore run twice and the answers are merged. The two sets overlap - an advert can
-be both - so the merge has to be by `propertyCode` rather than by adding the totals up.
+`typologies`, which the app's saved-search objects carry as `flats` and `housesOrChalets`, is
+ignored by the search endpoint in silence - it answers whatever the rest of the body asks for,
+without narrowing to the named types.
 
 `subTypology` names the shape of a house: `independantHouse`, `semidetachedHouse`, `terracedHouse`,
 `villa` and a long tail of regional ones. It is only read when `chalet` is **not** sent; with
-`chalet=1` in the same body it is ignored and the search widens to every house.
+`chalet=1` in the same body it is ignored and the search widens to every house - which is why the
+two never travel together, the shapes being separate searches whose answers merge.
 
 ## Locations
 
@@ -234,13 +256,30 @@ rather than by point - so it is used only where a code cannot be named at all.
 
 `lib/services/idealista/zones.js` does this, and caches it: a border does not move.
 
+## Transport notes
+
+- The edge in front of `app.idealista.it` answers **HTTP/2 requests with a bare `406`** and an
+  empty body - no status from the api itself, just the proxy (`via: varnish`). Node's fetch and
+  every HTTP/1.1 client get through; a curl that negotiates h2 does not, which matters only when
+  probing by hand (`curl --http1.1`). Fredy's fetch is HTTP/1.1 and unaffected.
+- The api reads no Play Integrity attestation: the app calls a Play-Protect endpoint of its own,
+  and disabling it changes nothing about the api's answers. The signed request is the whole proof.
+
 ## Numbers to check a change against
 
-A search whose url is
-`/multi/vendita-case/a5W,a7j,aR0,dJY/con-prezzo_450000,prezzo-min_180000,dimensione_80,dimensione-max_250,case-indipendenti,villette-bifamiliari,villette-a-schiera,ville-indipendenti,trilocali-3,quadrilocali-4,5-locali-o-piu,nuova-costruzione,buono-stato/`
-covers Sebino Bergamasco, Val Calepio, Ospitaletto and Sebino-Franciacorta, and the website reports
-328 adverts for it.
+A drawn search whose url is
+`/aree/vendita-case/con-prezzo_300000,appartamenti,case-indipendenti,villette-bifamiliari,
+villette-a-schiera,ville-indipendenti,trilocali-3,quadrilocali-4,5-locali-o-piu,nuova-costruzione,
+buono-stato,aste_no,alta-efficienza,media-efficienza/?shape=...` - the polygon of a lake district
+in Lombardy - is reported by the website as **321** adverts. The parser reads it as `flat=1` with
+the four house shapes' `subTypology` beside it and `preservations=good,newDevelopment`, which is
+one request, and that request's walk answers the same 321 distinct adverts. The older reading - the
+singular `preservation` split once per condition, four searches - answers the same 321.
 
-The api answers 268 for `preservation=good` and 75 for `preservation=newdevelopment`, which share 15
-adverts: 328 distinct. The same search asked by border rather than by location answers 273 and 75,
-which is the measure of what a border costs.
+A `/multi/` search over five area codes around Lago d'Iseo (`a5W,a6c,a7j,ceC,dJY`) with
+`con-prezzo_330000,dimensione_80,appartamenti,case-indipendenti,villette-bifamiliari,
+villette-a-schiera,ville-indipendenti,quadrilocali-4,5-locali-o-piu,nuova-costruzione,buono-stato,
+aste_no,alta-efficienza/` is reported by the website as **300** adverts. The parser resolves the
+five codes to their location ids - the last of them, `dJY`, is `0-EU-IT-BS-02`, "Sebino-Franciacorta",
+which the local sampling of borders cannot name because its adverts' ids disagree at the zone
+level - and the search by those ids answers the same 300.

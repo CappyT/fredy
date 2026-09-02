@@ -243,8 +243,14 @@ describe('the result pages idealista falls back to reading', () => {
     const asked = [];
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
-      asked.push(String(url));
-      const page = Number(String(url).match(/lista-(\d+)\.htm/)?.[1] ?? 1);
+      const address = String(url);
+      // The api's token and parser answer nothing a website walk can use, so the run falls back -
+      // and only the website's own pages are counted.
+      if (!address.startsWith('https://www.idealista.it')) {
+        return { status: 500, ok: false, headers: undefined, text: async () => '', json: async () => ({}) };
+      }
+      asked.push(address);
+      const page = Number(address.match(/lista-(\d+)\.htm/)?.[1] ?? 1);
       // Two full pages and then a short one, which is where the results end.
       const body = page <= 2 ? cards(page * 100, 30) : cards(300, 4);
       return { status: 200, headers: undefined, text: async () => body };
@@ -257,6 +263,7 @@ describe('the result pages idealista falls back to reading', () => {
       const walk = runConfig.getListings(runConfig.url);
       await vi.runAllTimersAsync();
       const adverts = await walk;
+
 
       expect(adverts).toHaveLength(64);
       expect(asked).toHaveLength(3);
@@ -278,8 +285,14 @@ describe('the result pages idealista falls back to reading', () => {
     const asked = [];
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
-      asked.push(String(url));
-      const page = Number(String(url).match(/lista-(\d+)\.htm/)?.[1] ?? 1);
+      const address = String(url);
+      // The api's token and parser answer nothing a website walk can use, so the run falls back -
+      // and only the website's own pages are counted.
+      if (!address.startsWith('https://www.idealista.it')) {
+        return { status: 500, ok: false, headers: undefined, text: async () => '', json: async () => ({}) };
+      }
+      asked.push(address);
+      const page = Number(address.match(/lista-(\d+)\.htm/)?.[1] ?? 1);
       if (page > 1) return { status: 429, headers: undefined, text: async () => 'Too Many Requests' };
       return {
         status: 200,

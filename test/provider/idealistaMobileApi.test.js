@@ -118,9 +118,10 @@ describe('the search a website url describes', () => {
   });
 
   /**
-   * The search that motivated the drawn translation, kept whole: a price ceiling, both energy
+   * The search that motivated the drawn translation, kept whole: a price ceiling, the energy
    * boxes, no auctions, the "Appartamenti" box and the four house shapes, over two building
-   * conditions - eight searches whose answers merge.
+   * conditions - two searches whose answers merge, since the flats' box is `flat=1` and the houses'
+   * shapes ride beside it in the same request.
    */
   it('carries a drawn search over whole', () => {
     const search = translateSearchUrl(
@@ -131,12 +132,14 @@ describe('the search a website url describes', () => {
     );
 
     expect(search?.drawnShape).toBe('((qwnuGijvz@}pHyrB))');
-    expect(search?.variants).toHaveLength(8);
+    expect(search?.variants).toHaveLength(2);
     for (const variant of search?.variants ?? []) {
       expect(variant).toContainEqual(['maxPrice', '300000']);
       expect(variant).toContainEqual(['bedrooms', '3,4,5']);
       expect(variant).toContainEqual(['auction', 'excludeAuctions']);
       expect(variant).toContainEqual(['energyEfficiency', 'high,medium']);
+      expect(variant).toContainEqual(['flat', '1']);
+      expect(variant).toContainEqual(['subTypology', 'independantHouse,semidetachedHouse,terracedHouse,villa']);
     }
   });
 
@@ -146,8 +149,8 @@ describe('the search a website url describes', () => {
    * user asked for and tell them about adverts they filtered out.
    */
   it('gives up on a search it cannot carry over whole', () => {
-    // A filter with no counterpart: only a balcony has a parameter.
-    expect(translateSearchUrl('https://www.idealista.it/affitto-case/roma-roma/con-terrazza/')).toBeNull();
+    // A filter with no counterpart: the box means terrace or balcony, two api parameters' worth.
+    expect(translateSearchUrl('https://www.idealista.it/affitto-case/roma-roma/con-terrazza-e-balcone/')).toBeNull();
     // A category the api does not serve.
     expect(translateSearchUrl('https://www.idealista.it/vendita-terreni/roma-roma/')).toBeNull();
     // A drawn search that lost its polygon says nothing about where it looks.
@@ -205,18 +208,18 @@ describe('the filters a website url hides in its path', () => {
   });
 
   /**
-   * "Appartamenti" covers flats, penthouses and two-level flats together, and the api honours one
-   * shape of home per search, so the box becomes one search per shape - alongside the houses' own
-   * search where the url names those too, and once per condition like any other split.
+   * "Appartamenti" is one search: every penthouse and two-level flat it covers already answers a
+   * `flat=1` request, measured by walking both and diffing the property codes. The houses' shapes
+   * ride beside the flat in the same request, whose union is what the url asked for.
    */
-  it('runs the "Appartamenti" box once per shape of home', () => {
-    expect(readFilters('con-appartamenti')).toEqual([[['flat', '1']], [['penthouse', '1']], [['duplex', '1']]]);
+  it('reads the "Appartamenti" box as one search beside the houses', () => {
+    expect(readFilters('con-appartamenti')).toEqual([[['flat', '1']]]);
 
     expect(readFilters('con-appartamenti,ville-indipendenti')).toEqual([
-      [['flat', '1']],
-      [['penthouse', '1']],
-      [['duplex', '1']],
-      [['subTypology', 'villa']],
+      [
+        ['flat', '1'],
+        ['subTypology', 'villa'],
+      ],
     ]);
 
     expect(readFilters('con-appartamenti,nuova-costruzione,buono-stato')).toEqual([
@@ -228,22 +231,6 @@ describe('the filters a website url hides in its path', () => {
         ['flat', '1'],
         ['preservation', 'good'],
       ],
-      [
-        ['penthouse', '1'],
-        ['preservation', 'newdevelopment'],
-      ],
-      [
-        ['penthouse', '1'],
-        ['preservation', 'good'],
-      ],
-      [
-        ['duplex', '1'],
-        ['preservation', 'newdevelopment'],
-      ],
-      [
-        ['duplex', '1'],
-        ['preservation', 'good'],
-      ],
     ]);
   });
 
@@ -252,8 +239,23 @@ describe('the filters a website url hides in its path', () => {
   });
 
   it('refuses a filter it has no counterpart for', () => {
-    expect(readFilters('con-bassa-efficienza')).toBeNull();
-    expect(readFilters('con-ascensori,terrazza')).toBeNull();
+    // The box means terrace or balcony, which the api reads as two searches' worth of conditions.
+    expect(readFilters('con-terrazza-e-balcone')).toBeNull();
+    expect(readFilters('con-ascensori,terrazza-e-balcone')).toBeNull();
+  });
+
+  /**
+   * Three boxes that used to be untranslatable, mapped against a live api: the energy boxes all
+ * three, the terrace spelled the way the app spells it, and the private garden the portal's own
+ * parser named.
+   */
+  it('maps the boxes the api grew parameters for', () => {
+    expect(readFilters('con-bassa-efficienza')).toEqual([[['energyEfficiency', 'low']]]);
+    expect(readFilters('con-alta-efficienza,media-efficienza,bassa-efficienza')).toEqual([
+      [['energyEfficiency', 'high,medium,low']],
+    ]);
+    expect(readFilters('con-terrazza')).toEqual([[['terrance', '1']]]);
+    expect(readFilters('con-giardino-privato')).toEqual([[['privateGarden', '1']]]);
   });
 });
 
@@ -468,6 +470,143 @@ describe('the breath between requests, and the silence after a refusal', () => {
     // ...but by the third in a row the door is read as slammed, and stays unknocked.
     await expect(call(PATH)).rejects.toThrow(/silent/);
     expect(knocks).toBe(3);
+  });
+});
+
+/**
+ * The first translator is idealista's own: the app opens idealista.it links by handing the url to
+ * the api's parser and reading back the search in the api's own words. These tests pin what a run
+ * builds out of that answer - one request where the flat covers the flats and the houses ride
+ * beside it, the lists joined with the comma that means their union, the legacy fields dropped.
+ */
+describe("the portal's own parser", () => {
+  /** The parser's answer for the drawn search, as the api spells it. */
+  const PARSED = {
+    filter: {
+      operation: 'sale',
+      propertyType: 'homes',
+      maxPrice: 300000,
+      shape: { type: 'MultiPolygon', coordinates: [[[[9.78, 45.62], [9.8, 45.68], [9.79, 45.62]]]] },
+      auction: 'excludeAuctions',
+      flat: true,
+      penthouse: false,
+      duplex: false,
+      bedrooms: '3,4,5',
+      preservations: ['good', 'newDevelopment'],
+      preservation: 'good',
+      newDevelopment: true,
+      subTypology: ['villa', 'terracedHouse', 'semidetachedHouse', 'independantHouse'],
+      energyEfficiency: ['high', 'medium'],
+      terrance: false,
+    },
+    target: 'listing',
+  };
+
+  const DRAWN_URL =
+    'https://www.idealista.it/aree/vendita-case/con-prezzo_300000,appartamenti,case-indipendenti,' +
+    'villette-bifamiliari,villette-a-schiera,ville-indipendenti,trilocali-3,quadrilocali-4,' +
+    '5-locali-o-piu,nuova-costruzione,buono-stato,aste_no,alta-efficienza,media-efficienza/' +
+    '?shape=%28%28qwnuGijvz%40%7DpHyrBwmH_oDsvEgsDqjE%7DsHoiDqeKwfAm%7ERrjBsaMlvEk%60Rh_LoyCxhF%7CgA%7CoGhxHfqH%7EaObeBfmR_KnsQexC%60nVezElyC%29%29';
+
+  /**
+   * The api, replaced by a router that answers the parser with `PARSED` and records every search
+   * request's address and form body.
+   *
+   * @param {() => any} page what the search endpoint answers
+   * @returns {{calls: {url: string, body: URLSearchParams}[]}} what the search endpoint was asked,
+   *   in the order it was asked
+   */
+  function mockApi(page) {
+    const calls = [];
+    vi.stubGlobal('fetch', (url, init) => {
+      const address = String(url);
+      if (address.includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      if (address.includes('/deeplinks/parse/search')) {
+        return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(PARSED) });
+      }
+      calls.push({ url: address, body: new URLSearchParams(String(init?.body)) });
+      return Promise.resolve({ ok: true, status: 200, json: page });
+    });
+    return { calls };
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetPacing();
+    forgetToken();
+    clearCaughtUpSearches();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('asks the parser, and runs the search it describes', async () => {
+    const { calls } = mockApi(() => ({ elementList: [], totalPages: 0 }));
+
+    const pending = searchListings(DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await expect(pending).resolves.toEqual([]);
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toContain('searchType=drawn');
+    expect(calls[0].body.get('flat')).toBe('1');
+    expect(calls[0].body.get('subTypology')).toBe('villa,terracedHouse,semidetachedHouse,independantHouse');
+    expect(calls[0].body.get('preservations')).toBe('good,newDevelopment');
+    expect(calls[0].body.get('bedrooms')).toBe('3,4,5');
+    expect(calls[0].body.get('energyEfficiency')).toBe('high,medium');
+    expect(calls[0].body.get('maxPrice')).toBe('300000');
+    expect(calls[0].body.get('auction')).toBe('excludeAuctions');
+    // The shape travels as the parser decoded it, and the legacy copies of the preservation stay
+    // out of the request.
+    expect(JSON.parse(calls[0].body.get('shape'))).toMatchObject({ type: 'MultiPolygon' });
+    expect(calls[0].body.get('preservation')).toBeNull();
+    expect(calls[0].body.get('newDevelopment')).toBeNull();
+  });
+
+  it('falls back to the local translation when the parser does not answer', async () => {
+    const calls = [];
+    vi.stubGlobal('fetch', (url, init) => {
+      const address = String(url);
+      if (address.includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      if (address.includes('/deeplinks/parse/search')) {
+        return Promise.resolve({
+          ok: false,
+          status: 500,
+          text: () => Promise.resolve(''),
+          json: () => Promise.resolve({}),
+        });
+      }
+      calls.push({ url: address, body: new URLSearchParams(String(init?.body)) });
+      return Promise.resolve({ ok: true, status: 200, json: () => ({ elementList: [], totalPages: 0 }) });
+    });
+
+    const pending = searchListings(DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await expect(pending).resolves.toEqual([]);
+
+    // The local table reads the same url: the flat with the houses beside it, once per building
+    // condition the api takes one of.
+    expect(calls).toHaveLength(2);
+    for (const search of calls) {
+      expect(search.url).toContain('searchType=drawn');
+      expect(search.body.get('flat')).toBe('1');
+      expect(search.body.get('subTypology')).toBe('independantHouse,semidetachedHouse,terracedHouse,villa');
+      expect(['newdevelopment', 'good']).toContain(search.body.get('preservation'));
+    }
   });
 });
 
