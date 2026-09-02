@@ -264,7 +264,6 @@ describe('the result pages idealista falls back to reading', () => {
       await vi.runAllTimersAsync();
       const adverts = await walk;
 
-
       expect(adverts).toHaveLength(64);
       expect(asked).toHaveLength(3);
       expect(asked[2]).toContain('/lista-3.htm');

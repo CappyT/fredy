@@ -246,8 +246,8 @@ describe('the filters a website url hides in its path', () => {
 
   /**
    * Three boxes that used to be untranslatable, mapped against a live api: the energy boxes all
- * three, the terrace spelled the way the app spells it, and the private garden the portal's own
- * parser named.
+   * three, the terrace spelled the way the app spells it, and the private garden the portal's own
+   * parser named.
    */
   it('maps the boxes the api grew parameters for', () => {
     expect(readFilters('con-bassa-efficienza')).toEqual([[['energyEfficiency', 'low']]]);
@@ -486,7 +486,18 @@ describe("the portal's own parser", () => {
       operation: 'sale',
       propertyType: 'homes',
       maxPrice: 300000,
-      shape: { type: 'MultiPolygon', coordinates: [[[[9.78, 45.62], [9.8, 45.68], [9.79, 45.62]]]] },
+      shape: {
+        type: 'MultiPolygon',
+        coordinates: [
+          [
+            [
+              [9.78, 45.62],
+              [9.8, 45.68],
+              [9.79, 45.62],
+            ],
+          ],
+        ],
+      },
       auction: 'excludeAuctions',
       flat: true,
       penthouse: false,
