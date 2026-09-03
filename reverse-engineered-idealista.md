@@ -116,9 +116,23 @@ An advert carries `propertyCode`, `price`, `size`, `rooms`, `bathrooms`, `addres
 `longitude`, `description`, `thumbnail`, `url` and its own `locationId`. A figure the advert does
 not state arrives as `0`, not as an absent field.
 
-`firstActivationDate` is on every advert - epoch milliseconds, the moment the portal published it.
-It is the field the api's own `publicationDate` ordering sorts by, and the only date the answer
-carries: the api sorts by `modificationDate` as well, but the value never travels with the advert.
+`firstActivationDate` is on every advert **in the fixture** - epoch milliseconds, the moment the
+portal published it. The live api has since stopped carrying it: a full search read in September
+2026 answered three hundred adverts and not one carried a date, `quality=high` and `gallery=true`
+included. What the api still answers is the ordering by `publicationDate` and `modificationDate`;
+the values just never travel with the search.
+
+The dates live on the advert's own detail, which is what the android app opens for one advert:
+
+```
+GET https://app.idealista.it/api/3/it/detail/<propertyCode>?language=it&quality=high&typology=homes
+```
+
+Same host, same token, no further credentials. The answer carries `modificationDate` as both the
+epoch milliseconds and the sentence the website prints under them - `{"value": 1788453292000,
+"text": "Annuncio aggiornato un'ora fa"}` - and, when the portal states them, `lastActivationDate`
+and `lastDeactivationDate` alongside. One request per *new* listing is what a run costs: the
+pipeline enriches only what it has not stored yet.
 
 `address` is the line the website prints on a card - "Bilocale in Via Tito Vignoli s.n.c,
 Lorenteggio, Milano" - so an advert read through the api and the same advert scraped off a page

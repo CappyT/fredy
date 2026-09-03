@@ -98,15 +98,67 @@ describe('#idealista provider testsuite()', () => {
   });
 
   /**
-   * The api's own `publicationDate` ordering sorts by `firstActivationDate`, and the answer carries
-   * that very field - so the date the list is ordered by is the portal's, not the day Fredy happened
-   * to find the advert. The fixture and the live portal both stamp every advert with one.
+   * The search used to carry `firstActivationDate` and still does in the fixture; the live api has
+   * stopped, which is why the date now comes off the advert detail instead. Either way, a date that
+   * does arrive has to be a real one.
    */
-  it('carries the date the portal activated the advert', () => {
-    for (const listing of carrying('publishedAt')) {
+  it('carries a sane date wherever the search states one', () => {
+    for (const listing of listings.filter((entry) => entry.publishedAt != null)) {
       expect(typeof listing.publishedAt, `publishedAt of ${listing.link}`).toBe('number');
       expect(listing.publishedAt, `publishedAt of ${listing.link}`).toBeGreaterThan(0);
       expect(listing.publishedAt, `publishedAt of ${listing.link}`).toBeLessThanOrEqual(Date.now());
+    }
+  });
+
+  /**
+   * The search answers no dates any more - the api stopped carrying `firstActivationDate` - while
+   * the detail the android app opens for one advert carries `modificationDate`, the very
+   * "Annuncio aggiornato ..." the website prints. The provider asks it for one advert at a time,
+   * and only ever for the ones it has not stored yet.
+   */
+  it('reads the modification date off the advert detail, for the ones it is asked about', async () => {
+    const originalFetch = globalThis.fetch;
+    const asked = [];
+    globalThis.fetch = async (url) => {
+      const asked_ = String(url);
+      if (asked_.includes('/api/oauth/token')) {
+        return { ok: true, status: 200, json: async () => ({ access_token: 'offline', expires_in: 3600 }) };
+      }
+      asked.push(asked_);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          adid: 123456,
+          modificationDate: { value: 1788453292000, text: "Annuncio aggiornato un'ora fa" },
+        }),
+      };
+    };
+
+    try {
+      const listing = await provider.config.fetchDetails({ link: 'https://www.idealista.it/immobile/123456/' });
+
+      expect(asked[0]).toContain('/api/3/it/detail/123456');
+      expect(listing.publishedAt).toBe(1788453292000);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('keeps the listing without a date when the detail answers none', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (url) => {
+      if (String(url).includes('/api/oauth/token')) {
+        return { ok: true, status: 200, json: async () => ({ access_token: 'offline', expires_in: 3600 }) };
+      }
+      return { ok: true, status: 200, json: async () => ({ adid: 123456 }) };
+    };
+
+    try {
+      const listing = await provider.config.fetchDetails({ link: 'https://www.idealista.it/immobile/123456/' });
+      expect(listing.publishedAt).toBeUndefined();
+    } finally {
+      globalThis.fetch = originalFetch;
     }
   });
 
