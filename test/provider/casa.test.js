@@ -77,7 +77,10 @@ describe.each(searchShapes)('#casa provider testsuite() - $shape', ({ shape, sou
     }
     for (const listing of carrying('rooms')) {
       expect(listing.rooms, `rooms of ${listing.id}`).toBeGreaterThan(0);
-      expect(listing.rooms, `rooms of ${listing.id}`).toBeLessThan(30);
+      // The bound only has to catch a misparse, not police the market: the live portal carries
+      // adverts whose rooms an agency typed wrongly by a factor of ten (32 and 73 were both read
+      // off it on the same day), and those are real figures arriving as real numbers.
+      expect(listing.rooms, `rooms of ${listing.id}`).toBeLessThan(100);
     }
   });
 
