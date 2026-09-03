@@ -89,6 +89,84 @@ describe('the filters a casa.it url carries', () => {
     expect(readFilters('?tr=vendita&page=4')?.filters.page).toBeUndefined();
   });
 
+  it('reads a toggle into the boolean of the same name the api keeps it under', () => {
+    const read = readFilters('?exclude_auction=true&has_swimming_pool=true&lift=false');
+
+    expect(read?.filters).toMatchObject({ exclude_auction: true, has_swimming_pool: true, lift: false });
+  });
+
+  /**
+   * The site's auction toggle is three-state in the url and two filters in the api: asking for
+   * auctions only, or for everything but them.
+   */
+  it('reads the auction toggle into the filter each of its states means', () => {
+    expect(readFilters('?is_auction=true')?.filters).toEqual({ only_auction: true });
+    expect(readFilters('?is_auction=false')?.filters).toEqual({ exclude_auction: true });
+    expect(readFilters('?is_auction=perhaps')).toBeNull();
+  });
+
+  it('splits the balcony list into the two booleans the api keeps them under', () => {
+    expect(readFilters('?balconyAndTerrace=balcone%2Cterrazzo')?.filters).toEqual({ balcony: true, terrace: true });
+    expect(readFilters('?balconyAndTerrace=terrazzo')?.filters).toEqual({ terrace: true });
+    // A value outside the pair the site writes would be dropped by the api without a word.
+    expect(readFilters('?balconyAndTerrace=veranda')).toBeNull();
+  });
+
+  it('bounds the bathrooms and pins an exact room count', () => {
+    expect(readFilters('?numBaths=2')?.filters.bathrooms).toEqual({ gte: 2 });
+    expect(readFilters('?numRooms=2')?.filters.rooms).toEqual({ gte: 2, lte: 2 });
+  });
+
+  /**
+   * The level is the one value the api keeps decoded: `piano+terra` is refused with a bare 500
+   * while `piano terra` answers. Every other multi-word value in the table is the other way round.
+   */
+  it('sends a level with real spaces, the one form the api takes', () => {
+    expect(readFilters('?level=piano+terra')?.filters.level).toBe('piano terra');
+    expect(readFilters('?level=piano%20terra')?.filters.level).toBe('piano terra');
+    expect(readFilters('?level=3')?.filters.level).toBe('3');
+  });
+
+  it('reads a category the way the path segment would have been read', () => {
+    expect(readFilters('?category=residenziale')?.filters.property_type_group).toBe('case');
+    expect(readFilters('?category=commerciale')?.filters.property_type_group).toBe('commerciale');
+    // The api answers a group it does not know with the residential one, which would silently
+    // widen the search past every holiday home the url meant to exclude.
+    expect(readFilters('?category=vacanze')).toBeNull();
+  });
+
+  it('hands the comuni-limitrofi toggle over as a modifier, not a filter', () => {
+    expect(readFilters('?surrounding=true')?.modifiers).toEqual({ with_surroundings: true });
+    expect(readFilters('?surrounding=false')?.modifiers).toEqual({});
+    expect(readFilters('?surrounding=perhaps')).toBeNull();
+  });
+
+  it('carries the lists and scalars the newer filters arrived with', () => {
+    const read = readFilters('?furniture=partially%2Cfull&zones=a0d22860%2Ced427fcb&publication_date=7d');
+
+    expect(read?.filters.furniture).toEqual(['partially', 'full']);
+    expect(read?.filters.zone).toEqual(['a0d22860', 'ed427fcb']);
+    expect(read?.filters.publication_date).toBe('7d');
+  });
+
+  /**
+   * Trackers and the site's own bookkeeping ride along on real urls. They name nothing the search
+   * could lose, so dropping them keeps the url translatable; an unknown *filter* still refuses the
+   * whole url, because a filter that went missing would widen the search in silence.
+   */
+  it('drops the trackers and bookkeeping a shared url carries without losing the search', () => {
+    const read = readFilters(
+      '?tr=vendita&priceMax=330000&utm_source=google&gclid=Cj0K&t=1690000000&isRoomsNumber=true&precision=6&at_medium=paidsearch&source=refinements',
+    );
+
+    expect(read).not.toBeNull();
+    expect(read?.filters).toEqual({ 'transaction.type': 'vendita', price: { lte: 330000 } });
+  });
+
+  it('hands the url its q untouched, for the translator to read as a place', () => {
+    expect(readFilters('?q=276e3467')?.area.q).toBe('276e3467');
+  });
+
   /**
    * Passing an unknown name through would be worse than refusing it: this api ignores what it does
    * not recognise, so the search would run without that filter and nobody would be told.
@@ -175,6 +253,7 @@ describe('the search a casa.it url describes', () => {
     expect(search).toEqual({
       where: [{ hkey: 'a0d22860', level: 9 }],
       filters: { 'transaction.type': 'affitto', property_type_group: 'case' },
+      modifiers: {},
     });
   });
 
@@ -201,6 +280,82 @@ describe('the search a casa.it url describes', () => {
         },
       },
     ]);
+  });
+
+  /**
+   * The url wraps the circle in a list, and the centre is the one coordinate pair that is *not*
+   * swapped: the api reads it [lat, lon], the order the url already carries.
+   */
+  it('unwraps a drawn circle and keeps its centre the way round the api reads it', async () => {
+    const drawn = '{"circle":[{"distance":54281.68,"center":[45.47069,9.18998]}]}';
+    const search = await translateSearchUrl(
+      `https://www.casa.it/srp/map/?tr=vendita&geocircle=${encodeURIComponent(drawn)}`,
+    );
+
+    expect(search?.where).toEqual([{ geo: { center: [45.47069, 9.18998], distance: 54281.68 } }]);
+  });
+
+  /**
+   * The api has no box of its own - the shapes it answers are the polygon and the circle - so the
+   * rectangle the url names with two corners is sent as the ring it is.
+   */
+  it('sends a drawn box as the rectangle it is', async () => {
+    const drawn = '{"bbox":[[42.339,12.197],[42.2607,12.3405]]}';
+    const search = await translateSearchUrl(
+      `https://www.casa.it/srp/map/?tr=vendita&geobounds=${encodeURIComponent(drawn)}`,
+    );
+
+    expect(search?.where).toEqual([
+      {
+        geo: {
+          polygon: [
+            [12.197, 42.339],
+            [12.3405, 42.339],
+            [12.3405, 42.2607],
+            [12.197, 42.2607],
+            [12.197, 42.339],
+          ],
+        },
+      },
+    ]);
+  });
+
+  /**
+   * A drawn search names the place it sits in with `q`, and that hkey is what the site's own
+   * request searches by. With a shape drawn the shape wins - it is what was asked for - and with
+   * nothing drawn the place is still a search the api can be asked for.
+   */
+  it('falls back to the place a drawn search names when nothing usable was drawn', async () => {
+    const search = await translateSearchUrl('https://www.casa.it/srp/map/?tr=vendita&q=62125490');
+
+    expect(search?.where).toEqual([{ hkey: '62125490' }]);
+    expect(search?.filters).toEqual({ 'transaction.type': 'vendita' });
+  });
+
+  it('prefers the drawn shape over the place it sits in', async () => {
+    const ring = '{"polygon":[[45.6,9.8],[45.7,9.9],[45.5,10.0],[45.6,9.8]]}';
+    const search = await translateSearchUrl(
+      `https://www.casa.it/srp/map/?tr=vendita&q=62125490&geopolygon=${encodeURIComponent(ring)}`,
+    );
+
+    expect(search?.where).toEqual([
+      {
+        geo: {
+          polygon: [
+            [9.8, 45.6],
+            [9.9, 45.7],
+            [10.0, 45.5],
+            [9.8, 45.6],
+          ],
+        },
+      },
+    ]);
+  });
+
+  it('carries the comuni-limitrofi toggle into the request modifiers', async () => {
+    const search = await translateSearchUrl('https://www.casa.it/affitto/residenziale/roma/?surrounding=true');
+
+    expect(search?.modifiers).toEqual({ with_surroundings: true });
   });
 
   it('gives up on a url it cannot read whole, so the caller renders it instead', async () => {

@@ -48,8 +48,15 @@ This api does not refuse what it does not understand, and that shapes the whole 
 - An unknown filter name is dropped in silence. The search then runs without it.
 - An unknown `property_type_group` answers with the residential one rather than with an error.
 - An unknown `sort` token answers in the api's own order.
+- A geo shape it does not know - `geo.bbox`, `geo.bounding_box` with point pairs, an `envelope` -
+  answers with the whole country rather than with an error.
 - A filter sent as a list where one value is wanted - or the other way round - answers with a bare
   21-byte "Internal Server Error", with no JSON and no message.
+
+That last refusal is what makes a filter name provable: a *known* name sent in the wrong shape
+answers the bare error, an unknown one is dropped and the total does not move. Every name in the
+table below was confirmed that way, and then confirmed again by watching it move the total of a
+known search - Roma is big enough that a flag which does nothing shows immediately.
 
 So the provider translates only what is in its table and renders the page for anything else. The
 sibling provider for immobiliare.it does the opposite and lets the endpoint judge its own
@@ -58,6 +65,18 @@ trusted that way.
 
 A handled failure does answer usefully: a 500 carrying the raw python exception and the body it was
 sent. That is worth reading when something breaks.
+
+### The request modifiers
+
+The site's own request carries a `modifiers` object next to `filters`. Only one of them changes
+which adverts a search answers with, and it is the one a url asks for:
+
+| url              | modifier                                     |
+| ---------------- | -------------------------------------------- |
+| `surrounding=true` | `with_surroundings: true` - reach past the place's own border (measured: Roma 37057 → 44241) |
+
+The rest - `with_poi`, `with_georeach`, `geo_boolean_op`, `autoexpand_location_polygon` - shape the
+answer's decorations, not its contents, and are left out.
 
 ## Where to search
 
@@ -109,32 +128,93 @@ page's own request, which the store carries as `apireq`, and against its total o
 
 A **drawn search** says everything in its query string, at `/srp/map/`.
 
+### What the site itself asks for a drawn search
+
+The store of a drawn search carries the `apireq` the page sent, and it is not what the url
+suggests. For `/srp/map/?geobounds={"bbox":...}&q=276e3467` the site asks for:
+
+```json
+{"where": [{"hkey": "276e3467"}], "filters": {...}, "modifiers": {...}}
+```
+
+No box, no polygon: the drawn shape never reaches the api. The shape is the map's business - the
+pins inside it are filtered client-side - and the list the page reads is the whole area the `q`
+names. `q` is an hkey, the place the drawing sits in, and the api takes it without a level.
+
+Fredy asks for what was drawn, not for the map's convenience: a drawn polygon is sent as the
+polygon, and the api answers it (that form is confirmed under *Where to search*). A drawn box has
+no api shape of its own - `geo.bbox`, `geo.bounding_box` and the GeoJSON envelope all answer with
+the whole country - so the box is sent as the rectangle it is. A drawn circle keeps the centre the
+url already carries, `[lat, lon]`, the one pair that is not swapped. And a drawn search whose shape
+cannot be read falls back to the `q` hkey, which is exactly what the site itself would have asked
+for, rather than to the browser.
+
 ### The filters
 
 Casa.it ships the converter that writes these urls, in `/portal-srp/common-*.js`. The table in
-`lib/services/casa/search-filters.js` is that mapping read backwards:
+`lib/services/casa/search-filters.js` is that mapping read backwards, and then confirmed against
+the api itself as described above:
 
-| url                                   | api                                       |
-| ------------------------------------- | ----------------------------------------- |
-| `tr`                                  | `transaction.type`                        |
-| `propertyTypeGroup`                   | `property_type_group`                     |
-| `propertyTypes`                       | `property.types`                          |
-| `priceMin` / `priceMax`               | `price.gte` / `price.lte`                 |
-| `mqMin` / `mqMax`                     | `surface.gte` / `surface.lte`             |
-| `numRoomsMin` / `numRoomsMax`         | `rooms.gte` / `rooms.lte`                 |
-| `mqpriceMin` / `mqpriceMax`           | `mqprice.gte` / `mqprice.lte`             |
-| `paymentMin` / `paymentMax`           | `payment.gte` / `payment.lte`             |
-| `buildingYearMin` / `buildingYearMax` | `building_year.gte` / `building_year.lte` |
-| `numParkingSpaces`                    | `carparks.gte`                            |
-| `buildingCondition`                   | `building_condition`                      |
-| `garden`                              | `garden.type`                             |
-| `heatingType`                         | `heating.types`                           |
-| `energyClass`                         | `energy_class`, one value only            |
-| `publicationDt`                       | `publication_date`, one value only        |
-| `sellerType`                          | `publisher`                               |
-| `photo`                               | `only_with_photos`                        |
-| `pId`                                 | `publisher.id`                            |
-| `rentType`                            | `rent_type`                               |
+| url                                        | api                                        |
+| ------------------------------------------ | ------------------------------------------ |
+| `tr`                                       | `transaction.type`                         |
+| `propertyTypeGroup`                        | `property_type_group`                      |
+| `category`                                 | `property_type_group` (`residenziale` → `case`) |
+| `propertyTypes`                            | `property.types`                           |
+| `priceMin` / `priceMax`                    | `price.gte` / `price.lte`                  |
+| `mqMin` / `mqMax`                          | `surface.gte` / `surface.lte`              |
+| `numRoomsMin` / `numRoomsMax`              | `rooms.gte` / `rooms.lte`                  |
+| `numRooms`                                 | `rooms` with both ends set to the figure   |
+| `numBaths`                                 | `bathrooms.gte` - the api calls them bathrooms, not baths |
+| `mqpriceMin` / `mqpriceMax`                | `mqprice.gte` / `mqprice.lte`              |
+| `paymentMin` / `paymentMax`                | `payment.gte` / `payment.lte`              |
+| `buildingYearMin` / `buildingYearMax`      | `building_year.gte` / `building_year.lte`  |
+| `numParkingSpaces`                         | `carparks.gte`                             |
+| `buildingCondition`                        | `building_condition`                       |
+| `garden`                                   | `garden.type`                              |
+| `heatingType`                              | `heating.types`                            |
+| `energyClass`                              | `energy_class`, one value only             |
+| `publication_date` (`2d` / `7d` / `30d`)   | `publication_date`, one value only         |
+| `sellerType`                               | `publisher`                                |
+| `photo`                                    | `only_with_photos`                         |
+| `pId`                                      | `publisher.id`                             |
+| `rentType`                                 | `rent_type`                                |
+| `level` (`piano terra`, `intermedio`, `3`) | `level`, one value only                    |
+| `availability`                             | `availability`                             |
+| `furniture`                                | `furniture`                                |
+| `license_type_groups`                      | `license_type_groups`                      |
+| `zones`                                    | `zone`, a list of hkeys                    |
+| `balconyAndTerrace` (`balcone`, `terrazzo`) | `balcony: true` / `terrace: true`          |
+| `exclude_auction`                          | `exclude_auction`                          |
+| `only_auction`                             | `only_auction`                             |
+| `is_auction`                               | `true` → `only_auction`, `false` → `exclude_auction` |
+| `exclude_private_negotiation`              | `exclude_private_negotiation`              |
+| `only_private_negotiation`                 | `only_private_negotiation`                 |
+| `exclude_under_construction`               | `exclude_under_construction`               |
+| `has_swimming_pool`                        | `has_swimming_pool`                        |
+| `has_reception`                            | `has_reception`                            |
+| `has_virtual_tour`                         | `has_virtual_tour`                         |
+| `air_conditioned`                          | `air_conditioned`                          |
+| `is_lux`                                   | `is_lux`                                   |
+| `includes_property_ownership`              | `includes_property_ownership`              |
+| `terrace`                                  | `terrace`                                  |
+| `lift`                                     | `lift`                                     |
+
+The boolean names are the same on both sides - the converter writes the api's own words into the
+url. On a measured day Roma vendita carried 3935 auctions and 391 private-negotiation adverts, and
+each pair excluded and only summed exactly to the unfiltered total, which is as clean a
+confirmation as a live catalogue offers.
+
+Two url parameters carry no filter and are dropped without losing anything: `isRoomsNumber`, which
+tells the site how to *render* the room count, and the trackers campaigns append (`utm_*`, `at_*`,
+`gclid`, `t`, ...). `ft`, the free-text search, has no counterpart this api answers to and stays
+untranslated, so a url carrying it is still read off the website.
+
+### The level, decoded
+
+Every multi-word value in the table reaches the api in the site's own encoding - spaces as `+` -
+and matches. The level is the one exception: `piano+terra` is refused with a bare 500, `piano
+terra` answers. Measured, not assumed; it is why the level is written through its own helper.
 
 ### The encoding trap
 
