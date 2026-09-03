@@ -209,7 +209,6 @@
   "listings.tooltipUndelete": "Inserat wiederherstellen",
   "listings.tooltipReactivate": "Wieder als verfügbar markieren",
   "listings.sortByJobName": "Job-Name",
-  "listings.sortByDate": "Inserat-Datum",
   "listings.sortByPrice": "Preis",
   "listings.sortByProvider": "Anbieter",
   "listings.sortPrefix": "Sortieren nach",
@@ -1134,5 +1133,9 @@
   "settings.routingMinutesSuffix": "Min.",
   "settings.toastRoutingInvalid": "Jeder Wert hier muss eine ganze Zahl innerhalb seines Bereichs sein.",
   "listing.detail.fieldPublished": "Veröffentlicht",
-  "listing.detail.fieldPublishedHelp": "Wann das Portal dieses Inserat veröffentlicht oder zuletzt aktualisiert hat."
+  "listing.detail.fieldPublishedHelp": "Wann das Portal dieses Inserat veröffentlicht oder zuletzt aktualisiert hat.",
+  "settings.dateFormat": "Datumsformat",
+  "settings.dateFormatHelp": "Wie Daten in der gesamten Oberfläche geschrieben werden. Monat zuerst ist, was Fredy bisher getan hat; Tag zuerst ist die Reihenfolge, die der größte Teil Europas schreibt.",
+  "listings.sortByListingDate": "Inserat-Datum",
+  "listings.sortByDateAdded": "Hinzugefügt am"
 }

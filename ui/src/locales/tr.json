@@ -209,7 +209,6 @@
   "listings.tooltipUndelete": "İlanı Geri Yükle",
   "listings.tooltipReactivate": "Yeniden mevcut olarak işaretle",
   "listings.sortByJobName": "İş Adı",
-  "listings.sortByDate": "İlan Tarihi",
   "listings.sortByPrice": "Fiyat",
   "listings.sortByProvider": "Sağlayıcı",
   "listings.sortPrefix": "Sıralama ölçütü",
@@ -1119,5 +1118,9 @@
   "settings.routingMinutesSuffix": "dk",
   "settings.toastRoutingInvalid": "Buradaki her değer, kendi aralığında tam sayı olmalıdır.",
   "listing.detail.fieldPublished": "Yayınlandı",
-  "listing.detail.fieldPublishedHelp": "Portalin bu ilanı yayımladığı veya son güncellediği tarih."
+  "listing.detail.fieldPublishedHelp": "Portalin bu ilanı yayımladığı veya son güncellediği tarih.",
+  "settings.dateFormat": "Tarih biçimi",
+  "settings.dateFormatHelp": "Tarihlerin arayüzde nasıl yazılacağı. Ay önce, Fredyin her zaman yaptığı şeydir; gün önce, Avrupanın çoğunun yazdığı sıralamadır.",
+  "listings.sortByListingDate": "İlan tarihi",
+  "listings.sortByDateAdded": "Eklenme tarihi"
 }

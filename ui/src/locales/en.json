@@ -209,7 +209,6 @@
   "listings.tooltipUndelete": "Restore Listing",
   "listings.tooltipReactivate": "Mark as available again",
   "listings.sortByJobName": "Job Name",
-  "listings.sortByDate": "Listing Date",
   "listings.sortByPrice": "Price",
   "listings.sortByProvider": "Provider",
   "listings.sortPrefix": "Sort by",
@@ -1134,5 +1133,9 @@
   "settings.routingMinutesSuffix": "min",
   "settings.toastRoutingInvalid": "Every value here must be a whole number inside its range.",
   "listing.detail.fieldPublished": "Published",
-  "listing.detail.fieldPublishedHelp": "When the portal says this listing was published or last updated."
+  "listing.detail.fieldPublishedHelp": "When the portal says this listing was published or last updated.",
+  "settings.dateFormat": "Date format",
+  "settings.dateFormatHelp": "How dates are written across the interface. Month-first is what Fredy has always done; day-first is the order most of Europe writes.",
+  "listings.sortByListingDate": "Listing Date",
+  "listings.sortByDateAdded": "Date Added"
 }
