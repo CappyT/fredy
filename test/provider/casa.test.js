@@ -113,9 +113,11 @@ describe.each(searchShapes)('#casa provider testsuite() - $shape', ({ shape, sou
     }
   });
 
-  it('serves the photo off the image host rather than as a bare path', () => {
+  it('serves the photo off the image host, resized the way the cdn demands', () => {
     for (const listing of carrying('image')) {
-      expect(listing.image, `image of ${listing.id}`).toMatch(/^https:\/\/images-1\.casa\.it\//);
+      // The cdn answers a bare /listing path with a 400 "invalid uri format"; every url it serves
+      // is a resized one, so the size segment has to be in.
+      expect(listing.image, `image of ${listing.id}`).toMatch(/^https:\/\/images-1\.casa\.it\/\d+x\d+\//);
     }
   });
 
