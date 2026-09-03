@@ -1132,5 +1132,7 @@
   "settings.poiCacheMaxAgeDays": "Gefundene Orte gültig für",
   "settings.poiCacheMaxAgeDaysHelp": "Wie lange eine Overpass-Antwort wiederverwendet wird. Läden ziehen selten um, und häufiges Nachfragen ist genau das, wofür Instanzen gesperrt werden.",
   "settings.routingMinutesSuffix": "Min.",
-  "settings.toastRoutingInvalid": "Jeder Wert hier muss eine ganze Zahl innerhalb seines Bereichs sein."
+  "settings.toastRoutingInvalid": "Jeder Wert hier muss eine ganze Zahl innerhalb seines Bereichs sein.",
+  "listing.detail.fieldPublished": "Veröffentlicht",
+  "listing.detail.fieldPublishedHelp": "Wann das Portal dieses Inserat veröffentlicht oder zuletzt aktualisiert hat."
 }

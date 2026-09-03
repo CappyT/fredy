@@ -116,6 +116,67 @@ describe('#immobiliare provider configuration()', () => {
     expect(provider.config.sortByDateParam).toBe('criterio=data&ordine=desc');
   });
 
+  /**
+   * The search endpoints answer no dates at all; the android app's property detail carries both the
+   * creation and the last edit, in epoch seconds. The later of the two is what the list orders by -
+   * a re-published advert is the portal's own notion of "newer".
+   */
+  it('reads the date the advert carries off the app api, seconds turned into milliseconds', async () => {
+    const originalFetch = globalThis.fetch;
+    let askedUrl = null;
+    globalThis.fetch = async (url) => {
+      askedUrl = String(url);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ id: 117393751, creationDate: 1736789140, lastModified: 1788187900 }),
+      };
+    };
+
+    try {
+      const listing = await provider.config.fetchDetails({
+        link: 'https://www.immobiliare.it/annunci/117393751/',
+      });
+
+      expect(askedUrl).toBe('https://android-imm-v4.ws-app.com/b2c/v2/properties/117393751');
+      expect(listing.publishedAt).toBe(1788187900000);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('keeps the listing without a date when the app api answers nothing', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: false, status: 500, json: async () => ({}) });
+
+    try {
+      const listing = await provider.config.fetchDetails({
+        link: 'https://www.immobiliare.it/annunci/117393751/',
+      });
+
+      expect(listing.publishedAt).toBeUndefined();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('asks for no date on a listing whose link names no advert id', async () => {
+    const originalFetch = globalThis.fetch;
+    let asked = false;
+    globalThis.fetch = async () => {
+      asked = true;
+      return { ok: true, status: 200, json: async () => ({}) };
+    };
+
+    try {
+      const listing = await provider.config.fetchDetails({ link: null });
+      expect(asked).toBe(false);
+      expect(listing.publishedAt).toBeUndefined();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it('declares Italy, which is what sends the geocoder there', () => {
     expect(provider.metaInformation.countries).toEqual(['it']);
   });

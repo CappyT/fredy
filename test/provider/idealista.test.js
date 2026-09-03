@@ -84,13 +84,29 @@ describe('#idealista provider testsuite()', () => {
    */
   it('does not take the floor for a room count', () => {
     for (const listing of carrying('rooms')) {
-      expect(listing.rooms, `rooms of ${listing.link}`).toBeLessThan(30);
+      // The bound only has to catch a misparse, not police the market: the live portal carries
+      // adverts whose rooms an agency typed wrongly by a factor of ten, and those are real
+      // figures arriving as real numbers.
+      expect(listing.rooms, `rooms of ${listing.link}`).toBeLessThan(100);
     }
   });
 
   it('links to the advert rather than to a relative path', () => {
     for (const listing of carrying('link')) {
       expect(listing.link).toMatch(/^https:\/\/www\.idealista\.it\/immobile\/\d+\//);
+    }
+  });
+
+  /**
+   * The api's own `publicationDate` ordering sorts by `firstActivationDate`, and the answer carries
+   * that very field - so the date the list is ordered by is the portal's, not the day Fredy happened
+   * to find the advert. The fixture and the live portal both stamp every advert with one.
+   */
+  it('carries the date the portal activated the advert', () => {
+    for (const listing of carrying('publishedAt')) {
+      expect(typeof listing.publishedAt, `publishedAt of ${listing.link}`).toBe('number');
+      expect(listing.publishedAt, `publishedAt of ${listing.link}`).toBeGreaterThan(0);
+      expect(listing.publishedAt, `publishedAt of ${listing.link}`).toBeLessThanOrEqual(Date.now());
     }
   });
 

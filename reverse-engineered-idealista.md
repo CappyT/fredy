@@ -116,6 +116,10 @@ An advert carries `propertyCode`, `price`, `size`, `rooms`, `bathrooms`, `addres
 `longitude`, `description`, `thumbnail`, `url` and its own `locationId`. A figure the advert does
 not state arrives as `0`, not as an absent field.
 
+`firstActivationDate` is on every advert - epoch milliseconds, the moment the portal published it.
+It is the field the api's own `publicationDate` ordering sorts by, and the only date the answer
+carries: the api sorts by `modificationDate` as well, but the value never travels with the advert.
+
 `address` is the line the website prints on a card - "Bilocale in Via Tito Vignoli s.n.c,
 Lorenteggio, Milano" - so an advert read through the api and the same advert scraped off a page
 describe themselves in the same words.

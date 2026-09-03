@@ -1132,5 +1132,7 @@
   "settings.poiCacheMaxAgeDays": "Trust found places for",
   "settings.poiCacheMaxAgeDaysHelp": "How long an Overpass answer is reused before asking again. Shops move rarely, and re-asking often is what gets an instance blocked.",
   "settings.routingMinutesSuffix": "min",
-  "settings.toastRoutingInvalid": "Every value here must be a whole number inside its range."
+  "settings.toastRoutingInvalid": "Every value here must be a whole number inside its range.",
+  "listing.detail.fieldPublished": "Published",
+  "listing.detail.fieldPublishedHelp": "When the portal says this listing was published or last updated."
 }

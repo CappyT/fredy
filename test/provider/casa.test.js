@@ -121,6 +121,19 @@ describe.each(searchShapes)('#casa provider testsuite() - $shape', ({ shape, sou
     }
   });
 
+  /**
+   * The api stamps every advert with the moment of its last edit - the field the site's own
+   * "aggiornato il" reads - and both search shapes are read through the api, so both carry it. The
+   * rendered store would not, but no url in the test set is left for it to answer.
+   */
+  it('carries the date the portal last edited the advert', () => {
+    for (const listing of carrying('publishedAt')) {
+      expect(typeof listing.publishedAt, `publishedAt of ${listing.id}`).toBe('number');
+      expect(listing.publishedAt, `publishedAt of ${listing.id}`).toBeGreaterThan(0);
+      expect(listing.publishedAt, `publishedAt of ${listing.id}`).toBeLessThanOrEqual(Date.now());
+    }
+  });
+
   /** Anything casa.it does not recognise falls back to relevance without saying so. */
   it('sorts by the criterion casa.it actually knows', () => {
     expect(provider.config.sortByDateParam).toBe('sortType=date_desc');

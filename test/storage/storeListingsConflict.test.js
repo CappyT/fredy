@@ -36,6 +36,7 @@ describe('storeListings id propagation', () => {
         address TEXT,
         link TEXT,
         created_at INTEGER,
+        published_at INTEGER,
         is_active INTEGER,
         manually_deleted INTEGER DEFAULT 0,
         latitude REAL,

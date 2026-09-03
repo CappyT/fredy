@@ -104,6 +104,22 @@ The endpoint requires `idNazione`, `idContratto` and `idCategoria`; it will not 
 `Route not found` for a path it does not recognise - and for an unknown query parameter, which is
 how `idMZona[]` was found and `idQuartiere[]` ruled out.
 
+## The dates
+
+Neither search shape carries a date - read an advert of the endpoint's answer whole and there is
+nothing to find, which is why the site can only show one on the detail page. The android app's
+property detail does carry them, on the same unprotected host its geography service sits on:
+
+```
+GET https://android-imm-v4.ws-app.com/b2c/v2/properties/<id>
+```
+
+No key, no token. The answer carries `creationDate` and `lastModified`, both epoch **seconds** -
+the one unit conversion in the provider - and `soldTransactionDate`, which is about a sale that
+already happened and is left alone. One request per *new* listing is what a run costs: the pipeline
+enriches only what it has not stored yet. Fredy keeps the later of the two dates, because a
+re-published advert is the portal's own notion of "newer".
+
 ## The geography service
 
 `GET https://android-imm-v4.ws-app.com/b2c/v1/geography/autocomplete?query=<words>`

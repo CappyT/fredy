@@ -1117,5 +1117,7 @@
   "settings.poiCacheMaxAgeDays": "Bulunan yerler şu süre geçerli",
   "settings.poiCacheMaxAgeDaysHelp": "Bir Overpass yanıtının yeniden sorulmadan önce ne kadar kullanılacağı. Dükkânlar nadiren taşınır ve sık sorma, kurulumların engellenmesine yol açan şeydir.",
   "settings.routingMinutesSuffix": "dk",
-  "settings.toastRoutingInvalid": "Buradaki her değer, kendi aralığında tam sayı olmalıdır."
+  "settings.toastRoutingInvalid": "Buradaki her değer, kendi aralığında tam sayı olmalıdır.",
+  "listing.detail.fieldPublished": "Yayınlandı",
+  "listing.detail.fieldPublishedHelp": "Portalin bu ilanı yayımladığı veya son güncellediği tarih."
 }

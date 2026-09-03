@@ -489,6 +489,18 @@ export default function ListingDetail() {
     },
   ];
 
+  // The date the portal itself states, when it states one at all - casa.it and idealista.it put it
+  // in the search answer, immobiliare.it only on the app's property detail - so it is pushed rather
+  // than shown as another "N/A" next to the figures every listing carries.
+  if (listing.published_at) {
+    data.push({
+      key: t('listing.detail.fieldPublished'),
+      value: timeService.format(listing.published_at, true, locale),
+      Icon: <IconCalendar />,
+      helpText: t('listing.detail.fieldPublishedHelp'),
+    });
+  }
+
   // Only the detail page states these, and only for a part of the listings, so they are pushed
   // rather than shown as another "N/A" next to the figures every listing carries.
   if (listing.build_year) {

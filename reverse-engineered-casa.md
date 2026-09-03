@@ -250,8 +250,10 @@ nothing about it. On one measured search the correct form answers 144 and the de
 The listing's page is `https://www.casa.it/immobili/<listing_id>/`, which is the form the website's
 own store uses. The api also offers `meta.links.pretty.href`, which is not needed.
 
-There is no publication date on the advert. `modified` is the last edit. The api sorts by insertion
-date all the same, and `listing_id` increases over time.
+There is no publication date on the advert. What the api stamps it with is the last edit -
+`modified`, with `last_relevant_update` alongside - in a compact UTC form (`20260826T003616Z`),
+which is what the site's own "aggiornato il" reads. Fredy keeps the later of the two and orders by
+it. The rendered store carries neither stamp, so a search read off the website has no date to give.
 
 ## Numbers to check a change against
 
