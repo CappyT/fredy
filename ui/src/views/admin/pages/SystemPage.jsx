@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { Button, Checkbox, Input, InputNumber, Banner } from '@douyinfe/semi-ui-19';
+import { Button, Checkbox, Input, InputNumber, Banner, Select } from '@douyinfe/semi-ui-19';
 import { IconSave } from '@douyinfe/semi-icons';
 import { useOutletContext } from 'react-router';
 
@@ -101,6 +101,17 @@ export default function SystemPage() {
         <Checkbox checked={form.demoMode} onChange={(e) => setField('demoMode', e.target.checked)}>
           {t('settings.demoModeEnable')}
         </Checkbox>
+      </SegmentPart>
+
+      <SegmentPart name={t('settings.dateFormat')} helpText={t('settings.dateFormatHelp')}>
+        <Select
+          value={form.dateFormat}
+          onChange={(value) => setField('dateFormat', value)}
+          style={{ maxWidth: 220 }}
+        >
+          <Select.Option value="DD/MM/YYYY">DD/MM/YYYY</Select.Option>
+          <Select.Option value="MM/DD/YYYY">MM/DD/YYYY</Select.Option>
+        </Select>
       </SegmentPart>
 
       <SegmentPart name={t('settings.proxyAuth')} helpText={t('settings.proxyAuthHelp')}>

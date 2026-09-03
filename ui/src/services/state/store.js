@@ -9,6 +9,7 @@
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { xhrGet, xhrPost, xhrDelete } from '../xhr.js';
+import { setDateFormat } from '../time/timeService.js';
 import queryString from 'query-string';
 
 /**
@@ -237,6 +238,7 @@ export const useFredyState = create(
           async getGeneralSettings() {
             try {
               const response = await xhrGet('/api/admin/generalSettings');
+              setDateFormat(response.json?.dateFormat);
               set((state) => ({ generalSettings: { ...state.generalSettings, settings: response.json } }));
             } catch (Exception) {
               console.error('Error while trying to get resource for api/admin/generalSettings. Error:', Exception);

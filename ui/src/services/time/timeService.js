@@ -3,15 +3,42 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
+/**
+ * The two orders the instance can render a date in. `MM/DD/YYYY` is what Fredy has always done;
+ * `DD/MM/YYYY` is the order the rest of the world writes. Set once per load, from the instance's
+ * general settings - every format() call reads the same module state, so a switch repaints the
+ * whole interface on the next render without anything else having to know.
+ * @type {Record<string, string>}
+ */
+export const DATE_FORMATS = { DAY_FIRST: 'DD/MM/YYYY', MONTH_FIRST: 'MM/DD/YYYY' };
+
+let dateFormat = DATE_FORMATS.MONTH_FIRST;
+
+/**
+ * @param {string|undefined|null} value The stored setting, or anything else for the default.
+ * @returns {void}
+ */
+export function setDateFormat(value) {
+  dateFormat = value === DATE_FORMATS.DAY_FIRST ? DATE_FORMATS.DAY_FIRST : DATE_FORMATS.MONTH_FIRST;
+}
+
 export function format(ts, showSeconds = true, locale = 'default') {
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
+  const date = new Date(ts);
+  // Intl orders the date part by locale, which is exactly what the setting is there to override.
+  // The time part keeps following the locale, the way it always has.
+  if (!Number.isFinite(date.getTime())) return '';
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const datePart =
+    dateFormat === DATE_FORMATS.DAY_FIRST
+      ? `${day}/${month}/${date.getFullYear()}`
+      : `${month}/${day}/${date.getFullYear()}`;
+  const timePart = new Intl.DateTimeFormat(locale, {
     hour: 'numeric',
     minute: 'numeric',
     ...(showSeconds ? { second: 'numeric' } : {}),
-  }).format(ts);
+  }).format(date);
+  return `${datePart}, ${timePart}`;
 }
 
 /**

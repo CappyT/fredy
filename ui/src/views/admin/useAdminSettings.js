@@ -25,6 +25,7 @@ export const SYSTEM_FIELDS = [
   'sqlitepath',
   'analyticsEnabled',
   'demoMode',
+  'dateFormat',
   'proxyAuthEnabled',
   'proxyAuthTrustedProxies',
   'proxyAuthUserHeader',
@@ -91,6 +92,8 @@ function toForm(settings) {
     sqlitepath: settings?.sqlitepath ?? '',
     analyticsEnabled: settings?.analyticsEnabled === true,
     demoMode: settings?.demoMode === true,
+    // Month first, because that is what every installation rendered before the setting existed.
+    dateFormat: settings?.dateFormat ?? 'MM/DD/YYYY',
     proxyAuthEnabled: settings?.proxyAuthEnabled === true,
     proxyAuthTrustedProxies: settings?.proxyAuthTrustedProxies ?? '',
     proxyAuthUserHeader: settings?.proxyAuthUserHeader ?? 'Remote-User',

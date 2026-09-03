@@ -118,8 +118,9 @@ describe('settings exposure', () => {
       const handler = await loadGetHandler(false);
       const payload = await handler({});
       // App.jsx gates the demo banner and the tracking consent modal on these two; the dashboard
-      // renders the interval. Anything less and the UI breaks for regular users.
-      expect(payload).toEqual({ demoMode: false, analyticsEnabled: true, interval: 60 });
+      // renders the interval, and every listing card renders the date the dateFormat setting
+      // names. Anything less and the UI breaks for regular users.
+      expect(payload).toEqual({ demoMode: false, analyticsEnabled: true, interval: 60, dateFormat: undefined });
     });
   });
 });
