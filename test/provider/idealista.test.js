@@ -140,6 +140,13 @@ describe('#idealista provider testsuite()', () => {
 
       expect(asked[0]).toContain('/api/3/it/detail/123456');
       expect(listing.publishedAt).toBe(1788453292000);
+
+      // A development's unit links from a different section, but ends in the very same code.
+      const fromDevelopment = await provider.config.fetchDetails({
+        link: 'https://www.idealista.it/nuova-costruzione/234567/',
+      });
+      expect(asked[1]).toContain('/api/3/it/detail/234567');
+      expect(fromDevelopment.publishedAt).toBe(1788453292000);
     } finally {
       globalThis.fetch = originalFetch;
     }
