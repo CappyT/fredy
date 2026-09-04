@@ -126,5 +126,10 @@ describe('#tecnocasa provider testsuite()', () => {
       expect(enriched.address).toBeTypeOf('string');
       expect(enriched.address).toContain(',');
     });
+
+    /** The search pages carry no date anywhere; only the advert page stamps one. */
+    it('reads the publish date the advert page stamps', () => {
+      expect(enriched.publishedAt).toBe(Date.UTC(2026, 6, 23, 17, 57, 55));
+    });
   });
 });

@@ -300,3 +300,45 @@ describe('reading a bound property off a page', () => {
     expect(readComponentData('<estates-index :estates="{not json"></estates-index>', ':estates')).toBeNull();
   });
 });
+
+describe('enriching an advert off its own page', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  /**
+   * A detail page as the platform serves one: the whole record bound onto the show component.
+   *
+   * @param {any} estate the record the page carries
+   * @returns {string} the html
+   */
+  function detailPage(estate) {
+    const escape = (value) => JSON.stringify(value).replaceAll('"', '&quot;');
+    return `<html><body><estate-show-v1 :estate="${escape(estate)}"></estate-show-v1></body></html>`;
+  }
+
+  const ADVERT_PAGE = 'https://www.tecnocasa.it/vendita/appartamenti/brescia/erbusco/1.html';
+  const listing = () => ({ id: 'a', link: ADVERT_PAGE, title: 'Trilocale in vendita' });
+
+  it('reads the date the advert was published or last edited on', async () => {
+    globalThis.fetch = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () =>
+        detailPage({ last_published_at: '2026-04-14 10:50:40', description: '<p>Cucina abitabile.</p>' }),
+    }));
+
+    expect((await tecnocasa.fetchDetails(listing())).publishedAt).toBe(Date.UTC(2026, 3, 14, 10, 50, 40));
+  });
+
+  // A date the page does not stamp is not a date to invent: the listing keeps the order it had.
+  it('leaves a listing the page names no date on without one', async () => {
+    globalThis.fetch = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () => detailPage({ description: '<p>Cucina abitabile.</p>' }),
+    }));
+
+    expect((await tecnocasa.fetchDetails(listing())).publishedAt).toBeUndefined();
+  });
+});

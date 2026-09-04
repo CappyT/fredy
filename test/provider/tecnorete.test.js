@@ -120,5 +120,14 @@ describe('#tecnorete provider testsuite()', () => {
       expect(enriched.address).toBeTypeOf('string');
       expect(enriched.address).toContain(',');
     });
+
+    /**
+     * The search pages carry no date anywhere; the advert page stamps the one the agency published
+     * or last edited the advert on, which is what sorts the list and tells an old advert from a new
+     * one.
+     */
+    it('reads the publish date the advert page stamps', () => {
+      expect(enriched.publishedAt).toBe(Date.UTC(2026, 5, 4, 15, 49, 58));
+    });
   });
 });
