@@ -3,10 +3,10 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { afterEach, expect, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mockFredy, sseEvents } from './utils.js';
 import * as mockStore from './mocks/mockStore.js';
-import { get as getLastNotification } from './mocks/mockNotification.js';
+import { get as getLastNotification, reset as resetNotification } from './mocks/mockNotification.js';
 
 describe('Issue reproduction: listings filtered by similarity or area should be marked as manually deleted', () => {
   it('should call deleteListingsById when listings are filtered by similarity', async () => {
@@ -424,5 +424,62 @@ describe('Live reload triggers via SSE', () => {
         count: 1,
       },
     });
+  });
+});
+
+describe('novelty is judged per job, not per provider', () => {
+  /**
+   * The tecnocasa group serves the same records to tecnocasa.it and tecnorete.it under one
+   * group-wide estate id, so both brands normalize an advert to the same hash - and the table
+   * stores it once, keyed on `(job_id, hash)` across providers. The novelty check has to read that
+   * same set: a per-provider view left the second brand with an empty history of its own, so it
+   * re-found and re-notified the first brand's adverts on every run.
+   */
+  it('does not re-notify an advert another provider of the same job already stored', async () => {
+    const Fredy = await mockFredy();
+    resetNotification();
+
+    mockStore.storeListings('group-job', 'tecnocasa', [
+      { id: 'same-hash', title: 'Quadrilocale in vendita', link: 'https://www.tecnocasa.it/vendita/1.html' },
+    ]);
+
+    const providerConfig = {
+      url: 'https://www.tecnorete.it/vendita/1.html',
+      getListings: () =>
+        Promise.resolve([
+          { id: 'same-hash', title: 'Quadrilocale in vendita', link: 'https://www.tecnorete.it/vendita/1.html' },
+        ]),
+      normalize: (l) => l,
+      filter: () => true,
+      requiredFieldNames: ['id', 'title', 'link'],
+    };
+    const mockedJob = { id: 'group-job', notificationAdapter: null, specFilter: null, spatialFilter: null };
+
+    const fredy = new Fredy(providerConfig, mockedJob, 'tecnorete', { checkAndAddEntry: () => false }, undefined);
+    await fredy.execute();
+
+    expect(getLastNotification()).toEqual({});
+  });
+
+  it('still notifies the first provider that finds an advert', async () => {
+    const Fredy = await mockFredy();
+    resetNotification();
+
+    const providerConfig = {
+      url: 'https://www.tecnocasa.it/vendita/2.html',
+      getListings: () =>
+        Promise.resolve([
+          { id: 'fresh-hash', title: 'Villa singola in vendita', link: 'https://www.tecnocasa.it/vendita/2.html' },
+        ]),
+      normalize: (l) => l,
+      filter: () => true,
+      requiredFieldNames: ['id', 'title', 'link'],
+    };
+    const mockedJob = { id: 'group-job-2', notificationAdapter: null, specFilter: null, spatialFilter: null };
+
+    const fredy = new Fredy(providerConfig, mockedJob, 'tecnocasa', { checkAndAddEntry: () => false }, undefined);
+    await fredy.execute();
+
+    expect(getLastNotification().payload).toBeDefined();
   });
 });

@@ -7,10 +7,25 @@
 const db = {};
 export const storeListings = (jobKey, providerId, listings) => {
   if (!Array.isArray(listings)) throw Error('Not a valid array');
-  db[providerId] = listings;
+  db[`${jobKey}|${providerId}`] = listings;
 };
-export const getKnownListingHashesForJobAndProvider = (jobKey, providerId) => {
-  return db[providerId] || [];
+export const getKnownListingHashesForJob = (jobKey) => {
+  return Object.entries(db)
+    .filter(([key]) => key.startsWith(`${jobKey}|`))
+    .flatMap(([, listings]) => listings)
+    .map((listing) => listing?.id)
+    .filter((id) => id != null);
+};
+
+/**
+ * Forget every stored listing.
+ *
+ * The dedup the real store performs is memory across runs, which a test that runs the same
+ * listing twice under one job does not want carried from the previous case.
+ * @returns {void}
+ */
+export const resetListings = () => {
+  for (const key of Object.keys(db)) delete db[key];
 };
 
 export const getGeocoordinatesByAddress = (any) => {

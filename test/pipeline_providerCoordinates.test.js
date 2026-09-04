@@ -48,6 +48,7 @@ async function run(listing) {
 }
 
 beforeEach(() => {
+  mockStore.resetListings();
   mockStore.geocodedAddresses.length = 0;
   mockStore.setGeocodeResult({ lat: 51.2219, lng: 6.7844 });
 });
