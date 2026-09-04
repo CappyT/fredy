@@ -160,6 +160,74 @@ describe('#immobiliare provider configuration()', () => {
     }
   });
 
+  /**
+   * The search endpoints answer an advert without its description, so the app api - already asked
+   * for the date - is where the text comes from. A search read from the rendered page carries the
+   * text itself, and the api's word must not overwrite it.
+   */
+  it('fills in the description the search payload does not carry', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: 117393751,
+        creationDate: 1736789140,
+        description: { reference: 'EK-117393751', content: '  Appartamento luminoso a due passi dal centro.  ' },
+      }),
+    });
+
+    try {
+      const listing = await provider.config.fetchDetails({
+        link: 'https://www.immobiliare.it/annunci/117393751/',
+      });
+
+      expect(listing.description).toBe('Appartamento luminoso a due passi dal centro.');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('keeps the description a rendered search already carried', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ description: { content: 'Testo dall app api' } }),
+    });
+
+    try {
+      const listing = await provider.config.fetchDetails({
+        link: 'https://www.immobiliare.it/annunci/117393751/',
+        description: 'Testo dalla pagina',
+      });
+
+      expect(listing.description).toBe('Testo dalla pagina');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('leaves the description alone when the advert carries none', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ description: { reference: 'EK-117393751', content: '   ' } }),
+    });
+
+    try {
+      const listing = await provider.config.fetchDetails({
+        link: 'https://www.immobiliare.it/annunci/117393751/',
+        description: null,
+      });
+
+      expect(listing.description).toBeNull();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it('asks for no date on a listing whose link names no advert id', async () => {
     const originalFetch = globalThis.fetch;
     let asked = false;
