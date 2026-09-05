@@ -26,6 +26,8 @@ export const getKnownListingHashesForJob = (jobKey) => {
  */
 export const resetListings = () => {
   for (const key of Object.keys(db)) delete db[key];
+  recordedPriceObservations.length = 0;
+  appliedPriceChanges.length = 0;
 };
 
 export const getGeocoordinatesByAddress = (any) => {
@@ -95,5 +97,55 @@ export const deleteListingsById = (ids) => {
 };
 export const deleteListingsByHash = (hashes) => {
   deletedIds.push(...hashes);
+};
+
+/**
+ * Every price reading the pipeline recorded through the price-change lane, in order.
+ *
+ * The link-identity check in `_findNew` routes a re-read of an already stored advert through
+ * `recordPriceChange`, whose storage half lands here; a test that cares whether the advert was
+ * recognised instead of re-stored asserts on these.
+ * @type {{listingId: string, price: number, source: string|null}[]}
+ */
+export const recordedPriceObservations = [];
+export const recordPriceObservation = (listingId, price, observedAt = Date.now(), source = null) => {
+  recordedPriceObservations.push({ listingId, price, observedAt, source });
+};
+
+/**
+ * Every applied price change, in order.
+ * @type {{listingId: string, newPrice: number}[]}
+ */
+export const appliedPriceChanges = [];
+export const applyPriceChange = (listingId, newPrice, changedAt = Date.now()) => {
+  appliedPriceChanges.push({ listingId, newPrice, changedAt });
+};
+
+/**
+ * The stored listings of one job that already carry one of the given links, newest per link.
+ *
+ * Mirrors the real query's contract: hidden listings stay out, everything else the job stored is
+ * a candidate, and the newest row wins for a link several rows have carried.
+ *
+ * @param {string} jobId
+ * @param {string[]} links
+ * @returns {Array<Object>}
+ */
+export const getKnownListingsByLinkForJob = (jobId, links) => {
+  const cleaned = [...new Set((Array.isArray(links) ? links : []).filter((l) => typeof l === 'string' && l.length > 0))];
+  if (!jobId || cleaned.length === 0) return [];
+  const newestPerLink = new Map();
+  for (const [key, listings] of Object.entries(db)) {
+    if (!key.startsWith(`${jobId}|`)) continue;
+    for (const listing of listings ?? []) {
+      if (listing?.manually_deleted === 1) continue;
+      if (typeof listing?.link !== 'string' || !cleaned.includes(listing.link)) continue;
+      const existing = newestPerLink.get(listing.link);
+      if (existing == null || (listing.created_at ?? 0) > (existing.created_at ?? 0)) {
+        newestPerLink.set(listing.link, listing);
+      }
+    }
+  }
+  return [...newestPerLink.values()];
 };
 /* eslint-enable no-unused-vars */

@@ -6,7 +6,7 @@
 import { vi } from 'vitest';
 import { readFile } from 'fs/promises';
 import * as mockStore from './mocks/mockStore.js';
-import { send } from './mocks/mockNotification.js';
+import { send, sendPriceChange } from './mocks/mockNotification.js';
 
 export const providerConfig = JSON.parse(
   await readFile(new URL('./provider/testProvider.json', import.meta.url), 'utf-8'),
@@ -20,14 +20,14 @@ vi.mock('../lib/services/geocoding/geoCodingService.js', () => ({
   geocodeAddress: mockStore.geocodeAddress,
 }));
 vi.mock('../lib/services/storage/jobStorage.js', () => ({
-  getJob: (jobKey) => ({ id: jobKey, userId: 'user1' }),
+  getJob: (jobKey) => ({ id: jobKey, userId: 'user1', notificationAdapter: [{ id: 'mock-adapter' }] }),
 }));
 vi.mock('../lib/services/sse/sse-broker.js', () => ({
   sendToUser: (userId, event, data) => {
     sseEvents.push({ userId, event, data });
   },
 }));
-vi.mock('../lib/notification/notify.js', () => ({ send }));
+vi.mock('../lib/notification/notify.js', () => ({ send, sendPriceChange }));
 
 vi.mock('../lib/services/extractor/puppeteerExtractor.js', async (importOriginal) => {
   if (process.env.TEST_MODE !== 'offline') {
