@@ -132,7 +132,7 @@ function renderListingBody(listing, index, total, t, locale) {
   return `
     ${pager}
     <img
-      src="${listing.image_url}"
+      src="/api/listings/${listing.id}/image"
       onerror="this.onerror=null;this.src='${no_image}'"
     />
     <h4>${listing.title}</h4>

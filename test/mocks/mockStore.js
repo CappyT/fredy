@@ -28,6 +28,8 @@ export const resetListings = () => {
   for (const key of Object.keys(db)) delete db[key];
   recordedPriceObservations.length = 0;
   appliedPriceChanges.length = 0;
+  storedImages.length = 0;
+  updatedImages.length = 0;
 };
 
 export const getGeocoordinatesByAddress = (any) => {
@@ -97,6 +99,31 @@ export const deleteListingsById = (ids) => {
 };
 export const deleteListingsByHash = (hashes) => {
   deletedIds.push(...hashes);
+};
+
+/**
+ * Every photograph the pipeline kept, in order.
+ *
+ * The image step runs after the store, keyed on the row id `storeListings` propagated onto each
+ * listing; a test that cares whether the scrape downloaded the photograph asserts on these.
+ * @type {{listingId: string, mimeType: string, size: number}[]}
+ */
+export const storedImages = [];
+export const storeListingImage = (listingId, mimeType, bytes) => {
+  storedImages.push({ listingId, mimeType, size: bytes?.length ?? 0 });
+};
+
+export const getListingImage = () => null;
+
+export const getListingsMissingStoredImage = () => [];
+
+/**
+ * Every fresh image url written back onto a listing.
+ * @type {{id: string, imageUrl: string}[]}
+ */
+export const updatedImages = [];
+export const updateListingImage = (id, imageUrl) => {
+  updatedImages.push({ id, imageUrl });
 };
 
 /**

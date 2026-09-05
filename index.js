@@ -28,6 +28,7 @@ import { initTravelTimeCron } from './lib/services/crons/travel-time-cron.js';
 import { initConnectivityCron } from './lib/services/crons/connectivity-cron.js';
 import { initListingDescriptionCron } from './lib/services/crons/listing-description-cron.js';
 import { initListingPublishedAtCron } from './lib/services/crons/listing-published-at-cron.js';
+import { runImageBackfill } from './lib/services/listings/imageBackfillService.js';
 
 // Ensure the CloakBrowser stealth Chromium binary is present and complete before
 // jobs run.  ensureValidBinary() also detects and auto-heals partial extractions
@@ -134,6 +135,10 @@ initConnectivityCron();
 // stored without, one polite request per listing, which on such an instance takes minutes.
 initListingDescriptionCron();
 initListingPublishedAtCron();
+// Fired, not awaited, and never on a schedule: the scrape keeps every photograph as the listing
+// is stored, so this only walks the backlog an upgrade's gallery was stored without, and the work
+// list empties once it has caught up.
+runImageBackfill();
 
 logger.info(`Started Fredy successfully. Ui can be accessed via http://localhost:${settings.port}`);
 

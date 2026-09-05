@@ -644,7 +644,7 @@ export default function ListingDetail() {
               className={`listing-detail__image-container${!listing.image_url ? ' listing-detail__image-container--placeholder' : ''}`}
             >
               <Image
-                src={listing.image_url ?? no_image}
+                src={listing.image_url ? `/api/listings/${listing.id}/image` : no_image}
                 fallback={<img src={no_image} alt={t('listing.detail.noImageAlt')} />}
                 style={{ width: '100%', height: '100%' }}
                 preview={!!listing.image_url}
