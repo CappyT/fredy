@@ -3,19 +3,16 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 
-import { storeListings, queryListings } from '../../../lib/services/storage/listingsStorage.js';
-
 /**
- * The date the portal itself states, and the order the list reads in.
+ * The publication-date backfill's storage half.
  *
- * The whole point of published_at is the difference between two moments that created_at cannot
- * tell apart: a flat published two weeks ago and only discovered today is the older of the two,
- * and an advert re-published to the top of a search is the newer one again. So the mocked
- * connection is backed by a real in-memory database - an ORDER BY over a nullable column is
- * exactly the kind of thing that reads correctly and behaves otherwise.
+ * Plain SQL on both sides, so the mocked connection is backed by a real in-memory database rather
+ * than by assertions about statement strings - which providers enter the work list, and which rows
+ * it must refuse to hand out, are exactly the kind of thing that reads correctly and behaves
+ * otherwise.
  */
 let db;
 
@@ -28,108 +25,108 @@ vi.mock('../../../lib/services/storage/SqliteConnection.js', () => ({
 }));
 vi.mock('../../../lib/services/similarity-check/similarityCache.js', () => ({
   removeEntry: () => {},
-  isListingKnownAndAddIfNot: () => false,
-  initSimilarityCache: () => {},
-  startSimilarityCacheReloader: () => {},
-  checkAndAddEntry: () => false,
 }));
 
-const DAY = 24 * 60 * 60 * 1000;
+/**
+ * @param {string} id
+ * @param {Object} [overrides]
+ * @returns {void}
+ */
+function addListing(id, overrides = {}) {
+  const row = {
+    id,
+    job_id: 'job-1',
+    provider: 'tecnocasa',
+    link: `https://www.tecnocasa.it/advert/${id}.html`,
+    published_at: null,
+    is_active: 1,
+    ...overrides,
+  };
+  db.prepare(
+    `INSERT INTO listings (id, job_id, provider, link, published_at, is_active)
+     VALUES (@id, @job_id, @provider, @link, @published_at, @is_active)`,
+  ).run(row);
+}
 
-describe('the date the portal states, and the order it is read in', () => {
-  beforeEach(() => {
+describe('listingsStorage published_at backfill', () => {
+  let storage;
+
+  beforeEach(async () => {
     db = new Database(':memory:');
     db.exec(`
       CREATE TABLE listings (
-        id            TEXT PRIMARY KEY,
-        hash          TEXT,
-        provider      TEXT,
-        job_id        TEXT,
-        title         TEXT,
-        address       TEXT,
-        price         REAL,
-        size          REAL,
-        rooms         REAL,
-        build_year    INTEGER,
-        energy_class  TEXT,
-        image_url     TEXT,
-        description   TEXT,
-        link          TEXT,
-        created_at    INTEGER,
-        published_at  INTEGER,
-        is_active     INTEGER,
-        latitude      REAL,
-        longitude     REAL,
-        manually_deleted INTEGER DEFAULT 0,
-        status        JSON
+        id           TEXT PRIMARY KEY,
+        job_id       TEXT,
+        provider     TEXT,
+        link         TEXT,
+        created_at   INTEGER,
+        published_at INTEGER,
+        is_active    INTEGER
       );
-      CREATE UNIQUE INDEX listings_job_hash ON listings (job_id, hash);
-      CREATE TABLE jobs (id TEXT PRIMARY KEY, name TEXT, deal_type TEXT, user_id TEXT, shared_with_user TEXT);
-      CREATE TABLE watch_list (id TEXT PRIMARY KEY, listing_id TEXT, user_id TEXT);
-      CREATE TABLE listing_travel_times (
-        listing_id TEXT, label TEXT, transit_minutes INTEGER, car_minutes INTEGER,
-        bike_minutes INTEGER, walk_minutes INTEGER, is_estimate INTEGER, transit_geometry TEXT,
-        origin_lat REAL, origin_lng REAL, computed_at INTEGER
-      );
-      INSERT INTO jobs (id, name, user_id, shared_with_user) VALUES ('job-1', 'Cerca', 'user-1', '[]');
     `);
+    storage = await import('../../../lib/services/storage/listingsStorage.js');
   });
 
-  /**
-   * The one shape the pipeline hands the store: the store fills in everything else itself.
-   *
-   * @param {string} hash
-   * @param {number|null} publishedAt
-   * @returns {Object}
-   */
-  const listing = (hash, publishedAt) => ({
-    id: hash,
-    title: `listing ${hash}`,
-    price: 100000,
-    size: 80,
-    rooms: 3,
-    address: 'Via Roma 1, Roma',
-    link: 'https://www.example.it/annunci/1/',
-    publishedAt,
+  afterEach(() => db.close());
+
+  describe('getListingsMissingPublishedAt', () => {
+    it('hands out the dateless rows of the providers it is asked about', () => {
+      addListing('tecnocasa-1');
+      addListing('idealista-1', { provider: 'idealista', link: 'https://www.idealista.it/it/ad/1/' });
+
+      const rows = storage.getListingsMissingPublishedAt(['tecnocasa', 'idealista']);
+
+      expect(rows.map((row) => row.id).sort()).toEqual(['idealista-1', 'tecnocasa-1']);
+    });
+
+    it('leaves out rows that already carry a date', () => {
+      addListing('dated', { published_at: 1757000000000 });
+      addListing('dateless');
+
+      expect(storage.getListingsMissingPublishedAt(['tecnocasa']).map((row) => row.id)).toEqual(['dateless']);
+    });
+
+    it('leaves out inactive rows and rows without a link to read', () => {
+      addListing('inactive', { is_active: 0 });
+      addListing('unlinkable', { link: null });
+      addListing('live');
+
+      expect(storage.getListingsMissingPublishedAt(['tecnocasa']).map((row) => row.id)).toEqual(['live']);
+    });
+
+    it('leaves out providers nobody can enrich, so no row is swept forever', () => {
+      addListing('tecnocasa-1');
+      addListing('subito-1', { provider: 'subito' });
+
+      expect(storage.getListingsMissingPublishedAt(['tecnocasa']).map((row) => row.id)).toEqual(['tecnocasa-1']);
+    });
+
+    it('answers nothing when no provider is named', () => {
+      addListing('tecnocasa-1');
+
+      expect(storage.getListingsMissingPublishedAt([])).toEqual([]);
+      expect(storage.getListingsMissingPublishedAt(undefined)).toEqual([]);
+    });
   });
 
-  it('orders by the date the portal states before the date Fredy found the listing', () => {
-    // Found a day ago, no date the portal would state: it keeps the moment it was found.
-    storeListings('job-1', 'idealista', [listing('hash-undated', null)]);
-    db.prepare(`UPDATE listings SET created_at = ? WHERE hash = 'hash-undated'`).run(Date.now() - DAY);
-    // Found just now, published two weeks ago: the older of the two, whatever created_at says.
-    storeListings('job-1', 'casa', [listing('hash-old-advert', Date.now() - 14 * DAY)]);
+  describe('updateListingPublishedAt', () => {
+    it('stores the date on the row it is told about', () => {
+      addListing('tecnocasa-1');
 
-    const rows = queryListings({ jobIdFilter: 'job-1', isAdmin: true }).result;
+      storage.updateListingPublishedAt('tecnocasa-1', 1757000000000);
 
-    expect(rows).toHaveLength(2);
-    // The undated listing is the newer of the two: yesterday beats two weeks ago.
-    expect(rows[0].hash).toBe('hash-undated');
-    expect(rows[1].hash).toBe('hash-old-advert');
-  });
+      expect(db.prepare('SELECT published_at FROM listings WHERE id = ?').get('tecnocasa-1').published_at).toBe(
+        1757000000000,
+      );
+    });
 
-  it('updates the date when the portal says the advert was edited again', () => {
-    const first = listing('hash-bumped', Date.now() - 10 * DAY);
-    storeListings('job-1', 'casa', [first]);
+    it('refuses a value that is not an epoch', () => {
+      addListing('tecnocasa-1');
 
-    const again = listing('hash-bumped', Date.now());
-    storeListings('job-1', 'casa', [again]);
+      storage.updateListingPublishedAt('tecnocasa-1', undefined);
+      storage.updateListingPublishedAt('tecnocasa-1', null);
 
-    const rows = queryListings({ jobIdFilter: 'job-1', isAdmin: true }).result;
-    expect(rows).toHaveLength(1);
-    expect(rows[0].published_at).toBe(again.publishedAt);
-    // The upsert still hands back the row that was already there, which is what the later
-    // pipeline steps key on.
-    expect(again.id).toBe(first.id);
-  });
-
-  it('keeps the stored date when the portal states none the second time around', () => {
-    const first = listing('hash-once-dated', Date.now() - DAY);
-    storeListings('job-1', 'casa', [first]);
-
-    storeListings('job-1', 'casa', [listing('hash-once-dated', null)]);
-
-    const rows = queryListings({ jobIdFilter: 'job-1', isAdmin: true }).result;
-    expect(rows[0].published_at).toBe(first.publishedAt);
+      expect(db.prepare('SELECT published_at FROM listings WHERE id = ?').get('tecnocasa-1').published_at).toBeNull();
+    });
   });
 });
