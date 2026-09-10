@@ -101,6 +101,7 @@
   },
   "idealista": {
     "url": "https://www.idealista.it/affitto-case/roma-roma/",
+    "otherSiteUrls": ["https://www.idealista.com/alquiler-viviendas/madrid-madrid/"],
     "enabled": true
   }
 }

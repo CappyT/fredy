@@ -116,7 +116,23 @@ describe('the providers Fredy actually ships', () => {
     const ranks = countries.map((code) => COUNTRY_ORDER.indexOf(code));
 
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
+    // The group is one country per provider, and every provider Fredy ships is grouped under one of
+    // the four markets that have a portal of their own.
     expect(new Set(countries)).toEqual(new Set(['de', 'it', 'at', 'ch']));
+  });
+
+  /**
+   * Every country a shipped provider declares has to be ranked here, or the provider sorts into the
+   * unranked tail and the picker puts it after markets it is larger than. idealista covers Spain
+   * and Portugal alongside Italy, which is where those two entered the list.
+   */
+  it('rank every country a shipped provider searches in', async () => {
+    const declared = (await getProviders()).flatMap((p) => p.metaInformation.countries ?? []);
+
+    expect(new Set(declared)).toEqual(new Set(['de', 'it', 'at', 'ch', 'es', 'pt']));
+    for (const code of new Set(declared)) {
+      expect(COUNTRY_ORDER, `${code} is searched in but not ranked`).toContain(code);
+    }
   });
 
   it('lead with ImmoScout24, Immowelt and Kleinanzeigen', async () => {

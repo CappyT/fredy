@@ -23,7 +23,7 @@
  *
  * @type {string[]}
  */
-export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch'];
+export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch', 'es', 'pt'];
 
 /**
  * Providers by size within their market, largest first.
@@ -56,7 +56,9 @@ export const PROVIDER_SIZE_ORDER = [
   'regionalimmobilien24',
   'inberlinwohnen',
   'schwarzesbrett',
-  // Italy
+  // Italy. idealista is three national sites in one provider and is filed here because Italy is the
+  // first of its countries in the order above; its flags still show all three, and Spain and
+  // Portugal have no other provider to lead.
   'immobiliare',
   'idealista',
   'casa',

@@ -39,6 +39,18 @@ for (const [name, cfg] of Object.entries(testProviderConfig)) {
   }
 }
 
+/**
+ * idealista is three national sites in one provider, and each of them is a recording of its own:
+ * the Italian search page under the provider's plain name, the Spanish one beside it. Portugal has
+ * no recording and reads the Spanish page - the markup of a card is identical on all three, and
+ * what a fixture pins is the markup.
+ */
+const IDEALISTA_PAGES = {
+  'www.idealista.it': 'idealista.html',
+  'www.idealista.com': 'idealista_es.html',
+  'www.idealista.pt': 'idealista_es.html',
+};
+
 async function tryReadFile(filepath) {
   try {
     return await readFile(filepath, 'utf-8');
@@ -93,6 +105,10 @@ export async function readFixture(url, options) {
     return null;
   }
 
+  if (IDEALISTA_PAGES[hostname] != null) {
+    return tryReadFile(path.join(FIXTURES_DIR, IDEALISTA_PAGES[hostname]));
+  }
+
   const providerName = hostnameToProvider[hostname];
   if (!providerName) {
     // aggregators link to partner portals, so their detail fixture sits under an unknown hostname
@@ -142,7 +158,20 @@ export async function readImmoweltFixtures() {
  * accidental live network traffic in offline mode.
  */
 /** Hosts whose providers request their pages themselves instead of going through the extractor. */
-const FETCHED_PAGE_HOSTS = ['subito.it', 'tecnocasa.it', 'tecnorete.it', 'idealista.it'];
+const FETCHED_PAGE_HOSTS = [
+  'subito.it',
+  'tecnocasa.it',
+  'tecnorete.it',
+  'www.idealista.it',
+  'www.idealista.com',
+  'www.idealista.pt',
+];
+
+/** The app's api, on any of its three national hosts. `<cc>` follows the version in every path. */
+const IDEALISTA_API = /app\.idealista\.(it|com|pt)\/api/;
+const IDEALISTA_TOKEN = /app\.idealista\.(it|com|pt)\/api\/oauth\/token/;
+const IDEALISTA_LOCATIONS = /app\.idealista\.(it|com|pt)\/api\/3\.5\/(it|es|pt)\/search\/locations/;
+const IDEALISTA_SEARCH = /app\.idealista\.(it|com|pt)\/api\/3\.5\/(it|es|pt)\/search/;
 
 export function buildFetchMock() {
   let casaPlaces = null;
@@ -211,15 +240,17 @@ export function buildFetchMock() {
       return { ok: true, status: 200, json: () => Promise.resolve(immobiliareGeography[asked] ?? []) };
     }
 
-    // Idealista is read through the api the android app talks to, so its fixtures are the answers
-    // that api gives. The token is not one of them: it is minted per install and says nothing about
-    // the search, so offline mode hands out one of its own.
-    if (urlStr.includes('app.idealista.it/api/oauth/token')) {
+    // Idealista is read through the api the android app talks to - one host per country, the same
+    // answers - so its fixtures are what that api gives. The token is not one of them: it is minted
+    // per install and says nothing about the search, so offline mode hands out one of its own. The
+    // recorded catalogue is Italian, so a search on another country's api finds no location and the
+    // run falls back to the recorded page, which is the flow that fixture is there to exercise.
+    if (IDEALISTA_TOKEN.test(urlStr)) {
       return { ok: true, status: 200, json: () => Promise.resolve({ access_token: 'offline', expires_in: 3600 }) };
     }
 
     // The catalogue is read one location at a time, and which one is asked for is in the body.
-    if (urlStr.includes('app.idealista.it/api/3.5/it/search/locations')) {
+    if (IDEALISTA_LOCATIONS.test(urlStr)) {
       if (idealistaCatalogue == null) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'idealista_locations.json'));
         idealistaCatalogue = raw ? JSON.parse(raw) : {};
@@ -230,7 +261,7 @@ export function buildFetchMock() {
 
     // One recorded page stands for the whole search, so it answers as the only page there is and
     // every page after it comes back empty, which is what stops the walk.
-    if (urlStr.includes('app.idealista.it/api/3.5/it/search')) {
+    if (IDEALISTA_SEARCH.test(urlStr)) {
       if (idealistaListData == null) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'idealista_list.json'));
         idealistaListData = raw ? JSON.parse(raw) : { elementList: [] };
@@ -245,8 +276,14 @@ export function buildFetchMock() {
 
     // The outline of one of the areas a `/multi/` search names. A triangle is enough: what the
     // tests read is that the parser turns the encoding into a ring, not where the ring is.
-    if (urlStr.includes('mt1.idealista.it')) {
+    if (/mt1\.idealista\.(it|com|pt)/.test(urlStr)) {
       return { ok: true, status: 200, text: () => Promise.resolve('((_p~iF~ps|U_ulLnnqC_mqNvxq`@))') };
+    }
+
+    // Anything else the app's api is asked for - an advert's own detail, which is where the dates
+    // live - is answered with nothing rather than blocked: the fixture run is about the search.
+    if (IDEALISTA_API.test(urlStr)) {
+      return { ok: true, status: 200, json: () => Promise.resolve({}) };
     }
 
     // The providers that read a page over plain `fetch` because their portal serves one without a

@@ -12,11 +12,24 @@ import {
   resetPacing,
   sign,
 } from '../../lib/services/idealista/mobile-api.js';
-import { clearCaughtUpSearches, searchListings } from '../../lib/services/idealista/search.js';
+import { resetSearchMemory, searchListings } from '../../lib/services/idealista/search.js';
 import { readCategory, readFilters } from '../../lib/services/idealista/search-filters.js';
 import { translateSearchUrl } from '../../lib/services/idealista/web-translator.js';
-import { slugify } from '../../lib/services/idealista/locations.js';
-import { decodePolyline, parseOutline, sharedLocationId, simplifyRing } from '../../lib/services/idealista/zones.js';
+import { PORTALS, portalOf } from '../../lib/services/idealista/portal.js';
+import { slugify } from '../../lib/utils/slugify.js';
+import {
+  decodePolyline,
+  outlineOf,
+  parseOutline,
+  resetZoneMemory,
+  sharedLocationId,
+  simplifyRing,
+} from '../../lib/services/idealista/zones.js';
+
+/** The three sites, as the modules below want them. */
+const IT = PORTALS['idealista.it'];
+const ES = PORTALS['idealista.com'];
+const PT = PORTALS['idealista.pt'];
 
 // The device id is an installation's property and lives in the settings table; in these tests it
 // is simply a constant, so no database is ever opened.
@@ -57,16 +70,51 @@ describe('the signature idealista wants on every request', () => {
   });
 });
 
+describe('which of the three sites a url belongs to', () => {
+  /**
+   * The provider is one module for three national sites, and everything that differs between them -
+   * which api answers, which country code the paths carry, which site a relative link resolves
+   * against - hangs off this one reading of the hostname.
+   */
+  it('reads the site off the hostname, with or without the www', () => {
+    expect(portalOf('https://www.idealista.com/alquiler-viviendas/madrid-madrid/')?.country).toBe('es');
+    expect(portalOf('https://www.idealista.it/affitto-case/roma-roma/')?.country).toBe('it');
+    expect(portalOf('https://idealista.pt/arrendar-casas/lisboa/')?.country).toBe('pt');
+  });
+
+  it('sends each country to its own api, and nowhere else', () => {
+    expect(ES.apiHost).toBe('https://app.idealista.com');
+    expect(IT.apiHost).toBe('https://app.idealista.it');
+    expect(PT.apiHost).toBe('https://app.idealista.pt');
+  });
+
+  /**
+   * A url on a host idealista does not serve is refused rather than read as one of the three. Read
+   * as Spain - which is what the upstream provider did - the run would search the Spanish
+   * catalogue for a place named by a url from somewhere else and store whatever it found under
+   * links to a site the user never asked about.
+   */
+  it('refuses a host that is not one of the three', () => {
+    expect(portalOf('https://www.idealista.de/vendita-case/roma/')).toBeNull();
+    expect(portalOf('https://www.example.com/')).toBeNull();
+    expect(portalOf('not a url')).toBeNull();
+    expect(portalOf(undefined)).toBeNull();
+  });
+});
+
 describe('the search a website url describes', () => {
   it('reads the category out of the first segment', () => {
-    expect(readCategory('vendita-case')).toEqual({ operation: 'sale', propertyType: 'homes' });
-    expect(readCategory('affitto-stanze')).toEqual({ operation: 'rent', propertyType: 'bedrooms' });
+    expect(readCategory(IT, 'vendita-case')).toEqual({ operation: 'sale', propertyType: 'homes' });
+    expect(readCategory(IT, 'affitto-stanze')).toEqual({ operation: 'rent', propertyType: 'bedrooms' });
     // The api sells no land, so this search has to be read off the website.
-    expect(readCategory('vendita-terreni')).toBeNull();
+    expect(readCategory(IT, 'vendita-terreni')).toBeNull();
   });
 
   it('takes the place out of the path and ignores what the query string says', () => {
-    const search = translateSearchUrl('https://www.idealista.it/affitto-case/milano-milano/centro-storico/?ordine=x');
+    const search = translateSearchUrl(
+      IT,
+      'https://www.idealista.it/affitto-case/milano-milano/centro-storico/?ordine=x',
+    );
 
     expect(search).toMatchObject({
       operation: 'rent',
@@ -79,12 +127,14 @@ describe('the search a website url describes', () => {
   it('reads a url the portal serves in another language, and one naming a page', () => {
     const expected = { operation: 'rent', propertyType: 'homes', locationSlugs: ['roma-roma'] };
 
-    expect(translateSearchUrl('https://www.idealista.it/en/affitto-case/roma-roma/')).toMatchObject(expected);
-    expect(translateSearchUrl('https://www.idealista.it/affitto-case/roma-roma/lista-3.htm')).toMatchObject(expected);
+    expect(translateSearchUrl(IT, 'https://www.idealista.it/en/affitto-case/roma-roma/')).toMatchObject(expected);
+    expect(translateSearchUrl(IT, 'https://www.idealista.it/affitto-case/roma-roma/lista-3.htm')).toMatchObject(
+      expected,
+    );
   });
 
   it('reports the codes of a multi-area search rather than trying to name them', () => {
-    const search = translateSearchUrl('https://www.idealista.it/multi/vendita-case/a5W,a7j,dJY/');
+    const search = translateSearchUrl(IT, 'https://www.idealista.it/multi/vendita-case/a5W,a7j,dJY/');
 
     expect(search?.locationCodes).toEqual(['a5W', 'a7j', 'dJY']);
     expect(search?.locationSlugs).toEqual([]);
@@ -98,7 +148,7 @@ describe('the search a website url describes', () => {
     const drawn =
       'https://www.idealista.it/aree/vendita-case/con-prezzo_300000,aste_no/?shape=%28%28qwnuGijvz%40%7DpH%29%29';
 
-    expect(translateSearchUrl(drawn)).toMatchObject({
+    expect(translateSearchUrl(IT, drawn)).toMatchObject({
       operation: 'sale',
       propertyType: 'homes',
       locationSlugs: [],
@@ -114,7 +164,7 @@ describe('the search a website url describes', () => {
 
     // A drawn search pages without the `.htm` the other searches carry.
     const paged = 'https://www.idealista.it/aree/vendita-case/lista-3?shape=%28%28qwnuGijvz%40%7DpH%29%29';
-    expect(translateSearchUrl(paged)?.drawnShape).toBe('((qwnuGijvz@}pH))');
+    expect(translateSearchUrl(IT, paged)?.drawnShape).toBe('((qwnuGijvz@}pH))');
   });
 
   /**
@@ -125,6 +175,7 @@ describe('the search a website url describes', () => {
    */
   it('carries a drawn search over whole', () => {
     const search = translateSearchUrl(
+      IT,
       'https://www.idealista.it/aree/vendita-case/con-prezzo_300000,appartamenti,case-indipendenti,' +
         'villette-bifamiliari,villette-a-schiera,ville-indipendenti,trilocali-3,quadrilocali-4,' +
         '5-locali-o-piu,nuova-costruzione,buono-stato,aste_no,alta-efficienza,media-efficienza/' +
@@ -150,12 +201,14 @@ describe('the search a website url describes', () => {
    */
   it('gives up on a search it cannot carry over whole', () => {
     // A filter with no counterpart: the box means terrace or balcony, two api parameters' worth.
-    expect(translateSearchUrl('https://www.idealista.it/affitto-case/roma-roma/con-terrazza-e-balcone/')).toBeNull();
+    expect(
+      translateSearchUrl(IT, 'https://www.idealista.it/affitto-case/roma-roma/con-terrazza-e-balcone/'),
+    ).toBeNull();
     // A category the api does not serve.
-    expect(translateSearchUrl('https://www.idealista.it/vendita-terreni/roma-roma/')).toBeNull();
+    expect(translateSearchUrl(IT, 'https://www.idealista.it/vendita-terreni/roma-roma/')).toBeNull();
     // A drawn search that lost its polygon says nothing about where it looks.
-    expect(translateSearchUrl('https://www.idealista.it/aree/vendita-case/')).toBeNull();
-    expect(translateSearchUrl('not a url')).toBeNull();
+    expect(translateSearchUrl(IT, 'https://www.idealista.it/aree/vendita-case/')).toBeNull();
+    expect(translateSearchUrl(IT, 'not a url')).toBeNull();
   });
 });
 
@@ -166,15 +219,15 @@ describe('the filters a website url hides in its path', () => {
    * downstream would notice.
    */
   it('reads the price as a ceiling and the size as a floor', () => {
-    expect(readFilters('con-prezzo_450000')).toEqual([[['maxPrice', '450000']]]);
-    expect(readFilters('con-prezzo-min_180000')).toEqual([[['minPrice', '180000']]]);
-    expect(readFilters('con-dimensione_80')).toEqual([[['minSize', '80']]]);
-    expect(readFilters('con-dimensione-max_250')).toEqual([[['maxSize', '250']]]);
+    expect(readFilters(IT, 'con-prezzo_450000')).toEqual([[['maxPrice', '450000']]]);
+    expect(readFilters(IT, 'con-prezzo-min_180000')).toEqual([[['minPrice', '180000']]]);
+    expect(readFilters(IT, 'con-dimensione_80')).toEqual([[['minSize', '80']]]);
+    expect(readFilters(IT, 'con-dimensione-max_250')).toEqual([[['maxSize', '250']]]);
   });
 
   it('stacks the filters the website ticks box by box', () => {
-    expect(readFilters('con-trilocali-3,quadrilocali-4,5-locali-o-piu')).toEqual([[['bedrooms', '3,4,5']]]);
-    expect(readFilters('con-bagno-1,bagno-2')).toEqual([[['bathrooms', '1,2']]]);
+    expect(readFilters(IT, 'con-trilocali-3,quadrilocali-4,5-locali-o-piu')).toEqual([[['bedrooms', '3,4,5']]]);
+    expect(readFilters(IT, 'con-bagno-1,bagno-2')).toEqual([[['bathrooms', '1,2']]]);
   });
 
   /**
@@ -182,7 +235,7 @@ describe('the filters a website url hides in its path', () => {
    * and answers a list with a 500. The search is therefore run once per condition.
    */
   it('splits a search naming several building conditions', () => {
-    expect(readFilters('con-nuova-costruzione,buono-stato')).toEqual([
+    expect(readFilters(IT, 'con-nuova-costruzione,buono-stato')).toEqual([
       [['preservation', 'newdevelopment']],
       [['preservation', 'good']],
     ]);
@@ -193,7 +246,7 @@ describe('the filters a website url hides in its path', () => {
    * `subTypology` as the wider of the two - every house rather than the four that were asked for.
    */
   it('lets the shape of a house speak for itself', () => {
-    expect(readFilters('con-villette-a-schiera,ville-indipendenti')).toEqual([
+    expect(readFilters(IT, 'con-villette-a-schiera,ville-indipendenti')).toEqual([
       [['subTypology', 'terracedHouse,villa']],
     ]);
   });
@@ -203,8 +256,8 @@ describe('the filters a website url hides in its path', () => {
    * union it means.
    */
   it('reads the energy boxes as one list', () => {
-    expect(readFilters('con-alta-efficienza,media-efficienza')).toEqual([[['energyEfficiency', 'high,medium']]]);
-    expect(readFilters('con-aste_no')).toEqual([[['auction', 'excludeAuctions']]]);
+    expect(readFilters(IT, 'con-alta-efficienza,media-efficienza')).toEqual([[['energyEfficiency', 'high,medium']]]);
+    expect(readFilters(IT, 'con-aste_no')).toEqual([[['auction', 'excludeAuctions']]]);
   });
 
   /**
@@ -213,16 +266,16 @@ describe('the filters a website url hides in its path', () => {
    * ride beside the flat in the same request, whose union is what the url asked for.
    */
   it('reads the "Appartamenti" box as one search beside the houses', () => {
-    expect(readFilters('con-appartamenti')).toEqual([[['flat', '1']]]);
+    expect(readFilters(IT, 'con-appartamenti')).toEqual([[['flat', '1']]]);
 
-    expect(readFilters('con-appartamenti,ville-indipendenti')).toEqual([
+    expect(readFilters(IT, 'con-appartamenti,ville-indipendenti')).toEqual([
       [
         ['flat', '1'],
         ['subTypology', 'villa'],
       ],
     ]);
 
-    expect(readFilters('con-appartamenti,nuova-costruzione,buono-stato')).toEqual([
+    expect(readFilters(IT, 'con-appartamenti,nuova-costruzione,buono-stato')).toEqual([
       [
         ['flat', '1'],
         ['preservation', 'newdevelopment'],
@@ -235,13 +288,13 @@ describe('the filters a website url hides in its path', () => {
   });
 
   it('has nothing to say about a url that carries no filters', () => {
-    expect(readFilters('')).toEqual([[]]);
+    expect(readFilters(IT, '')).toEqual([[]]);
   });
 
   it('refuses a filter it has no counterpart for', () => {
     // The box means terrace or balcony, which the api reads as two searches' worth of conditions.
-    expect(readFilters('con-terrazza-e-balcone')).toBeNull();
-    expect(readFilters('con-ascensori,terrazza-e-balcone')).toBeNull();
+    expect(readFilters(IT, 'con-terrazza-e-balcone')).toBeNull();
+    expect(readFilters(IT, 'con-ascensori,terrazza-e-balcone')).toBeNull();
   });
 
   /**
@@ -250,12 +303,76 @@ describe('the filters a website url hides in its path', () => {
    * parser named.
    */
   it('maps the boxes the api grew parameters for', () => {
-    expect(readFilters('con-bassa-efficienza')).toEqual([[['energyEfficiency', 'low']]]);
-    expect(readFilters('con-alta-efficienza,media-efficienza,bassa-efficienza')).toEqual([
+    expect(readFilters(IT, 'con-bassa-efficienza')).toEqual([[['energyEfficiency', 'low']]]);
+    expect(readFilters(IT, 'con-alta-efficienza,media-efficienza,bassa-efficienza')).toEqual([
       [['energyEfficiency', 'high,medium,low']],
     ]);
-    expect(readFilters('con-terrazza')).toEqual([[['terrance', '1']]]);
-    expect(readFilters('con-giardino-privato')).toEqual([[['privateGarden', '1']]]);
+    expect(readFilters(IT, 'con-terrazza')).toEqual([[['terrance', '1']]]);
+    expect(readFilters(IT, 'con-giardino-privato')).toEqual([[['privateGarden', '1']]]);
+  });
+});
+
+/**
+ * Spain and Portugal get the words a url cannot avoid - the category, the operation, the price and
+ * the size - and nothing else, because their tick-box slugs were never read off a live page here
+ * and a filter mapped by guesswork would widen a search silently. Everything beyond that is read by
+ * idealista's own parser, and a url this table cannot carry over whole is read off the website.
+ */
+describe('the same url on the other two sites', () => {
+  it('reads the Spanish and the Portuguese category', () => {
+    expect(readCategory(ES, 'alquiler-viviendas')).toEqual({ operation: 'rent', propertyType: 'homes' });
+    expect(readCategory(ES, 'venta-viviendas')).toEqual({ operation: 'sale', propertyType: 'homes' });
+    expect(readCategory(PT, 'arrendar-casas')).toEqual({ operation: 'rent', propertyType: 'homes' });
+    expect(readCategory(PT, 'comprar-casas')).toEqual({ operation: 'sale', propertyType: 'homes' });
+  });
+
+  // Each site speaks one language. An Italian word on a Spanish url is a url this cannot read.
+  it('does not read the words of one country on the url of another', () => {
+    expect(readCategory(ES, 'affitto-case')).toBeNull();
+    expect(readCategory(IT, 'alquiler-viviendas')).toBeNull();
+    expect(readCategory(PT, 'venta-viviendas')).toBeNull();
+  });
+
+  it('reads the price bounds each of them spells differently', () => {
+    expect(readFilters(ES, 'con-precio-desde_800,precio-hasta_1200')).toEqual([
+      [
+        ['minPrice', '800'],
+        ['maxPrice', '1200'],
+      ],
+    ]);
+    // Portugal writes the segment with an `m`.
+    expect(readFilters(PT, 'com-preco-min_800,preco-max_1200')).toEqual([
+      [
+        ['minPrice', '800'],
+        ['maxPrice', '1200'],
+      ],
+    ]);
+    expect(readFilters(ES, 'con-metros-cuadrados-mas-de_60')).toEqual([[['minSize', '60']]]);
+  });
+
+  it('gives up on a tick-box it was never taught, and leaves the search to the website', () => {
+    expect(readFilters(ES, 'con-de-dos-dormitorios')).toBeNull();
+    expect(
+      translateSearchUrl(ES, 'https://www.idealista.com/alquiler-viviendas/madrid-madrid/con-piscina/'),
+    ).toBeNull();
+  });
+
+  it('carries a plain Spanish and Portuguese search over', () => {
+    expect(
+      translateSearchUrl(ES, 'https://www.idealista.com/alquiler-viviendas/madrid-madrid/con-precio-hasta_1200/'),
+    ).toMatchObject({
+      operation: 'rent',
+      propertyType: 'homes',
+      locationSlugs: ['madrid-madrid'],
+      variants: [[['maxPrice', '1200']]],
+    });
+
+    expect(translateSearchUrl(PT, 'https://www.idealista.pt/arrendar-casas/lisboa/')).toMatchObject({
+      operation: 'rent',
+      propertyType: 'homes',
+      locationSlugs: ['lisboa'],
+      variants: [[]],
+    });
   });
 });
 
@@ -298,6 +415,71 @@ describe('the outline of an area the website names in a code', () => {
     expect(simplifyRing(straight)).toHaveLength(2);
     expect(simplifyRing(bent).length).toBeLessThan(bent.length);
     expect(simplifyRing(bent)).toContainEqual([9.5, 45.5]);
+  });
+});
+
+/**
+ * What the tile host is allowed to be remembered as.
+ *
+ * An outline is cached for the lifetime of the process, because a border does not move. That makes
+ * the difference between "there is no such area" and "the host could not be read just now" the
+ * whole story: a 503 remembered as the former pinned the outline - and the location the outline is
+ * what names - to null until Fredy was restarted, and every run of that job fell back to reading
+ * the website behind DataDome for a search the api could have answered.
+ */
+describe('an area whose outline could not be read', () => {
+  /** One ring, in the encoding the tile host serves borders in. */
+  const OUTLINE = '((_p~iF~ps|U_ulLnnqC_mqNvxq`@))';
+
+  /**
+   * @param {Array<{ok: boolean, status: number, body?: string}>} answers one per request, in order
+   * @returns {() => number} how many requests were made
+   */
+  function serve(answers) {
+    let made = 0;
+    vi.stubGlobal('fetch', () => {
+      const answer = answers[Math.min(made, answers.length - 1)];
+      made += 1;
+      return Promise.resolve({ ...answer, text: () => Promise.resolve(answer.body ?? '') });
+    });
+    return () => made;
+  }
+
+  beforeEach(() => {
+    resetZoneMemory();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('is read again on the next run, and answers once the host is back', async () => {
+    const made = serve([
+      { ok: false, status: 503 },
+      { ok: true, status: 200, body: OUTLINE },
+    ]);
+
+    await expect(outlineOf(IT, ['a5W'])).rejects.toThrow(/503/);
+    await expect(outlineOf(IT, ['a5W'])).resolves.toMatchObject({ type: 'MultiPolygon' });
+    expect(made()).toBe(2);
+  });
+
+  // A 429 is the host asking for less traffic, not a statement about the area.
+  it('is read again after a refusal too', async () => {
+    const made = serve([{ ok: false, status: 429 }]);
+
+    await expect(outlineOf(IT, ['a5W'])).rejects.toThrow(/429/);
+    await expect(outlineOf(IT, ['a5W'])).rejects.toThrow(/429/);
+    expect(made()).toBe(2);
+  });
+
+  // A host that says the code does not exist is believed, and asked once.
+  it('is believed when the host says there is no such area', async () => {
+    const made = serve([{ ok: false, status: 404 }]);
+
+    await expect(outlineOf(IT, ['a5W'])).resolves.toBeNull();
+    await expect(outlineOf(IT, ['a5W'])).resolves.toBeNull();
+    expect(made()).toBe(1);
   });
 });
 
@@ -377,7 +559,7 @@ describe('the breath between requests, and the silence after a refusal', () => {
   it('walks requests out one at a time, a breath apart', async () => {
     const knocks = mockApi(ok);
 
-    const pending = [call(PATH), call(PATH), call(PATH)];
+    const pending = [call(IT, PATH), call(IT, PATH), call(IT, PATH)];
     await vi.runAllTimersAsync();
 
     for (const attempt of pending) await expect(attempt).resolves.toEqual({ elementList: [] });
@@ -390,13 +572,13 @@ describe('the breath between requests, and the silence after a refusal', () => {
     const knocks = mockApi(refused);
 
     // The rejection handler is attached before the clock runs, so no rejection flies loose.
-    const refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    const refusal = expect(call(IT, PATH)).rejects.toThrow(/407/);
     await vi.runAllTimersAsync();
     await refusal;
 
     // A minute into a quarter-hour silence the door is not knocked at all.
     await vi.advanceTimersByTimeAsync(60_000);
-    await expect(call(PATH)).rejects.toThrow(/silent/);
+    await expect(call(IT, PATH)).rejects.toThrow(/silent/);
     expect(knocks).toHaveLength(1);
   });
 
@@ -404,15 +586,15 @@ describe('the breath between requests, and the silence after a refusal', () => {
     let mood = refused;
     const knocks = mockApi(() => mood());
 
-    const refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    const refusal = expect(call(IT, PATH)).rejects.toThrow(/407/);
     await vi.runAllTimersAsync();
     await refusal;
 
     mood = ok;
     await vi.advanceTimersByTimeAsync(15 * 60_000 + 1000);
 
-    const probe = call(PATH);
-    const after = call(PATH);
+    const probe = call(IT, PATH);
+    const after = call(IT, PATH);
     await vi.runAllTimersAsync();
     await expect(probe).resolves.toEqual({ elementList: [] });
     await expect(after).resolves.toEqual({ elementList: [] });
@@ -422,24 +604,24 @@ describe('the breath between requests, and the silence after a refusal', () => {
   it('doubles the silence every time the refusal outlasts it', async () => {
     const knocks = mockApi(refused);
 
-    let refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    let refusal = expect(call(IT, PATH)).rejects.toThrow(/407/);
     await vi.runAllTimersAsync();
     await refusal;
 
     // Fifteen minutes later the refusal is still there, so the next silence is half an hour.
     await vi.advanceTimersByTimeAsync(15 * 60_000 + 1);
-    refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    refusal = expect(call(IT, PATH)).rejects.toThrow(/407/);
     await vi.runAllTimersAsync();
     await refusal;
 
     // Sixteen minutes into it the door stays unknocked...
     await vi.advanceTimersByTimeAsync(16 * 60_000);
-    await expect(call(PATH)).rejects.toThrow(/silent/);
+    await expect(call(IT, PATH)).rejects.toThrow(/silent/);
     expect(knocks).toHaveLength(2);
 
     // ...and only the full half hour opens it again.
     await vi.advanceTimersByTimeAsync(14 * 60_000 + 1000);
-    refusal = expect(call(PATH)).rejects.toThrow(/407/);
+    refusal = expect(call(IT, PATH)).rejects.toThrow(/407/);
     await vi.runAllTimersAsync();
     await refusal;
     expect(knocks).toHaveLength(3);
@@ -461,14 +643,14 @@ describe('the breath between requests, and the silence after a refusal', () => {
 
     // One reset is weather, so the weather gets its retries...
     for (let i = 0; i < 3; i++) {
-      const dropped = expect(call(PATH)).rejects.toThrow('fetch failed');
+      const dropped = expect(call(IT, PATH)).rejects.toThrow('fetch failed');
       await vi.runAllTimersAsync();
       await dropped;
     }
     expect(knocks).toBe(3);
 
     // ...but by the third in a row the door is read as slammed, and stays unknocked.
-    await expect(call(PATH)).rejects.toThrow(/silent/);
+    await expect(call(IT, PATH)).rejects.toThrow(/silent/);
     expect(knocks).toBe(3);
   });
 });
@@ -529,6 +711,7 @@ describe("the portal's own parser", () => {
    */
   function mockApi(page) {
     const calls = [];
+    const parses = [];
     vi.stubGlobal('fetch', (url, init) => {
       const address = String(url);
       if (address.includes('/api/oauth/token')) {
@@ -539,19 +722,20 @@ describe("the portal's own parser", () => {
         });
       }
       if (address.includes('/deeplinks/parse/search')) {
+        parses.push(address);
         return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(PARSED) });
       }
       calls.push({ url: address, body: new URLSearchParams(String(init?.body)) });
       return Promise.resolve({ ok: true, status: 200, json: page });
     });
-    return { calls };
+    return { calls, parses };
   }
 
   beforeEach(() => {
     vi.useFakeTimers();
     resetPacing();
     forgetToken();
-    clearCaughtUpSearches();
+    resetSearchMemory();
   });
 
   afterEach(() => {
@@ -562,7 +746,7 @@ describe("the portal's own parser", () => {
   it('asks the parser, and runs the search it describes', async () => {
     const { calls } = mockApi(() => ({ elementList: [], totalPages: 0 }));
 
-    const pending = searchListings(DRAWN_URL);
+    const pending = searchListings(IT, DRAWN_URL);
     await vi.runAllTimersAsync();
     await expect(pending).resolves.toEqual([]);
 
@@ -580,6 +764,73 @@ describe("the portal's own parser", () => {
     expect(JSON.parse(calls[0].body.get('shape'))).toMatchObject({ type: 'MultiPolygon' });
     expect(calls[0].body.get('preservation')).toBeNull();
     expect(calls[0].body.get('newDevelopment')).toBeNull();
+  });
+
+  /**
+   * What the parser answers depends on the url and on nothing else, and a job runs its url every
+   * few minutes for months. Asking again each time spends a paced request on a question that was
+   * answered the first time the job ran.
+   */
+  it('is asked once per url, however often the job runs it', async () => {
+    const { parses } = mockApi(() => ({ elementList: [], totalPages: 0 }));
+
+    const first = searchListings(IT, DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await first;
+
+    const second = searchListings(IT, DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await second;
+
+    expect(parses).toHaveLength(1);
+    expect(parses[0]).toContain('/api/3.5/it/deeplinks/parse/search');
+  });
+
+  /**
+   * The parser answers the same sentinel for a url it will not serve and for a 200 carrying
+   * something that is not an answer at all - a maintenance document, an error page, a cache's
+   * holding reply. Remembering it meant one odd minute downgraded that job to the website path for
+   * the lifetime of the process, and nothing short of a restart brought it back.
+   */
+  it('does not remember an answer that was not a search', async () => {
+    const calls = [];
+    const parses = [];
+    vi.stubGlobal('fetch', (url, init) => {
+      const address = String(url);
+      if (address.includes('/api/oauth/token')) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: 'token', expires_in: 43200 }),
+        });
+      }
+      if (address.includes('/deeplinks/parse/search')) {
+        parses.push(address);
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve(parses.length === 1 ? { target: 'error' } : PARSED),
+        });
+      }
+      calls.push({ url: address, body: new URLSearchParams(String(init?.body)) });
+      return Promise.resolve({ ok: true, status: 200, json: () => ({ elementList: [], totalPages: 0 }) });
+    });
+
+    const first = searchListings(IT, DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await first;
+    // The odd answer sends this run to the local table, which reads the url as one search per
+    // building condition.
+    expect(calls).toHaveLength(2);
+
+    const second = searchListings(IT, DRAWN_URL);
+    await vi.runAllTimersAsync();
+    await second;
+
+    // Asked again, and the good answer is the one that runs: the parser's reading is a single
+    // search, so exactly one more request went to the search endpoint.
+    expect(parses).toHaveLength(2);
+    expect(calls).toHaveLength(3);
   });
 
   it('falls back to the local translation when the parser does not answer', async () => {
@@ -605,7 +856,7 @@ describe("the portal's own parser", () => {
       return Promise.resolve({ ok: true, status: 200, json: () => ({ elementList: [], totalPages: 0 }) });
     });
 
-    const pending = searchListings(DRAWN_URL);
+    const pending = searchListings(IT, DRAWN_URL);
     await vi.runAllTimersAsync();
     await expect(pending).resolves.toEqual([]);
 
@@ -654,7 +905,7 @@ describe('the pages a run reads', () => {
     vi.useFakeTimers();
     resetPacing();
     forgetToken();
-    clearCaughtUpSearches();
+    resetSearchMemory();
   });
 
   afterEach(() => {
@@ -665,13 +916,65 @@ describe('the pages a run reads', () => {
   it('walks a whole search the first time, and settles for its head from then on', async () => {
     mockDeepSearch();
 
-    const first = searchListings(DRAWN_URL);
+    const first = searchListings(IT, DRAWN_URL);
     await vi.runAllTimersAsync();
     await expect(first).resolves.toHaveLength(250);
 
-    const second = searchListings(DRAWN_URL);
+    const second = searchListings(IT, DRAWN_URL);
     await vi.runAllTimersAsync();
     // Three pages of fifty: the head every other run reads.
     await expect(second).resolves.toHaveLength(150);
+  });
+});
+
+/**
+ * A token is granted by one country's api to this installation, and the other two have never heard
+ * of it. Holding one token for all three was the shape of the bug this pins: the second country's
+ * requests would carry the first one's bearer and be refused, run after run.
+ */
+describe('the token each country grants', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetPacing();
+    forgetToken();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('is minted per api host, and never carried across', async () => {
+    /** @type {string[]} */
+    const minted = [];
+    /** @type {Array<{url: string, bearer: string}>} */
+    const asked = [];
+
+    vi.stubGlobal('fetch', (url, init) => {
+      const address = String(url);
+      if (address.includes('/api/oauth/token')) {
+        minted.push(address);
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ access_token: `token-for-${minted.length}`, expires_in: 43200 }),
+        });
+      }
+      asked.push({ url: address, bearer: String(init?.headers?.Authorization ?? '') });
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ elementList: [] }) });
+    });
+
+    const pending = [call(IT, '/api/3.5/it/search'), call(ES, '/api/3.5/es/search'), call(IT, '/api/3.5/it/search')];
+    await vi.runAllTimersAsync();
+    for (const attempt of pending) await attempt;
+
+    // One token per host, and the third request reuses the one its host already granted.
+    expect(minted.map((url) => new URL(url).origin)).toEqual(['https://app.idealista.it', 'https://app.idealista.com']);
+
+    expect(asked[0].url).toContain('https://app.idealista.it/api/3.5/it/search');
+    expect(asked[1].url).toContain('https://app.idealista.com/api/3.5/es/search');
+    expect(asked[0].bearer).toBe('Bearer token-for-1');
+    expect(asked[1].bearer).toBe('Bearer token-for-2');
+    expect(asked[2].bearer).toBe('Bearer token-for-1');
   });
 });

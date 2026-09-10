@@ -177,44 +177,72 @@ async function downloadTecnocasaGroupFixtures(name, providerConfig) {
 }
 
 /**
- * Idealista's search page, rendered by the solver named in `FREDY_CHALLENGE_SOLVER_URL`.
+ * Idealista's search page, read the two ways the provider itself reads one: through the solver
+ * named in `FREDY_CHALLENGE_SOLVER_URL` where there is one, and otherwise through a browser waiting
+ * out DataDome's interstitial - the very transport `lib/services/idealista/idealistaSearch.js` uses.
  *
- * What the solver returns is what gets written. A second plain request would arrive without the
- * session it earned and save a block page instead.
+ * What the wall hands back is what gets written. A second plain request would arrive without the
+ * session the first one earned and save a block page instead.
  *
- * @param {string} url the search url
+ * The three national sites are recorded separately, because what a fixture pins is the language
+ * inside the card: the Italian page under the provider's plain name, the others as
+ * `idealista_<country>.html`, which is where `test/offlineFixtures.js` looks for them.
+ *
+ * @param {string} url the search url, on any of the three sites
+ * @param {Function} launchBrowser
+ * @param {Function} closeBrowser
  * @returns {Promise<void>}
  */
-async function downloadIdealistaFixtures(url) {
-  console.log('\nDownloading idealista...');
-
-  const endpoint = process.env.FREDY_CHALLENGE_SOLVER_URL?.trim();
-  if (!endpoint) {
-    console.warn('  Skipping idealista: set FREDY_CHALLENGE_SOLVER_URL to a scrape service first');
+async function downloadIdealistaFixtures(url, launchBrowser, closeBrowser) {
+  const { portalOf } = await import('../../lib/services/idealista/portal.js');
+  const portal = portalOf(url);
+  if (portal == null) {
+    console.warn(`  Skipping ${url}: idealista serves .com, .it and .pt and nothing else`);
     return;
   }
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cmd: 'request.get', url, maxTimeout: 90_000 }),
-  });
-  if (!response.ok) {
-    console.warn(`  Failed to download idealista: ${response.status} ${response.statusText}`);
+  const fixture = portal.country === 'it' ? 'idealista.html' : `idealista_${portal.country}.html`;
+  console.log(`\nDownloading idealista (${portal.host})...`);
+
+  const html = (await renderThroughSolver(url)) ?? (await renderThroughBrowser(url, launchBrowser, closeBrowser));
+  if (html == null) {
+    console.warn(`  Neither the solver nor a browser got past the wall - skipping ${fixture}`);
     return;
   }
 
-  // TRAWL's own /scrape puts the fields at the top level; the FlareSolverr /v1 shape nests them.
-  const payload = await response.json();
-  const solution = payload?.solution ?? payload ?? {};
-  const html = solution.html ?? solution.response;
-  if (typeof html !== 'string' || html.length === 0) {
-    console.warn('  The solver returned no page - skipping idealista');
-    return;
-  }
+  await writeFile(path.join(FIXTURES_DIR, fixture), html, 'utf-8');
+  console.log(`  Saved ${fixture}`);
+}
 
-  await writeFile(path.join(FIXTURES_DIR, 'idealista.html'), html, 'utf-8');
-  console.log('  Saved idealista.html');
+/**
+ * @param {string} url
+ * @returns {Promise<string|null>} the page the configured solver rendered, or null when none is
+ *   configured or it did not get through
+ */
+async function renderThroughSolver(url) {
+  const { challengeSolverUrl, solveChallenge } = await import('../../lib/services/extractor/challengeSolver.js');
+  if (challengeSolverUrl() == null) {
+    console.log('  No FREDY_CHALLENGE_SOLVER_URL set - falling back to a browser');
+    return null;
+  }
+  return (await solveChallenge(url, 'idealista'))?.html ?? null;
+}
+
+/**
+ * @param {string} url
+ * @param {Function} launchBrowser
+ * @param {Function} closeBrowser
+ * @returns {Promise<string|null>} the page a browser waited the challenge out for
+ */
+async function renderThroughBrowser(url, launchBrowser, closeBrowser) {
+  const { fetchSearchHtml } = await import('../../lib/services/idealista/idealistaSearch.js');
+  // Headful, because that is the only way the interstitial is likely to clear from a desktop.
+  const browser = await launchBrowser(url, { puppeteerHeadless: false });
+  try {
+    return await fetchSearchHtml(url, browser);
+  } finally {
+    await closeBrowser(browser);
+  }
 }
 
 /**
@@ -322,21 +350,24 @@ async function downloadImmobiliareGeographyFixture(url) {
 async function downloadIdealistaApiFixtures(url) {
   console.log('\nDownloading idealista mobile api...');
 
-  // The catalogue only serves the list of provinces alongside the children of some location, so the
-  // resolver always opens this one first. See `lib/services/idealista/locations.js`.
-  const PROVINCE_LIST_ANCHOR = '0-EU-IT-MI';
-
-  const { call, LOCATIONS_PATH, SEARCH_PATH } = await import('../../lib/services/idealista/mobile-api.js');
+  const { call, locationsPath, searchPath } = await import('../../lib/services/idealista/mobile-api.js');
   const { translateSearchUrl } = await import('../../lib/services/idealista/web-translator.js');
   const { resolveLocationId } = await import('../../lib/services/idealista/locations.js');
+  const { portalOf } = await import('../../lib/services/idealista/portal.js');
 
-  const search = translateSearchUrl(url);
+  const portal = portalOf(url);
+  if (portal == null) {
+    console.warn(`  Skipping ${url}: idealista serves .com, .it and .pt and nothing else`);
+    return;
+  }
+
+  const search = translateSearchUrl(portal, url);
   if (search == null) {
     console.warn(`  Skipping: ${url} is not a search the api can be asked for`);
     return;
   }
 
-  const locationId = await resolveLocationId(search.locationSlugs, search);
+  const locationId = await resolveLocationId(portal, search.locationSlugs, search);
   if (locationId == null) {
     console.warn(`  Skipping: the api catalogue has no "${search.locationSlugs.join('/')}"`);
     return;
@@ -345,16 +376,18 @@ async function downloadIdealistaApiFixtures(url) {
   const criteria = [
     ['operation', search.operation],
     ['propertyType', search.propertyType],
-    ['locale', 'it'],
+    ['locale', portal.country],
   ];
   const catalogue = {};
-  for (const level of [PROVINCE_LIST_ANCHOR, locationId.split('-').slice(0, 4).join('-')]) {
-    catalogue[level] = await call(LOCATIONS_PATH, { body: [...criteria, ['locationIds', level]] });
+  // The catalogue only serves the list of provinces alongside the children of some location, so the
+  // resolver always opens the country's anchor first. See `lib/services/idealista/locations.js`.
+  for (const level of [portal.provinceAnchor, locationId.split('-').slice(0, 4).join('-')]) {
+    catalogue[level] = await call(portal, locationsPath(portal), { body: [...criteria, ['locationIds', level]] });
   }
   await writeFile(path.join(FIXTURES_DIR, 'idealista_locations.json'), JSON.stringify(catalogue, null, 2), 'utf-8');
   console.log(`  Saved idealista_locations.json (${Object.keys(catalogue).length} levels)`);
 
-  const listing = await call(SEARCH_PATH, {
+  const listing = await call(portal, searchPath(portal), {
     query: [
       ['adIds', ''],
       ['searchType', 'locationIds'],
@@ -800,7 +833,12 @@ async function main() {
         await downloadTecnocasaGroupFixtures(name, runConfig);
         break;
       case 'idealista':
-        await downloadIdealistaFixtures(runConfig.url);
+        // One recording per national site, so a change to the card markup is caught in the language
+        // it was written in. The api fixtures are the Italian search's, which is the one the
+        // offline suite runs end to end.
+        for (const site of [runConfig.url, ...(cfg.otherSiteUrls ?? [])]) {
+          await downloadIdealistaFixtures(site, launchBrowser, closeBrowser);
+        }
         await downloadIdealistaApiFixtures(runConfig.url);
         break;
       case 'immobiliare':

@@ -57,8 +57,9 @@ On top of the listing itself, Fredy answers two questions:
 
 ## ✨ Key Features
 
-- 🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭: ImmoScout24, Immowelt, Kleinanzeigen, WG-Gesucht,
-  Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and [14 more](#provider-)
+- 🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭 🇪🇸 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
+  WG-Gesucht, Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and
+  [14 more](#provider-)
 - ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
   Discord, Mattermost, Pushover, Apprise and more
 - 🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
@@ -188,8 +189,9 @@ Fredy ships with 25 providers:
 | McMakler        | Wg gesucht          |                        |
 
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
+**🇪🇸 Spain · 🇵🇹 Portugal** · Idealista  
 **🇦🇹 Austria** · willhaben  
-**🇨🇭 Switzerland** · Flatfox  
+**🇨🇭 Switzerland** · Flatfox
 
 Tecnocasa and Tecnorete are the two estate agency networks of the Tecnocasa group. They carry
 different adverts but share one website platform, so enable both to see the group's whole stock.
@@ -199,12 +201,16 @@ buying or renting, a town, an area, a shape drawn on the map, a commercial searc
 filters the form set. Casa.it and a search drawn on the map on Immobiliare.it read every result page
 as well - up to twenty each.
 
-Idealista is read through the api its mobile app talks to, which sorts by publication date and
-needs no scrape service. Paste any search url from the website, including a `/multi/` search over
-several areas. A search the api has no terms for - a filter it cannot express, a category it does
-not serve, land - is read off the website instead, and only that case needs
-`FREDY_CHALLENGE_SOLVER_URL` pointed at a challenge-solving scrape service such as
-[TRAWL](https://github.com/germondai/trawl). See
+Idealista is one provider for three national sites - idealista.com, idealista.it and idealista.pt -
+and it works the same way on all three: the api its mobile app talks to serves one country per host,
+sorts by publication date and needs no scrape service. Paste any search url from any of the three,
+including a `/multi/` search over several areas; which country a job searches is read off the url's
+own domain, and a url on any other domain is refused rather than guessed at. A search the api has no
+terms for - a filter it cannot express, a category it does not serve, land - is read off the website
+instead. That fallback works without any configuration, through the browser Fredy already runs, but
+DataDome lets a datacenter address through only sometimes: point `FREDY_CHALLENGE_SOLVER_URL` at a
+challenge-solving scrape service such as [TRAWL](https://github.com/germondai/trawl) and those
+searches become plain requests. See
 [reverse-engineered-idealista.md](./reverse-engineered-idealista.md).
 
 Immobiliare.it reads a search through the endpoint its own pages call, which is not behind the wall.
