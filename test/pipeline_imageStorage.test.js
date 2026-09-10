@@ -25,11 +25,11 @@ describe('pipeline - keeping the photograph', () => {
     requiredFieldNames: ['id', 'title', 'link'],
   });
 
-  const runOnePass = async (providerConfig) => {
+  const runOnePass = async (providerConfig, job = {}) => {
     const Fredy = await mockFredy();
     const fredy = new Fredy(
       providerConfig,
-      { id: 'job-1', notificationAdapter: [{ id: 'mock-adapter' }] },
+      { id: 'job-1', notificationAdapter: [{ id: 'mock-adapter' }], ...job },
       'test-provider',
       { checkAndAddEntry: () => false },
       undefined,
@@ -81,6 +81,55 @@ describe('pipeline - keeping the photograph', () => {
     expect(mockStore.storedImages).toEqual([]);
     // The run went on and stored the listing anyway.
     expect(mockStore.getKnownListingHashesForJob('job-1')).toContain('hash-1');
+  });
+
+  it('downloads nothing for a listing the area filter is about to soft-delete', async () => {
+    /** A small square around Berlin; the listing below sits in Munich. */
+    const spatialFilter = {
+      features: [
+        {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [13.3, 52.4],
+                [13.5, 52.4],
+                [13.5, 52.6],
+                [13.3, 52.6],
+                [13.3, 52.4],
+              ],
+            ],
+          },
+        },
+      ],
+    };
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      throw new Error('the photograph of a rejected listing must never be fetched');
+    };
+    try {
+      await runOnePass(
+        configWith({
+          id: 'hash-1',
+          title: 'Flat',
+          link: 'https://portal/1/',
+          price: 100000,
+          image: 'https://img/1',
+          latitude: 48.13,
+          longitude: 11.58,
+        }),
+        { spatialFilter },
+      );
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+
+    // The row is a tombstone by the time the image step runs, and a blob per tombstone is a
+    // download at the portal and a table row spent on something nobody will open.
+    expect(mockStore.storedImages).toEqual([]);
+    expect(mockStore.deletedIds).toContain('hash-1');
   });
 
   it('downloads nothing for a listing the portal showed no image for', async () => {
