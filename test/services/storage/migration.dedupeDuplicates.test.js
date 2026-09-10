@@ -42,8 +42,8 @@ function addListing(id, overrides = {}) {
   ).run(row);
 }
 
-const addWatch = (id, listingId) =>
-  db.prepare(`INSERT INTO watch_list (id, listing_id, user_id) VALUES (?, ?, 'user-1')`).run(id, listingId);
+const addWatch = (id, listingId, userId = 'user-1') =>
+  db.prepare(`INSERT INTO watch_list (id, listing_id, user_id) VALUES (?, ?, ?)`).run(id, listingId, userId);
 const addHistory = (id, listingId, price) =>
   db
     .prepare(
@@ -82,6 +82,9 @@ describe('migration 42 - collapse price-change duplicates', () => {
         listing_id TEXT NOT NULL,
         user_id    TEXT NOT NULL
       );
+      -- The index migration 4 creates. Without it here the test could not see the collision a
+      -- user who starred both duplicates causes, which used to abort the whole migration.
+      CREATE UNIQUE INDEX idx_watch_list ON watch_list (listing_id, user_id);
       CREATE TABLE listing_price_history (
         id          TEXT PRIMARY KEY,
         listing_id  TEXT NOT NULL,
@@ -146,6 +149,59 @@ describe('migration 42 - collapse price-change duplicates', () => {
 
     const survivor = db.prepare(`SELECT notes, status FROM listings WHERE id = 'fresh'`).get();
     expect(survivor).toEqual({ notes: 'mine', status: '{"seen":true}' });
+  });
+
+  it('survives a user who starred both duplicates, leaving the one star on the survivor', () => {
+    addListing('stale', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 1000 });
+    addListing('fresh', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 2000 });
+    addWatch('watch-stale', 'stale');
+    addWatch('watch-fresh', 'fresh');
+
+    // The unique index on (listing_id, user_id) used to make this throw, which rolls the
+    // migration back and leaves Fredy refusing to start.
+    expect(() => up(db)).not.toThrow();
+
+    expect(ids()).toEqual(['fresh']);
+    expect(db.prepare(`SELECT id, listing_id FROM watch_list`).all()).toEqual([
+      { id: 'watch-fresh', listing_id: 'fresh' },
+    ]);
+  });
+
+  it('moves the star of a user who only watched the loser', () => {
+    addListing('stale', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 1000 });
+    addListing('fresh', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 2000 });
+    addWatch('watch-both-1', 'stale', 'user-1');
+    addWatch('watch-both-2', 'fresh', 'user-1');
+    addWatch('watch-loser-only', 'stale', 'user-2');
+
+    up(db);
+
+    const watches = db.prepare(`SELECT id, listing_id, user_id FROM watch_list ORDER BY user_id`).all();
+    expect(watches).toEqual([
+      { id: 'watch-both-2', listing_id: 'fresh', user_id: 'user-1' },
+      { id: 'watch-loser-only', listing_id: 'fresh', user_id: 'user-2' },
+    ]);
+  });
+
+  it('prefers a visible row over a newer hidden one', () => {
+    addListing('visible', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 1000, manually_deleted: 0 });
+    addListing('hidden', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 2000, manually_deleted: 1 });
+    addWatch('watch-1', 'hidden');
+
+    up(db);
+
+    // Newest alone would have kept the hidden row and put the advert out of sight for good.
+    expect(ids()).toEqual(['visible']);
+    expect(db.prepare(`SELECT listing_id FROM watch_list WHERE id = 'watch-1'`).get().listing_id).toBe('visible');
+  });
+
+  it('keeps the newest hidden row when the user hid every copy', () => {
+    addListing('older', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 1000, manually_deleted: 1 });
+    addListing('newer', { link: 'https://www.immobiliare.it/annunci/1/', created_at: 2000, manually_deleted: 1 });
+
+    up(db);
+
+    expect(ids()).toEqual(['newer']);
   });
 
   it('merges per job, so the same link under another job is not one advert', () => {
