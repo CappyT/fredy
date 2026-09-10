@@ -1,4 +1,9 @@
 /*
+ * Copyright (c) 2026 by Christian Kellner.
+ * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
+ */
+
+/*
  * Copyright (c) 2026 by Copyright (c) 2026 by Christian Kellner.
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
@@ -94,6 +99,16 @@ describe('listingsStorage stored images', () => {
       addListing('no-photo', { image_url: null });
 
       expect(storage.getListingsMissingStoredImage(['idealista'])).toEqual([]);
+    });
+
+    it('leaves out rows the alive-checker declared gone and rows the user hid', () => {
+      addListing('gone', { is_active: 0 });
+      addListing('hidden', { manually_deleted: 1 });
+      addListing('live');
+
+      // A blob downloaded for a listing somebody is done with is a request at the portal spent on
+      // a photograph nobody will open.
+      expect(storage.getListingsMissingStoredImage(['idealista']).map((row) => row.id)).toEqual(['live']);
     });
 
     it('keeps other providers out of the list, so nobody sweeps what it cannot fetch', () => {

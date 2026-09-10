@@ -131,6 +131,22 @@ export const getListingImage = () => null;
 export const getListingsMissingStoredImage = () => [];
 
 /**
+ * The nightly sweeps' work lists and their attempt marker.
+ *
+ * The pipeline never calls these, but this module stands in for the whole storage layer, and an
+ * export that is missing here throws the moment anything reaches for it.
+ */
+export const getListingsMissingDetails = () => [];
+/**
+ * The benchmark pass runs on every stored batch; without this the pipeline logged a mock-shaped
+ * warning for each one, which is noise in every suite that stores a listing.
+ */
+export const applyMarketBenchmark = () => {};
+export const markDetailBackfillAttempt = () => {};
+export const updateListingDescription = () => {};
+export const updateListingPublishedAt = () => {};
+
+/**
  * Every fresh image url written back onto a listing.
  * @type {{id: string, imageUrl: string}[]}
  */

@@ -26,8 +26,7 @@ import { initListingRetentionCron } from './lib/services/crons/listing-retention
 import { initPriceTrackingCron } from './lib/services/crons/price-tracking-cron.js';
 import { initTravelTimeCron } from './lib/services/crons/travel-time-cron.js';
 import { initConnectivityCron } from './lib/services/crons/connectivity-cron.js';
-import { initListingDescriptionCron } from './lib/services/crons/listing-description-cron.js';
-import { initListingPublishedAtCron } from './lib/services/crons/listing-published-at-cron.js';
+import { initListingDetailCron, runDetailBackfill } from './lib/services/crons/listing-detail-cron.js';
 import { runImageBackfill } from './lib/services/listings/imageBackfillService.js';
 
 // Ensure the CloakBrowser stealth Chromium binary is present and complete before
@@ -131,14 +130,24 @@ initTravelTimeCron();
 // and nothing at all for an address sharing a cell with one already looked up, so a restart is not
 // a moment it needs holding back from.
 initConnectivityCron();
-// Fired, not awaited: the first sweep repairs the description an upgrade's back catalogue was
-// stored without, one polite request per listing, which on such an instance takes minutes.
-initListingDescriptionCron();
-initListingPublishedAtCron();
-// Fired, not awaited, and never on a schedule: the scrape keeps every photograph as the listing
-// is stored, so this only walks the backlog an upgrade's gallery was stored without, and the work
-// list empties once it has caught up.
-runImageBackfill();
+// Schedule only; the pass that repairs an upgrade's back catalogue is fired below.
+initListingDetailCron();
+// Fired, not awaited, and one sweep after the other rather than all at once. Both walk the same
+// back catalogue against the same handful of portals, one polite request at a time, which on an
+// instance with many rows takes minutes - starting them together simply doubles the traffic Fredy
+// opens with, at the hosts it is pacing itself for. The image sweep has no schedule of its own:
+// the scrape keeps every photograph as the listing is stored, so its work list empties for good
+// once it has caught up.
+// The `catch` is not decoration. Both sweeps write to SQLite per row, and a single SQLITE_BUSY
+// escaping this chain is an unhandled rejection - which, on Node, takes the whole process down
+// seconds after it finished starting. A startup sweep that fails is a back catalogue repaired
+// tomorrow night instead of tonight; it is never a reason not to be running.
+void (async () => {
+  await runDetailBackfill();
+  await runImageBackfill();
+})().catch((error) => {
+  logger.error('The startup backfill sweeps did not finish.', error);
+});
 
 logger.info(`Started Fredy successfully. Ui can be accessed via http://localhost:${settings.port}`);
 
