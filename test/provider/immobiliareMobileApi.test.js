@@ -127,6 +127,35 @@ describe('the place a search url names', () => {
     expect(await resolvePlace(['nowhere-at-all'])).toBeNull();
     expect(await resolvePlace([])).toBeNull();
   });
+
+  /**
+   * A town keeps its id, so a resolved lookup is remembered for the lifetime of the process. That
+   * makes "no such place" and "the service could not be read just now" two different answers, and
+   * they used to be the same one: a 503 remembered as the former sent every run of every job
+   * searching that town back through the browser and its bot wall, until Fredy was restarted.
+   */
+  it('asks again after a failure, and answers once the service is back', async () => {
+    let asked = 0;
+    globalThis.fetch = vi.fn(async () => {
+      asked += 1;
+      return asked === 1
+        ? { ok: false, status: 503, json: async () => ({}) }
+        : { ok: true, status: 200, json: async () => ERBUSCO };
+    });
+
+    expect(await resolvePlace(['erbusco'])).toBeNull();
+    expect(await resolvePlace(['erbusco'])).toMatchObject({ idComune: '7369' });
+    expect(asked).toBe(2);
+  });
+
+  it('asks once for a place the service says it does not have', async () => {
+    const fetcher = serve({});
+    globalThis.fetch = fetcher;
+
+    expect(await resolvePlace(['nowhere-at-all'])).toBeNull();
+    expect(await resolvePlace(['nowhere-at-all'])).toBeNull();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('the search a website url describes', () => {

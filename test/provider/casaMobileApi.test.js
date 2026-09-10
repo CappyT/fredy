@@ -231,6 +231,38 @@ describe('the place a casa.it url names', () => {
   it('has no answer for a place the lookup does not know', async () => {
     expect(await resolvePlace('nowhere-at-all')).toBeNull();
   });
+
+  /**
+   * A place keeps its key, so a resolved lookup is remembered for the lifetime of the process. That
+   * makes "no such place" and "the service could not be read just now" two different answers, and
+   * they used to be the same one: a 503 remembered as the former sent every run of every job
+   * searching that town back to rendering the website, until Fredy was restarted.
+   */
+  it('asks again after a failure, and answers once the service is back', async () => {
+    let asked = 0;
+    globalThis.fetch = vi.fn(async () => {
+      asked += 1;
+      return asked === 1
+        ? { ok: false, status: 503, json: async () => ({}) }
+        : { ok: true, status: 200, json: async () => ROMA };
+    });
+
+    expect(await resolvePlace('roma')).toBeNull();
+    expect(await resolvePlace('roma')).toEqual({ hkey: 'a0d22860', level: 9 });
+    expect(asked).toBe(2);
+  });
+
+  it('asks once for a place the catalogue says it does not have', async () => {
+    let asked = 0;
+    globalThis.fetch = vi.fn(async () => {
+      asked += 1;
+      return { ok: false, status: 404, json: async () => ({}) };
+    });
+
+    expect(await resolvePlace('nowhere-at-all')).toBeNull();
+    expect(await resolvePlace('nowhere-at-all')).toBeNull();
+    expect(asked).toBe(1);
+  });
 });
 
 describe('the search a casa.it url describes', () => {
