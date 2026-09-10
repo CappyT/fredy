@@ -44,6 +44,7 @@ export default function ConnectivityCard({ connectivity }) {
   const share = roundShare(connectivity.sharePercent);
   const attribution = SOURCE_ATTRIBUTION[connectivity.source];
   const mobile = connectivity.mobile;
+  const networks = connectivity.networks ?? [];
 
   return (
     <div className="connectivity">
@@ -83,6 +84,22 @@ export default function ConnectivityCard({ connectivity }) {
           })}
         </span>
       </div>
+
+      {/* Which wholesale network is at the building decides who somebody can actually buy from, and
+          only a source that reads the networks rather than a cell knows it - so the row appears
+          for the sources that carry one and is simply absent for the rest. */}
+      {networks.length > 0 && (
+        <div className="connectivity__row">
+          <span className="connectivity__label">{t('connectivity.networks')}</span>
+          <span className="connectivity__chips">
+            {networks.map((network) => (
+              <span key={network} className="connectivity__chip connectivity__chip--on">
+                {network}
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
 
       {mobile != null && (
         <>

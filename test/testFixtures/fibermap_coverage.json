@@ -1,0 +1,72 @@
+{
+  "status": "ok",
+  "type": "coverage",
+  "data": {
+    "geo": {
+      "unique_address_id": "380100175085143",
+      "codice_istat": "16179",
+      "city": "RANZANICO",
+      "district": "BG",
+      "region": "LOMBARDIA",
+      "part_top": "VIA",
+      "strada": "AL POGGIO",
+      "civico": "1/X",
+      "lat": "45.77394",
+      "long": "9.9312525"
+    },
+    "network": {
+      "shared": {
+        "ADSL_FC": {
+          "stato": 1,
+          "speed_dl": 20,
+          "speed_ul": 1,
+          "distanza": 3629,
+          "centrale": "CSAZITAA",
+          "copertura": "FiberCop Ethernet ADSL",
+          "vendibile": "Saturo"
+        },
+        "FTTC_FC": {
+          "stato": 1,
+          "speed_dl": 200,
+          "speed_ul": 20,
+          "distanza": 1767,
+          "centrale": "CSAZITAA",
+          "copertura": "FiberCop NGA FTTC",
+          "vendibile": "Attivo",
+          "cabinet": "03504E_02"
+        },
+        "FTTH_FC": {
+          "stato": 0,
+          "speed_dl": 1000,
+          "speed_ul": 300,
+          "copertura": "FiberCop NGA FTTH",
+          "vendibile": "NO"
+        },
+        "FWA_EOLO": {
+          "stato": 1,
+          "speed_dl": 300,
+          "speed_ul": 50,
+          "copertura": "EOLO FWA",
+          "vendibile": "Coperto"
+        }
+      },
+      "dedicated": {
+        "GEA_FC": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "centrale": "CSAZITAA",
+          "copertura": "FiberCop Terminating Ethernet (GEA)",
+          "vendibile": "C1"
+        },
+        "FTTO_FC": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "copertura": "FiberCop Fiber To The Office (FTTO)",
+          "vendibile": "C"
+        }
+      }
+    }
+  }
+}

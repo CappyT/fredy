@@ -1,0 +1,93 @@
+{
+  "status": "ok",
+  "type": "coverage",
+  "data": {
+    "geo": {
+      "unique_address_id": "380100004342255",
+      "codice_istat": "15146",
+      "city": "MILANO",
+      "district": "MI",
+      "region": "LOMBARDIA",
+      "part_top": "VIA",
+      "strada": "GIULIO ROMANO",
+      "civico": "1",
+      "lat": "45.44878",
+      "long": "9.19782"
+    },
+    "network": {
+      "shared": {
+        "ADSL_FC": {
+          "stato": 1,
+          "speed_dl": 20,
+          "speed_ul": 1,
+          "distanza": 359,
+          "centrale": "MILAITCM",
+          "copertura": "FiberCop Ethernet ADSL",
+          "vendibile": "Attivo"
+        },
+        "FTTC_FC": {
+          "stato": 0,
+          "speed_ul": 20,
+          "copertura": "FiberCop NGA FTTC",
+          "vendibile": "NO"
+        },
+        "FTTH_FC": {
+          "stato": 1,
+          "speed_dl": 2500,
+          "speed_ul": 1000,
+          "centrale": "MILAITCM",
+          "copertura": "FiberCop NGA FTTH",
+          "vendibile": "Attivo"
+        },
+        "FTTH_OF_AB": {
+          "stato": 1,
+          "speed_dl": 2500,
+          "speed_ul": 500,
+          "centrale": "MI/FCO/4",
+          "copertura": "Open Fiber FTTH Aree Nere A&B",
+          "vendibile": "110"
+        }
+      },
+      "dedicated": {
+        "RETELIT": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "copertura": "Retelit Fibra Premium",
+          "vendibile": "A"
+        },
+        "GEA_FC": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "centrale": "MILAITCM",
+          "copertura": "FiberCop Terminating Ethernet (GEA)",
+          "vendibile": "A"
+        },
+        "FTTO_FC": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "copertura": "FiberCop Fiber To The Office (FTTO)",
+          "vendibile": "A"
+        },
+        "P2P_FW": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "centrale": "MILAITCM",
+          "copertura": "Fastweb Fibra Dedicata",
+          "vendibile": "Coperto"
+        },
+        "BEA_OF": {
+          "stato": 1,
+          "speed_dl": 1000,
+          "speed_ul": 1000,
+          "centrale": "MI/FCO/4",
+          "copertura": "Open Fiber Business Ethernet Access (BEA)",
+          "vendibile": "AB"
+        }
+      }
+    }
+  }
+}

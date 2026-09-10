@@ -13,12 +13,15 @@
 /**
  * The national registers Fredy can ask, in the order the settings page lists them.
  *
- * Mirrors `SOURCE_IDS` on the server. Kept here rather than in the settings hook so that anything
- * needing the list - the admin page, the locale parity test - can have it without dragging a UI
- * framework along.
+ * Mirrors `SOURCE_IDS` on the server, order included: where two of them cover the same country -
+ * Italy has two - the first one still switched on is the one that answers, so the order the page
+ * lists them in is the order they are actually preferred in.
+ *
+ * Kept here rather than in the settings hook so that anything needing the list - the admin page,
+ * the locale parity test - can have it without dragging a UI framework along.
  * @type {string[]}
  */
-export const CONNECTIVITY_SOURCES = ['de-bba', 'ch-bakom', 'it-navigabene'];
+export const CONNECTIVITY_SOURCES = ['de-bba', 'ch-bakom', 'it-navigabene', 'it-fibermap'];
 
 /**
  * The downstream thresholds the overview filter offers, in Mbit/s.
@@ -91,6 +94,12 @@ export const SOURCE_ATTRIBUTION = {
     href: 'https://copertura.navigabene.it',
     extraLabel: 'prod01.copertura.contratti.net',
     extraHref: 'https://contratti.net',
+  },
+  'it-fibermap': {
+    label: 'Fibermap',
+    href: 'https://fibermap.it',
+    extraLabel: 'Verifica copertura',
+    extraHref: 'https://fibermap.it/verifica-copertura/',
   },
 };
 
