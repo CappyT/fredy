@@ -189,7 +189,7 @@ Fredy ships with 25 providers:
 
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
 **🇦🇹 Austria** · willhaben  
-**🇨🇭 Switzerland** · Flatfox
+**🇨🇭 Switzerland** · Flatfox  
 
 Tecnocasa and Tecnorete are the two estate agency networks of the Tecnocasa group. They carry
 different adverts but share one website platform, so enable both to see the group's whole stock.
