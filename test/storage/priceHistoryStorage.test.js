@@ -28,6 +28,7 @@ describe('price history storage', () => {
     db.exec(`
       CREATE TABLE listings (
         id TEXT PRIMARY KEY,
+        hash TEXT,
         job_id TEXT,
         provider TEXT,
         title TEXT,
@@ -66,12 +67,12 @@ describe('price history storage', () => {
 
   const addListing = (
     id,
-    { price = 1000, isActive = 1, deleted = 0, link = `https://x.de/${id}`, checked = null } = {},
+    { price = 1000, isActive = 1, deleted = 0, link = `https://x.de/${id}`, checked = null, hash = `hash-${id}` } = {},
   ) => {
     db.prepare(
-      `INSERT INTO listings (id, job_id, provider, title, link, price, created_at, is_active, manually_deleted, last_price_check_at)
-       VALUES (?,?,?,?,?,?,?,?,?,?)`,
-    ).run(id, 'job-1', 'immowelt', 'flat', link, price, NOW - 30 * DAY, isActive, deleted, checked);
+      `INSERT INTO listings (id, hash, job_id, provider, title, link, price, created_at, is_active, manually_deleted, last_price_check_at)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+    ).run(id, hash, 'job-1', 'immowelt', 'flat', link, price, NOW - 30 * DAY, isActive, deleted, checked);
   };
   const dueIds = (opts = {}) => storage.getListingsDueForPriceCheck({ now: NOW, ...opts }).map((row) => row.id);
 
@@ -142,6 +143,40 @@ describe('price history storage', () => {
       expect(storage.getPriceHistory('a')).toEqual([{ price: 1100, observed_at: NOW, source: 'priceProbe' }]);
     });
 
+    it('takes the hash the advert now answers to when the caller read one', () => {
+      addListing('a', { price: 1200, hash: 'hash-of-1200' });
+
+      storage.applyPriceChange('a', 1100, NOW, 'hash-of-1100');
+
+      // Most providers hash the price in, so a row left on its old hash is an advert under a name
+      // the portal has stopped answering with: the link lane would rediscover the same change on
+      // every run, and a return to 1200 would be swallowed before the link lane ever saw it.
+      expect(db.prepare('SELECT hash FROM listings WHERE id = ?').get('a').hash).toBe('hash-of-1100');
+    });
+
+    it('leaves the hash alone for a caller that has none - the price probe reads no hash', () => {
+      addListing('a', { price: 1200, hash: 'hash-of-1200' });
+
+      storage.applyPriceChange('a', 1100, NOW);
+
+      expect(db.prepare('SELECT hash FROM listings WHERE id = ?').get('a').hash).toBe('hash-of-1200');
+    });
+
+    it('leaves the row on its old hash when a sibling of the same job already holds the new one', () => {
+      // `(job_id, hash)` is unique, and the collision is reachable: a repost is stored as a fresh
+      // row while the corpse the alive-checker made keeps the hash of the old price, so a return to
+      // that price asks the live row for a name the dead one still holds. Refusing the rename costs
+      // one redundant trip through the link lane; throwing would cost the whole run.
+      db.exec('CREATE UNIQUE INDEX idx_job_hash ON listings (job_id, hash)');
+      addListing('corpse', { price: 1200, hash: 'hash-of-1200' });
+      addListing('live', { price: 1100, hash: 'hash-of-1100' });
+
+      expect(() => storage.applyPriceChange('live', 1200, NOW, 'hash-of-1200')).not.toThrow();
+
+      const row = db.prepare('SELECT price, hash FROM listings WHERE id = ?').get('live');
+      expect(row).toEqual({ price: 1200, hash: 'hash-of-1100' });
+    });
+
     it('refuses an unusable price rather than writing a zero', () => {
       addListing('a', { price: 1200 });
       storage.recordPriceObservation('a', null, NOW, 'priceProbe');
@@ -157,6 +192,40 @@ describe('price history storage', () => {
       storage.recordPriceObservation('a', 900, NOW, 'x');
       storage.recordPriceObservation('a', 950, NOW - 1 * DAY, 'x');
       expect(storage.getPriceHistory('a').map((row) => row.price)).toEqual([1000, 950, 900]);
+    });
+  });
+
+  describe('renameListingHash', () => {
+    it('moves the row onto the new name without touching its price or its history', () => {
+      addListing('a', { price: 1200, hash: 'hash-of-1200' });
+
+      storage.renameListingHash('a', 'hash-of-1100');
+
+      // The price probe moved the price and knew no hash; this is the scrape putting the two back
+      // together, and a rename is not a reading - nothing lands on the chart.
+      const row = db.prepare('SELECT price, hash, price_changed_at FROM listings WHERE id = ?').get('a');
+      expect(row).toEqual({ price: 1200, hash: 'hash-of-1100', price_changed_at: null });
+      expect(storage.getPriceHistory('a')).toEqual([]);
+    });
+
+    it('refuses a row it cannot name and a name that is not one', () => {
+      addListing('a', { hash: 'hash-of-1200' });
+
+      storage.renameListingHash(null, 'hash-of-1100');
+      storage.renameListingHash('a', '');
+      storage.renameListingHash('a', null);
+
+      expect(db.prepare('SELECT hash FROM listings WHERE id = ?').get('a').hash).toBe('hash-of-1200');
+    });
+
+    it('leaves the row alone when a sibling of the same job already answers to that name', () => {
+      db.exec('CREATE UNIQUE INDEX idx_job_hash ON listings (job_id, hash)');
+      addListing('corpse', { hash: 'hash-of-1200' });
+      addListing('live', { hash: 'hash-of-1100' });
+
+      expect(() => storage.renameListingHash('live', 'hash-of-1200')).not.toThrow();
+
+      expect(db.prepare('SELECT hash FROM listings WHERE id = ?').get('live').hash).toBe('hash-of-1100');
     });
   });
 

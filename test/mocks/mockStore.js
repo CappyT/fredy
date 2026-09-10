@@ -9,10 +9,22 @@ export const storeListings = (jobKey, providerId, listings) => {
   if (!Array.isArray(listings)) throw Error('Not a valid array');
   db[`${jobKey}|${providerId}`] = listings;
 };
+/**
+ * The hashes one job still recognises.
+ *
+ * Mirrors the real query's liveness rule, which is the whole point of having one here: a row the
+ * alive-checker declared gone is forgotten, so a repost reaches the link lane and is stored, while
+ * a row the user hid stays remembered however dead it is, so a scrape never rediscovers it. The
+ * two lanes of the novelty check have to agree, and a mock that agreed with neither hid the bug.
+ *
+ * @param {string} jobKey
+ * @returns {string[]}
+ */
 export const getKnownListingHashesForJob = (jobKey) => {
   return Object.entries(db)
     .filter(([key]) => key.startsWith(`${jobKey}|`))
     .flatMap(([, listings]) => listings)
+    .filter((listing) => listing?.manually_deleted === 1 || listing?.is_active == null || listing?.is_active === 1)
     .map((listing) => listing?.id)
     .filter((id) => id != null);
 };
@@ -28,6 +40,7 @@ export const resetListings = () => {
   for (const key of Object.keys(db)) delete db[key];
   recordedPriceObservations.length = 0;
   appliedPriceChanges.length = 0;
+  renamedHashes.length = 0;
   storedImages.length = 0;
   updatedImages.length = 0;
 };
@@ -141,18 +154,54 @@ export const recordPriceObservation = (listingId, price, observedAt = Date.now()
 
 /**
  * Every applied price change, in order.
- * @type {{listingId: string, newPrice: number}[]}
+ *
+ * `newHash` is part of the record because most providers hash the price in: the row has to take
+ * the name the portal now answers with, or the next run's hash lane no longer recognises it.
+ * @type {{listingId: string, newPrice: number, changedAt: number, newHash: string|null}[]}
  */
 export const appliedPriceChanges = [];
-export const applyPriceChange = (listingId, newPrice, changedAt = Date.now()) => {
-  appliedPriceChanges.push({ listingId, newPrice, changedAt });
+export const applyPriceChange = (listingId, newPrice, changedAt = Date.now(), newHash = null) => {
+  appliedPriceChanges.push({ listingId, newPrice, changedAt, newHash });
+  // The real table keeps the row's primary key and moves its `hash` column; this store has one
+  // field standing in for both, so the stored row takes the new name here. Without it a later run
+  // would still be looking for the advert under the hash the portal has stopped answering with.
+  for (const listings of Object.values(db)) {
+    for (const listing of listings ?? []) {
+      if (listing?.id !== listingId) continue;
+      listing.price = newPrice;
+      if (newHash != null) listing.id = newHash;
+    }
+  }
+};
+
+/**
+ * Every hash rename that was not a price change, in order.
+ *
+ * The price probe moves a row's price without knowing its hash, so the next scrape finds the advert
+ * under a name the job does not recognise and is then told the price has not moved. The rename is
+ * all that happens there, and a test that cares whether the row was left on a stale name asserts on
+ * these.
+ * @type {{listingId: string, newHash: string}[]}
+ */
+export const renamedHashes = [];
+export const renameListingHash = (listingId, newHash) => {
+  if (!listingId || newHash == null || newHash === '') return;
+  renamedHashes.push({ listingId, newHash });
+  // One field stands in for the row's primary key and its hash here, the same way it does in
+  // `applyPriceChange` above.
+  for (const listings of Object.values(db)) {
+    for (const listing of listings ?? []) {
+      if (listing?.id === listingId) listing.id = newHash;
+    }
+  }
 };
 
 /**
  * The stored listings of one job that already carry one of the given links, newest per link.
  *
- * Mirrors the real query's contract: hidden listings stay out, everything else the job stored is
- * a candidate, and the newest row wins for a link several rows have carried.
+ * Mirrors the real query's contract: hidden listings stay out, so do the ones the alive-checker
+ * declared gone, everything else the job stored is a candidate, and the newest row wins for a
+ * link several rows have carried.
  *
  * @param {string} jobId
  * @param {string[]} links
@@ -168,6 +217,7 @@ export const getKnownListingsByLinkForJob = (jobId, links) => {
     if (!key.startsWith(`${jobId}|`)) continue;
     for (const listing of listings ?? []) {
       if (listing?.manually_deleted === 1) continue;
+      if (listing?.is_active === 0) continue;
       if (typeof listing?.link !== 'string' || !cleaned.includes(listing.link)) continue;
       const existing = newestPerLink.get(listing.link);
       if (existing == null || (listing.created_at ?? 0) > (existing.created_at ?? 0)) {

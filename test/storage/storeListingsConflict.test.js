@@ -38,6 +38,8 @@ describe('storeListings id propagation', () => {
         created_at INTEGER,
         published_at INTEGER,
         is_active INTEGER,
+        inactive_since INTEGER,
+        active_check_failures INTEGER DEFAULT 0,
         manually_deleted INTEGER DEFAULT 0,
         latitude REAL,
         longitude REAL,
@@ -121,6 +123,49 @@ describe('storeListings id propagation', () => {
     listingsStorage.deleteListingsById([second[0].id]);
 
     expect(db.prepare('SELECT manually_deleted FROM listings').get().manually_deleted).toBe(1);
+  });
+
+  it('brings a row the alive-checker had buried back to life', () => {
+    const first = [listing('repost')];
+    listingsStorage.storeListings('job-1', 'immowelt', first);
+    listingsStorage.deactivateListings([first[0].id], 5000);
+
+    listingsStorage.storeListings('job-1', 'immowelt', [listing('repost')]);
+
+    // Reaching the conflict at all means the novelty check no longer recognised the hash, and the
+    // only rows it forgets are the ones the checker declared gone. Leaving the row dead announced
+    // the repost to the user and then hid it from them - and announced it again on every run after
+    // that, since nothing would have moved `is_active` back.
+    const row = db
+      .prepare('SELECT is_active, inactive_since, active_check_failures FROM listings WHERE id = ?')
+      .get(first[0].id);
+    expect(row).toEqual({ is_active: 1, inactive_since: null, active_check_failures: 0 });
+  });
+
+  it('leaves a hidden row hidden, because no scrape may undo that', () => {
+    const first = [listing('hidden')];
+    listingsStorage.storeListings('job-1', 'immowelt', first);
+    listingsStorage.deleteListingsById([first[0].id]);
+    listingsStorage.deactivateListings([first[0].id], 5000);
+
+    listingsStorage.storeListings('job-1', 'immowelt', [listing('hidden')]);
+
+    const row = db.prepare('SELECT is_active, manually_deleted FROM listings WHERE id = ?').get(first[0].id);
+    expect(row).toEqual({ is_active: 0, manually_deleted: 1 });
+  });
+
+  it('still points a listing at the existing row when that row is hidden', () => {
+    const first = [listing('hidden-id')];
+    listingsStorage.storeListings('job-1', 'immowelt', first);
+    listingsStorage.deleteListingsById([first[0].id]);
+
+    // The `WHERE` on the conflict update means nothing is returned here, so the id has to come from
+    // the fallback lookup - otherwise every later step addresses a row that does not exist.
+    const second = [listing('hidden-id')];
+    listingsStorage.storeListings('job-1', 'immoscout', second);
+
+    expect(second[0].id).toBe(first[0].id);
+    expect(db.prepare('SELECT COUNT(*) AS c FROM listings').get().c).toBe(1);
   });
 
   it('keeps the same hash separate across different jobs', () => {
