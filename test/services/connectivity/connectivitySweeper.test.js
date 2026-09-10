@@ -4,19 +4,39 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { metaInformation as idealista } from '../../../lib/provider/idealista.js';
 
 const root = (await import('node:path')).resolve('.');
 const listingsStoragePath = root + '/lib/services/storage/listingsStorage.js';
 const settingsPath = root + '/lib/services/storage/settingsStorage.js';
 const providerCountriesPath = root + '/lib/services/providers/providerCountries.js';
+const utilsPath = root + '/lib/utils.js';
+const jobStoragePath = root + '/lib/services/storage/jobStorage.js';
 const servicePath = root + '/lib/services/connectivity/connectivityService.js';
 const trackerPath = root + '/lib/services/tracking/Tracker.js';
 const loggerPath = root + '/lib/services/logger.js';
 
 let state;
 
-async function loadSweeper() {
+/**
+ * The sweeper with everything under it replaced.
+ *
+ * @param {boolean} [realCountries] Leave the country resolver in place and mock the provider list
+ *   underneath it instead. The narrowing test needs the real resolution - a mocked resolver would
+ *   only be testing the mock - and `sources.js` is never mocked either way, so which register a
+ *   country reaches is decided by the same table the running instance uses.
+ * @returns {Promise<any>}
+ */
+async function loadSweeper(realCountries = false) {
   vi.resetModules();
+  // `doMock` registrations outlive `resetModules`, so each mode has to undo the other's.
+  if (realCountries) {
+    vi.doUnmock(providerCountriesPath);
+    vi.doMock(utilsPath, () => ({ getProviders: async () => [{ metaInformation: idealista }] }));
+    vi.doMock(jobStoragePath, () => ({ getJobs: () => [] }));
+  } else {
+    vi.doUnmock(utilsPath);
+  }
   vi.doMock(listingsStoragePath, () => ({
     getListingsToEnrichConnectivity: (params) => {
       state.queries.push(params);
@@ -26,14 +46,16 @@ async function loadSweeper() {
       state.stored.push({ id, connectivity, columns, checkedAt }),
   }));
   vi.doMock(settingsPath, () => ({ getSettings: async () => state.settings }));
-  vi.doMock(providerCountriesPath, () => ({
-    getCountriesForProvider: async (providerId) => {
-      if (providerId === 'explodes') {
-        throw new Error('provider metadata is unreadable');
-      }
-      return { swissportal: ['ch'], austrianportal: ['at'] }[providerId] ?? ['de'];
-    },
-  }));
+  if (!realCountries) {
+    vi.doMock(providerCountriesPath, () => ({
+      getCountriesForListing: async (providerId) => {
+        if (providerId === 'explodes') {
+          throw new Error('provider metadata is unreadable');
+        }
+        return { swissportal: ['ch'], austrianportal: ['at'] }[providerId] ?? ['de'];
+      },
+    }));
+  }
   vi.doMock(servicePath, () => ({
     getConnectivity: async (lat, lng, countries) => {
       state.lookups.push({ lat, lng, countries });
@@ -151,6 +173,28 @@ describe('services/connectivity/connectivitySweeper', () => {
     expect(state.stored[0].connectivity).toBeNull();
   });
 
+  it('stamps a whole batch of misses without calling an outage', async () => {
+    // What a register that answers per address does with addresses it cannot find: a refusal per
+    // listing, no stand-off, every row stamped. The refusal is about the address, so the sweep must
+    // neither report the register as gone nor leave the rows unstamped - an unstamped row is first
+    // in the queue on the next sweep and would spend it the same way.
+    state.pending = Array.from({ length: 3 }, (_, index) => ({
+      id: `l${index}`,
+      latitude: 45.79 + index / 100,
+      longitude: 9.91,
+      provider: 'immoscout',
+    }));
+    state.answer = null;
+    const sweep = await loadSweeper();
+
+    const tally = await sweep({ now: 1000 });
+
+    expect(tally).toEqual({ enriched: 0, empty: 3, skipped: 0 });
+    expect(state.lookups).toHaveLength(3);
+    expect(state.stored.map((row) => row.id)).toEqual(['l0', 'l1', 'l2']);
+    expect(state.tracked).toEqual([]);
+  });
+
   it('leaves a listing alone when the register is the thing that failed', async () => {
     state.answer = null;
     state.paused = ['de-bba'];
@@ -245,5 +289,89 @@ describe('services/connectivity/connectivitySweeper', () => {
     expect(tally.skipped).toBe(1);
     expect(tally.enriched).toBe(1);
     expect(state.stored.map((row) => row.id)).toEqual(['l2']);
+  });
+});
+
+/**
+ * Which register answers for a listing found by a provider covering several countries.
+ *
+ * idealista serves Spain, Italy and Portugal, and Italy is the only one of the three anybody has
+ * written a coverage client for. Asked about the provider rather than about the row, every Madrid
+ * and Lisboa listing was sent to the Italian checkers - which read the address as Italian, spend
+ * one of fibermap's five requests an hour on it, and get a null that is then stamped on the row for
+ * the next six months. The advert's own link is what says which of the three it is on.
+ */
+describe('services/connectivity/connectivitySweeper, on a provider covering several countries', () => {
+  beforeEach(() => {
+    state = {
+      settings: { connectivityEnabled: true, connectivityLimitPerRun: 50, connectivityMaxAgeDays: 180 },
+      enabled: true,
+      pending: [],
+      stored: [],
+      queries: [],
+      lookups: [],
+      tracked: [],
+      paused: [],
+      disabledSources: [],
+      answer: { maxDownMbit: 1000, fiber: true, source: 'it-navigabene' },
+    };
+  });
+
+  it('asks the Italian register only about the listing that is in Italy', async () => {
+    state.pending = [
+      {
+        id: 'it-1',
+        latitude: 45.46,
+        longitude: 9.19,
+        provider: 'idealista',
+        address: 'Via Tito Vignoli 1, Milano',
+        link: 'https://www.idealista.it/immobile/1/',
+      },
+    ];
+
+    const sweep = await loadSweeper(true);
+    const tally = await sweep({ now: 1000 });
+
+    expect(tally.enriched).toBe(1);
+    expect(state.lookups).toEqual([{ lat: 45.46, lng: 9.19, countries: ['it'] }]);
+  });
+
+  /**
+   * No register covers Spain, so the row is stamped and left alone - the same answer an Austrian
+   * listing gets, and the whole point: no request is spent, and none of Italy's throttle is either.
+   */
+  it('spends no Italian request on a listing in Spain', async () => {
+    state.pending = [
+      {
+        id: 'es-1',
+        latitude: 40.42,
+        longitude: -3.7,
+        provider: 'idealista',
+        address: 'Calle de Alcalá 1, Madrid',
+        link: 'https://www.idealista.com/inmueble/1/',
+      },
+    ];
+
+    const sweep = await loadSweeper(true);
+    const tally = await sweep({ now: 1000 });
+
+    expect(state.lookups).toEqual([]);
+    expect(tally).toMatchObject({ enriched: 0, empty: 1 });
+    expect(state.stored).toEqual([
+      { id: 'es-1', connectivity: null, columns: { maxDown: null, fiber: null, mobile: null }, checkedAt: 1000 },
+    ]);
+  });
+
+  // A row whose link says nothing keeps every country the provider declares, which is the answer
+  // the sweep gave before any of them could be told apart.
+  it('keeps all three countries for a row whose link is gone', async () => {
+    state.pending = [
+      { id: 'x-1', latitude: 38.7, longitude: -9.14, provider: 'idealista', address: 'Rua Augusta 1', link: null },
+    ];
+
+    const sweep = await loadSweeper(true);
+    await sweep({ now: 1000 });
+
+    expect(state.lookups).toEqual([{ lat: 38.7, lng: -9.14, countries: ['es', 'it', 'pt'] }]);
   });
 });
