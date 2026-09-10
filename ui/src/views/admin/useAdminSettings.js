@@ -92,8 +92,10 @@ function toForm(settings) {
     sqlitepath: settings?.sqlitepath ?? '',
     analyticsEnabled: settings?.analyticsEnabled === true,
     demoMode: settings?.demoMode === true,
-    // Month first, because that is what every installation rendered before the setting existed.
-    dateFormat: settings?.dateFormat ?? 'MM/DD/YYYY',
+    // Empty, because that is what every installation rendered before the setting existed: the
+    // order the user's own language writes. Defaulting the dropdown to a pattern would pin that
+    // pattern on this page's next save, whether or not anybody touched the field.
+    dateFormat: settings?.dateFormat ?? '',
     proxyAuthEnabled: settings?.proxyAuthEnabled === true,
     proxyAuthTrustedProxies: settings?.proxyAuthTrustedProxies ?? '',
     proxyAuthUserHeader: settings?.proxyAuthUserHeader ?? 'Remote-User',

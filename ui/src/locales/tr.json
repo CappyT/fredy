@@ -1131,7 +1131,8 @@
   "listing.detail.fieldPublished": "Yayınlandı",
   "listing.detail.fieldPublishedHelp": "Portalin bu ilanı yayımladığı veya son güncellediği tarih.",
   "settings.dateFormat": "Tarih biçimi",
-  "settings.dateFormatHelp": "Tarihlerin arayüzde nasıl yazılacağı. Ay önce, Fredyin her zaman yaptığı şeydir; gün önce, Avrupanın çoğunun yazdığı sıralamadır.",
+  "settings.dateFormatHelp": "Tarihlerin arayüzde nasıl yazılacağı. Dile bırakılırsa herkes kendi dilinin yazdığı sıralamayı görür; Fredy her zaman böyle yapmıştır. Bir sıralama seçmek ise aynı sıralamayı herkes için sabitler.",
+  "settings.dateFormatLocale": "Dili takip et",
   "listings.sortByListingDate": "İlan tarihi",
   "listings.sortByDateAdded": "Eklenme tarihi"
 }

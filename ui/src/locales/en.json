@@ -1146,7 +1146,8 @@
   "listing.detail.fieldPublished": "Published",
   "listing.detail.fieldPublishedHelp": "When the portal says this listing was published or last updated.",
   "settings.dateFormat": "Date format",
-  "settings.dateFormatHelp": "How dates are written across the interface. Month-first is what Fredy has always done; day-first is the order most of Europe writes.",
+  "settings.dateFormatHelp": "How dates are written across the interface. Left on the language, everyone reads the order their own language writes, which is what Fredy has always done; pick an order to pin the same one for everybody.",
+  "settings.dateFormatLocale": "Follow the language",
   "listings.sortByListingDate": "Listing Date",
   "listings.sortByDateAdded": "Date Added"
 }

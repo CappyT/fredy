@@ -1146,7 +1146,8 @@
   "listing.detail.fieldPublished": "Veröffentlicht",
   "listing.detail.fieldPublishedHelp": "Wann das Portal dieses Inserat veröffentlicht oder zuletzt aktualisiert hat.",
   "settings.dateFormat": "Datumsformat",
-  "settings.dateFormatHelp": "Wie Daten in der gesamten Oberfläche geschrieben werden. Monat zuerst ist, was Fredy bisher getan hat; Tag zuerst ist die Reihenfolge, die der größte Teil Europas schreibt.",
+  "settings.dateFormatHelp": "Wie Daten in der gesamten Oberfläche geschrieben werden. Bleibt es bei der Sprache, liest jeder die Reihenfolge, die seine eigene Sprache schreibt - so hat Fredy es immer getan; eine Reihenfolge auszuwählen legt für alle dieselbe fest.",
+  "settings.dateFormatLocale": "Der Sprache folgen",
   "listings.sortByListingDate": "Inserat-Datum",
   "listings.sortByDateAdded": "Hinzugefügt am"
 }

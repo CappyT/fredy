@@ -104,11 +104,10 @@ export default function SystemPage() {
       </SegmentPart>
 
       <SegmentPart name={t('settings.dateFormat')} helpText={t('settings.dateFormatHelp')}>
-        <Select
-          value={form.dateFormat}
-          onChange={(value) => setField('dateFormat', value)}
-          style={{ maxWidth: 220 }}
-        >
+        <Select value={form.dateFormat} onChange={(value) => setField('dateFormat', value)} style={{ maxWidth: 220 }}>
+          {/* The empty value is the shipped state: no order pinned, so each user reads the date
+              the way their own language writes it. */}
+          <Select.Option value="">{t('settings.dateFormatLocale')}</Select.Option>
           <Select.Option value="DD/MM/YYYY">DD/MM/YYYY</Select.Option>
           <Select.Option value="MM/DD/YYYY">MM/DD/YYYY</Select.Option>
         </Select>
