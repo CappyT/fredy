@@ -61,21 +61,19 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
   });
 
   it('moves the new price onto the stored row instead of storing the advert again', async () => {
-    await runOnePass(
-      configWith({ id: 'hash-of-239k', title: oldListing.title, link: oldListing.link, price: 239000 }),
-    );
+    await runOnePass(configWith({ id: 'hash-of-239k', title: oldListing.title, link: oldListing.link, price: 239000 }));
 
     // The stored row is still the one from before, now carrying the price the portal answers with.
-    expect(mockStore.appliedPriceChanges).toEqual([{ listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number) }]);
+    expect(mockStore.appliedPriceChanges).toEqual([
+      { listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number) },
+    ]);
     expect(mockStore.recordedPriceObservations).toEqual([
       { listingId: 'hash-of-249k', price: 239000, observedAt: expect.any(Number), source: 'scrape' },
     ]);
   });
 
   it('reports the change through the price-change lane, not as a new flat', async () => {
-    await runOnePass(
-      configWith({ id: 'hash-of-239k', title: oldListing.title, link: oldListing.link, price: 239000 }),
-    );
+    await runOnePass(configWith({ id: 'hash-of-239k', title: oldListing.title, link: oldListing.link, price: 239000 }));
 
     const notifications = getPriceChanges();
     expect(notifications).toHaveLength(1);
@@ -98,7 +96,12 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
   });
 
   it('stores an advert the job has never seen, whatever its hash', async () => {
-    const brandNew = { id: 'hash-of-other-flat', title: 'Other flat', link: 'https://www.immobiliare.it/annunci/2/', price: 300000 };
+    const brandNew = {
+      id: 'hash-of-other-flat',
+      title: 'Other flat',
+      link: 'https://www.immobiliare.it/annunci/2/',
+      price: 300000,
+    };
     await runOnePass(configWith(brandNew));
 
     expect(mockStore.appliedPriceChanges).toEqual([]);

@@ -47,7 +47,11 @@ describe('services/listings/imageBackfillService', () => {
     globalThis.fetch = async (url) => {
       const image = state.images[url];
       if (image == null) throw new Error('connection dropped');
-      return { ok: true, headers: { get: (h) => (h.toLowerCase() === 'content-type' ? image.mime : null) }, arrayBuffer: async () => image.bytes };
+      return {
+        ok: true,
+        headers: { get: (h) => (h.toLowerCase() === 'content-type' ? image.mime : null) },
+        arrayBuffer: async () => image.bytes,
+      };
     };
   });
 
@@ -57,7 +61,9 @@ describe('services/listings/imageBackfillService', () => {
   });
 
   it('downloads the photograph each row carries and keeps its bytes', async () => {
-    state.pending = [{ id: 'row-1', link: 'https://www.idealista.it/it/ad/1/', image_url: 'https://img/1', provider: 'idealista' }];
+    state.pending = [
+      { id: 'row-1', link: 'https://www.idealista.it/it/ad/1/', image_url: 'https://img/1', provider: 'idealista' },
+    ];
     state.images = { 'https://img/1': { mime: 'image/webp', bytes: Buffer.from('photograph') } };
 
     const service = await loadService();
@@ -72,7 +78,14 @@ describe('services/listings/imageBackfillService', () => {
   });
 
   it('asks the advert api for a fresh signature when the stored url has lapsed', async () => {
-    state.pending = [{ id: 'row-1', link: 'https://www.idealista.it/immobile/36711892/', image_url: 'https://img/expired', provider: 'idealista' }];
+    state.pending = [
+      {
+        id: 'row-1',
+        link: 'https://www.idealista.it/immobile/36711892/',
+        image_url: 'https://img/expired',
+        provider: 'idealista',
+      },
+    ];
     state.adverts = { 36711892: { thumbnail: 'https://img/fresh' } };
     state.images = { 'https://img/fresh': { mime: 'image/webp', bytes: Buffer.from('freshbytes') } };
 
@@ -88,7 +101,14 @@ describe('services/listings/imageBackfillService', () => {
   });
 
   it('leaves a listing the portal no longer serves on the work list', async () => {
-    state.pending = [{ id: 'row-1', link: 'https://www.idealista.it/it/ad/1/', image_url: 'https://img/expired', provider: 'idealista' }];
+    state.pending = [
+      {
+        id: 'row-1',
+        link: 'https://www.idealista.it/it/ad/1/',
+        image_url: 'https://img/expired',
+        provider: 'idealista',
+      },
+    ];
 
     const service = await loadService();
     vi.useFakeTimers();
@@ -103,7 +123,12 @@ describe('services/listings/imageBackfillService', () => {
 
   it('carries on when one download fails', async () => {
     state.pending = [
-      { id: 'row-1', link: 'https://www.idealista.it/it/ad/1/', image_url: 'https://img/broken', provider: 'idealista' },
+      {
+        id: 'row-1',
+        link: 'https://www.idealista.it/it/ad/1/',
+        image_url: 'https://img/broken',
+        provider: 'idealista',
+      },
       { id: 'row-2', link: 'https://www.idealista.it/it/ad/2/', image_url: 'https://img/2', provider: 'idealista' },
     ];
     state.images = { 'https://img/2': { mime: 'image/jpeg', bytes: Buffer.from('second') } };

@@ -107,9 +107,9 @@ describe('listingsStorage.getKnownListingsByLinkForJob', () => {
   it('keeps inactive rows in the answer - the alive-checker owns bringing them back', () => {
     addListing('inactive', { is_active: 0 });
 
-    expect(storage.getKnownListingsByLinkForJob('job-1', ['https://www.immobiliare.it/annunci/inactive/'])).toHaveLength(
-      1,
-    );
+    expect(
+      storage.getKnownListingsByLinkForJob('job-1', ['https://www.immobiliare.it/annunci/inactive/']),
+    ).toHaveLength(1);
   });
 
   it('answers nothing without a job, links, or usable link values', () => {

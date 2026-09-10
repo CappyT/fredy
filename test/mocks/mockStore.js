@@ -159,7 +159,9 @@ export const applyPriceChange = (listingId, newPrice, changedAt = Date.now()) =>
  * @returns {Array<Object>}
  */
 export const getKnownListingsByLinkForJob = (jobId, links) => {
-  const cleaned = [...new Set((Array.isArray(links) ? links : []).filter((l) => typeof l === 'string' && l.length > 0))];
+  const cleaned = [
+    ...new Set((Array.isArray(links) ? links : []).filter((l) => typeof l === 'string' && l.length > 0)),
+  ];
   if (!jobId || cleaned.length === 0) return [];
   const newestPerLink = new Map();
   for (const [key, listings] of Object.entries(db)) {

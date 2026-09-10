@@ -45,11 +45,21 @@ function addListing(id, overrides = {}) {
 const addWatch = (id, listingId) =>
   db.prepare(`INSERT INTO watch_list (id, listing_id, user_id) VALUES (?, ?, 'user-1')`).run(id, listingId);
 const addHistory = (id, listingId, price) =>
-  db.prepare(`INSERT INTO listing_price_history (id, listing_id, price, observed_at, source) VALUES (?, ?, ?, 1000, 'priceProbe')`).run(id, listingId, price);
+  db
+    .prepare(
+      `INSERT INTO listing_price_history (id, listing_id, price, observed_at, source) VALUES (?, ?, ?, 1000, 'priceProbe')`,
+    )
+    .run(id, listingId, price);
 const addTravelTime = (listingId, label) =>
-  db.prepare(`INSERT INTO listing_travel_times (listing_id, label, transit_minutes) VALUES (?, ?, 30)`).run(listingId, label);
+  db
+    .prepare(`INSERT INTO listing_travel_times (listing_id, label, transit_minutes) VALUES (?, ?, 30)`)
+    .run(listingId, label);
 
-const ids = () => db.prepare(`SELECT id FROM listings ORDER BY id`).all().map((row) => row.id);
+const ids = () =>
+  db
+    .prepare(`SELECT id FROM listings ORDER BY id`)
+    .all()
+    .map((row) => row.id);
 
 describe('migration 42 - collapse price-change duplicates', () => {
   beforeEach(() => {
