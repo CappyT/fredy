@@ -1,8 +1,11 @@
 # Reverse Engineered Idealista's Mobile API
 
-Il provider legge le API delle app di idealista.com, idealista.it e idealista.pt.
-Le ricerche non traducibili usano il browser del job.
-Il browser attende il caricamento dei risultati e termina il tentativo se il blocco persiste.
+The provider uses the mobile APIs for idealista.com, idealista.it and idealista.pt.
+Searches that cannot be translated into API requests use the job's browser.
+The browser waits for search results and ends the attempt if the page remains blocked.
+
+The provider is `lib/provider/idealista.js`. Search URL translation lives in `lib/services/idealista/`.
+`lib/services/idealista/portal.js` determines the country from the search URL's hostname.
 
 ## Hosts
 

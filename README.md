@@ -201,20 +201,20 @@ buying or renting, a town, an area, a shape drawn on the map, a commercial searc
 filters the form set. Casa.it and a search drawn on the map on Immobiliare.it read every result page
 as well - up to twenty each.
 
-Idealista usa le API delle app per idealista.com, idealista.it e idealista.pt.
-Il dominio dell'URL determina il paese della ricerca.
-Le ricerche con filtri o categorie non supportati dalle API usano il browser di Fredy.
-Il fallback puo' incontrare blocchi DataDome.
-La [documentazione di idealista](./reverse-engineered-idealista.md) descrive gli endpoint e i filtri supportati.
+Idealista uses the mobile APIs for idealista.com, idealista.it and idealista.pt.
+The search URL determines the country.
+Searches with filters or categories unsupported by the APIs use Fredy's browser.
+DataDome can block the browser fallback.
+See the [Idealista API documentation](./reverse-engineered-idealista.md) for supported endpoints and filters.
 
-Immobiliare.it usa le API di ricerca e il servizio geografico per tradurre gli URL delle localita'.
-Le ricerche non traducibili usano il browser del job.
-La [documentazione di Immobiliare.it](./reverse-engineered-immobiliare.md) descrive gli endpoint supportati.
+Immobiliare.it uses its search API and geography service to resolve location URLs.
+Searches that cannot be translated into API requests use the job's browser.
+See the [Immobiliare.it API documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
 
-Casa.it usa le API dell'app e il servizio geografico per tradurre gli URL delle ricerche.
-Le ricerche non traducibili usano il browser del job.
-Il fallback si ferma quando una pagina non fornisce risultati validi.
-La [documentazione di Casa.it](./reverse-engineered-casa.md) descrive gli endpoint e i filtri supportati.
+Casa.it uses its mobile API and geography service to translate search URLs.
+Searches that cannot be translated into API requests use the job's browser.
+The fallback stops when a page provides no valid results.
+See the [Casa.it API documentation](./reverse-engineered-casa.md) for supported endpoints and filters.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the
@@ -741,7 +741,3 @@ Because of these conditions Fredy is **source-available, not OSI open source**. 
     <img alt="Fredy star history" src="doc/star-history/star-history-light.svg">
   </picture>
 </a>
-
-## Date degli annunci
-
-Le [fonti delle date](doc/listing-dates.md) descrivono i campi usati dai provider e il comportamento dei valori mancanti.
