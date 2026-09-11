@@ -201,27 +201,20 @@ buying or renting, a town, an area, a shape drawn on the map, a commercial searc
 filters the form set. Casa.it and a search drawn on the map on Immobiliare.it read every result page
 as well - up to twenty each.
 
-Idealista is one provider for three national sites - idealista.com, idealista.it and idealista.pt -
-and it works the same way on all three: the api its mobile app talks to serves one country per host,
-sorts by publication date and needs no scrape service. Paste any search url from any of the three,
-including a `/multi/` search over several areas; which country a job searches is read off the url's
-own domain, and a url on any other domain is refused rather than guessed at. A search the api has no
-terms for - a filter it cannot express, a category it does not serve, land - is read off the website
-instead. That fallback works without any configuration, through the browser Fredy already runs, but
-DataDome lets a datacenter address through only sometimes: point `FREDY_CHALLENGE_SOLVER_URL` at a
-challenge-solving scrape service such as [TRAWL](https://github.com/germondai/trawl) and those
-searches become plain requests. See
-[reverse-engineered-idealista.md](./reverse-engineered-idealista.md).
+Idealista usa le API delle app per idealista.com, idealista.it e idealista.pt.
+Il dominio dell'URL determina il paese della ricerca.
+Le ricerche con filtri o categorie non supportati dalle API usano il browser di Fredy.
+Il fallback puo' incontrare blocchi DataDome.
+La [documentazione di idealista](./reverse-engineered-idealista.md) descrive gli endpoint e i filtri supportati.
 
-Immobiliare.it reads a search through the endpoint its own pages call, which is not behind the wall.
-It needs no browser for a town, a province or a quarter either: the place is looked up through the
-geography service the portal's android app uses. A search it cannot read whole - a category outside
-[the confirmed table](./reverse-engineered-immobiliare.md), a place the lookup does not know - falls
-back to rendering the page, and only that case wants the scrape service.
+Immobiliare.it usa le API di ricerca e il servizio geografico per tradurre gli URL delle localita'.
+Le ricerche non traducibili usano il browser del job.
+La [documentazione di Immobiliare.it](./reverse-engineered-immobiliare.md) descrive gli endpoint supportati.
 
-Casa.it is read the same way, through the api its android app talks to, which sorts by publication
-date and needs no browser. A url it cannot read whole falls back to rendering the page, and only
-that case wants the scrape service. See [reverse-engineered-casa.md](./reverse-engineered-casa.md).
+Casa.it usa le API dell'app e il servizio geografico per tradurre gli URL delle ricerche.
+Le ricerche non traducibili usano il browser del job.
+Il fallback si ferma quando una pagina non fornisce risultati validi.
+La [documentazione di Casa.it](./reverse-engineered-casa.md) descrive gli endpoint e i filtri supportati.
 
 **Every provider declares the countries it covers**, and the job form puts the matching flag in
 front of its name so a mixed list can be read at a glance. The declaration is one line on the

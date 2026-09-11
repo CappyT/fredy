@@ -1,15 +1,8 @@
 # Reverse Engineered Idealista's Mobile API
 
-Idealista is one portal serving three countries - Spain, Italy and Portugal - as three sites of the
-same application. Its website sits behind DataDome, which a headless browser rarely clears, so Fredy
-reads it through an external challenge-solving scrape service where one is configured and through
-the run's own browser otherwise. The android app talks to a different host, and that host serves
-JSON to a plain HTTPS request. This file records what that api is, because none of it is documented
-and all of it was measured.
-
-The provider is `lib/provider/idealista.js`. The translation from a website search url into an api
-search is in `lib/services/idealista/`, and which country a job speaks to is read off the hostname
-of its url by `lib/services/idealista/portal.js`.
+Il provider legge le API delle app di idealista.com, idealista.it e idealista.pt.
+Le ricerche non traducibili usano il browser del job.
+Il browser attende il caricamento dei risultati e termina il tentativo se il blocco persiste.
 
 ## Hosts
 
