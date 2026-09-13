@@ -507,6 +507,9 @@
   "settings.demoMode": "Demo-Modus",
   "settings.demoModeHelp": "Im Demo-Modus führt Fredy ausschließlich den eingebauten Demo-Job aus. Alles andere wird um Mitternacht auf Standardwerte zurückgesetzt.",
   "settings.demoModeEnable": "Demo-Modus aktivieren",
+  "settings.dateFormat": "Datumsformat",
+  "settings.dateFormatHelp": "Wie Daten in der gesamten Oberfläche geschrieben werden. Bleibt es bei der Sprache, liest jeder die Reihenfolge, die seine eigene Sprache schreibt - so hat Fredy es immer getan; eine Reihenfolge auszuwählen legt für alle dieselbe fest.",
+  "settings.dateFormatLocale": "Der Sprache folgen",
   "settings.proxyAuth": "Anmeldung über Reverse-Proxy (Forward Auth)",
   "settings.proxyAuthHelp": "Ein identitätsbewusster Reverse-Proxy (Pangolin, Authelia, Authentik, oauth2-proxy, …) meldet Nutzer an. Der Proxy authentifiziert am Rand und übergibt den Benutzernamen in einem Request-Header; Fredy ordnet ihn einem bestehenden Nutzer gleichen Namens zu. Es wird niemand angelegt oder befördert. Standardmäßig aus.",
   "settings.proxyAuthWarning": "Nur aktivieren, wenn jeder Weg zu Fredy über den Proxy führt. Wer Fredy direkt von einer vertrauenswürdigen Adresse erreicht, könnte sich durch Setzen des Headers als beliebiger Nutzer ausgeben.",
@@ -1150,8 +1153,5 @@
   "settings.poiCacheMaxAgeDays": "Gefundene Orte gültig für",
   "settings.poiCacheMaxAgeDaysHelp": "Wie lange eine Overpass-Antwort wiederverwendet wird. Läden ziehen selten um, und häufiges Nachfragen ist genau das, wofür Instanzen gesperrt werden.",
   "settings.routingMinutesSuffix": "Min.",
-  "settings.toastRoutingInvalid": "Jeder Wert hier muss eine ganze Zahl innerhalb seines Bereichs sein.",
-  "settings.dateFormat": "Datumsformat",
-  "settings.dateFormatHelp": "Wie Daten in der gesamten Oberfläche geschrieben werden. Bleibt es bei der Sprache, liest jeder die Reihenfolge, die seine eigene Sprache schreibt - so hat Fredy es immer getan; eine Reihenfolge auszuwählen legt für alle dieselbe fest.",
-  "settings.dateFormatLocale": "Der Sprache folgen"
+  "settings.toastRoutingInvalid": "Jeder Wert hier muss eine ganze Zahl innerhalb seines Bereichs sein."
 }

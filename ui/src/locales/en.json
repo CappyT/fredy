@@ -507,6 +507,9 @@
   "settings.demoMode": "Demo Mode",
   "settings.demoModeHelp": "In demo mode, Fredy only runs the built-in Demo-Job. Everything else resets to defaults at midnight.",
   "settings.demoModeEnable": "Enable demo mode",
+  "settings.dateFormat": "Date format",
+  "settings.dateFormatHelp": "How dates are written across the interface. Left on the language, everyone reads the order their own language writes, which is what Fredy has always done; pick an order to pin the same one for everybody.",
+  "settings.dateFormatLocale": "Follow the language",
   "settings.proxyAuth": "Reverse proxy sign-in (forward auth)",
   "settings.proxyAuthHelp": "Let an identity-aware reverse proxy (Pangolin, Authelia, Authentik, oauth2-proxy, …) sign users in. The proxy authenticates at the edge and passes the username in a request header; Fredy maps it onto an existing user with the same name. Nobody is created or promoted. Off by default.",
   "settings.proxyAuthWarning": "Only enable this when every path to Fredy goes through the proxy. Anyone who can reach Fredy directly from a trusted address could impersonate any user by setting the header.",
@@ -1150,8 +1153,5 @@
   "settings.poiCacheMaxAgeDays": "Trust found places for",
   "settings.poiCacheMaxAgeDaysHelp": "How long an Overpass answer is reused before asking again. Shops move rarely, and re-asking often is what gets an instance blocked.",
   "settings.routingMinutesSuffix": "min",
-  "settings.toastRoutingInvalid": "Every value here must be a whole number inside its range.",
-  "settings.dateFormat": "Date format",
-  "settings.dateFormatHelp": "How dates are written across the interface. Left on the language, everyone reads the order their own language writes, which is what Fredy has always done; pick an order to pin the same one for everybody.",
-  "settings.dateFormatLocale": "Follow the language"
+  "settings.toastRoutingInvalid": "Every value here must be a whole number inside its range."
 }

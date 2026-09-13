@@ -492,6 +492,9 @@
   "settings.demoMode": "Demo Modu",
   "settings.demoModeHelp": "Demo modunda Fredy yalnızca yerleşik Demo İşi'ni çalıştırır. Diğer her şey gece yarısında varsayılanlara sıfırlanır.",
   "settings.demoModeEnable": "Demo modunu etkinleştir",
+  "settings.dateFormat": "Tarih biçimi",
+  "settings.dateFormatHelp": "Tarihlerin arayüzde nasıl yazılacağı. Dile bırakılırsa herkes kendi dilinin yazdığı sıralamayı görür; Fredy her zaman böyle yapmıştır. Bir sıralama seçmek ise aynı sıralamayı herkes için sabitler.",
+  "settings.dateFormatLocale": "Dili takip et",
   "settings.proxyAuth": "Ters proxy ile oturum açma (forward auth)",
   "settings.proxyAuthHelp": "Kimlik farkındalıklı bir ters proxy (Pangolin, Authelia, Authentik, oauth2-proxy, …) kullanıcıların oturum açmasını sağlar. Proxy kenarda kimlik doğrular ve kullanıcı adını bir istek başlığında iletir; Fredy bunu aynı ada sahip mevcut bir kullanıcıyla eşleştirir. Kimse oluşturulmaz veya yükseltilmez. Varsayılan olarak kapalı.",
   "settings.proxyAuthWarning": "Yalnızca Fredy'ye giden her yol proxy üzerinden geçiyorsa etkinleştirin. Güvenilen bir adresten Fredy'ye doğrudan erişebilen herkes, başlığı ayarlayarak herhangi bir kullanıcının kimliğine bürünebilir.",
@@ -1135,8 +1138,5 @@
   "settings.poiCacheMaxAgeDays": "Bulunan yerler şu süre geçerli",
   "settings.poiCacheMaxAgeDaysHelp": "Bir Overpass yanıtının yeniden sorulmadan önce ne kadar kullanılacağı. Dükkânlar nadiren taşınır ve sık sorma, kurulumların engellenmesine yol açan şeydir.",
   "settings.routingMinutesSuffix": "dk",
-  "settings.toastRoutingInvalid": "Buradaki her değer, kendi aralığında tam sayı olmalıdır.",
-  "settings.dateFormat": "Tarih biçimi",
-  "settings.dateFormatHelp": "Tarihlerin arayüzde nasıl yazılacağı. Dile bırakılırsa herkes kendi dilinin yazdığı sıralamayı görür; Fredy her zaman böyle yapmıştır. Bir sıralama seçmek ise aynı sıralamayı herkes için sabitler.",
-  "settings.dateFormatLocale": "Dili takip et"
+  "settings.toastRoutingInvalid": "Buradaki her değer, kendi aralığında tam sayı olmalıdır."
 }
