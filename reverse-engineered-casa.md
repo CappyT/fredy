@@ -58,10 +58,10 @@ answers the bare error, an unknown one is dropped and the total does not move. E
 table below was confirmed that way, and then confirmed again by watching it move the total of a
 known search - Roma is big enough that a flag which does nothing shows immediately.
 
-So the provider translates only what is in its table and renders the page for anything else. The
-sibling provider for immobiliare.it does the opposite and lets the endpoint judge its own
-parameters, because that one refuses what it dislikes and names the field. This one cannot be
-trusted that way.
+So the provider translates only what is in its table and renders the page for anything else. An
+endpoint that refuses what it dislikes and names the field can be handed parameters it was never
+taught, and the answer says whether they were understood. This one cannot be trusted that way: it
+takes an unknown filter, says nothing, and answers a search wider than the one that was asked for.
 
 A handled failure does answer usefully: a 500 carrying the raw python exception and the body it was
 sent. That is worth reading when something breaks.
