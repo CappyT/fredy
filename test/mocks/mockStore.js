@@ -241,6 +241,14 @@ export const getKnownListingsByLinkForJob = (jobId, links) => {
       }
     }
   }
-  return [...newestPerLink.values()];
+  // The real query selects only these columns, so the pipeline must not read anything else off the row.
+  return [...newestPerLink.values()].map(({ id, link, price, provider, job_id, created_at }) => ({
+    id,
+    link,
+    price,
+    provider,
+    job_id,
+    created_at,
+  }));
 };
 /* eslint-enable no-unused-vars */

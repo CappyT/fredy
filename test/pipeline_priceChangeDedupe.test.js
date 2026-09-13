@@ -89,6 +89,17 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
     });
   });
 
+  it('names the advert in the price change notification, without a photo', async () => {
+    const image = 'https://www.immobiliare.it/foto/1.jpg';
+    await runOnePass(
+      configWith({ id: 'hash-of-239k', title: oldListing.title, link: oldListing.link, price: 239000, image }),
+    );
+
+    const [change] = getPriceChanges()[0].priceChanges;
+    expect(change).toMatchObject({ title: oldListing.title, link: oldListing.link });
+    expect(change).not.toHaveProperty('image');
+  });
+
   it('does nothing when the price the portal answers with is the one already stored', async () => {
     await runOnePass(
       configWith({ id: 'hash-of-249k-again', title: oldListing.title, link: oldListing.link, price: 249000 }),
