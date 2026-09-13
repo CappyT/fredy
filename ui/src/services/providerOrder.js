@@ -60,15 +60,14 @@ export const PROVIDER_SIZE_ORDER = [
   'willhaben',
   // Switzerland
   'flatfox',
-  // Italy. idealista is three national sites in one provider and is filed here because Italy is the
-  // first of its countries in the order above; its flags still show all three, and Spain and
-  // Portugal have no other provider to lead.
+  // Spain, Italy and Portugal
   'immobiliare',
   'idealista',
+  // Italy
   'casa',
-  'subito',
   'tecnocasa',
   'tecnorete',
+  'subito',
 ];
 
 /** Sorts anything unranked or unknown behind everything ranked or known. */
