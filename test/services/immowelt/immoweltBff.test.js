@@ -5,10 +5,13 @@
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
+const { solveCaptchaMock } = vi.hoisted(() => ({ solveCaptchaMock: vi.fn() }));
+
 vi.mock('../../../lib/services/tracking/Tracker.js', () => ({ trackPoi: vi.fn(async () => {}) }));
 vi.mock('../../../lib/services/logger.js', () => ({
   default: { warn: vi.fn(), error: vi.fn(), debug: vi.fn(), info: vi.fn() },
 }));
+vi.mock('../../../lib/services/datadome/captcha.js', () => ({ solveCaptcha: solveCaptchaMock }));
 
 const { searchClassifieds, fetchExposeHtml, releaseSession } =
   await import('../../../lib/services/immowelt/immoweltBff.js');
@@ -29,12 +32,15 @@ let requests;
  * than a reimplementation of it.
  *
  * @param {(url: string, init?: any) => {status: number, body: string}} handler answers one request
+ * @param {object} [options]
+ * @param {number} [options.warmupStatus] the status the warm-up navigation answers with, when the
+ *   test cares what DataDome was thought to have done to it
  * @returns {any} something shaped enough like a puppeteer browser
  */
-function fakeBrowser(handler) {
+function fakeBrowser(handler, { warmupStatus } = {}) {
   const page = {
     isClosed: () => false,
-    goto: async () => {},
+    goto: async () => (warmupStatus == null ? undefined : { status: () => warmupStatus }),
     waitForFunction: async () => {},
     close: async () => {},
     evaluate: async (fn, ...args) => {
@@ -77,6 +83,28 @@ function listResponse(url) {
 describe('#immowelt bff transport', () => {
   beforeEach(() => {
     requests = [];
+    solveCaptchaMock.mockReset();
+    solveCaptchaMock.mockResolvedValue(false);
+  });
+
+  // The warm-up is what earns the cookie every request rides on, so a wall in front of it has to
+  // be cleared before the cookie is waited for - and only then, on a warm-up that answered as the
+  // wall rather than as content.
+  it('clears a DataDome wall in front of the warm-up before waiting for the cookie', async () => {
+    const browser = fakeBrowser(() => ({ status: 200, body: searchResponse(1) }), { warmupStatus: 403 });
+
+    await searchClassifieds(browser, SEARCH_REQUEST);
+
+    expect(solveCaptchaMock).toHaveBeenCalledTimes(1);
+    expect(solveCaptchaMock.mock.calls[0][1].response.status()).toBe(403);
+  });
+
+  it('leaves a warm-up that answered as content alone', async () => {
+    const browser = fakeBrowser(() => ({ status: 200, body: searchResponse(1) }), { warmupStatus: 200 });
+
+    await searchClassifieds(browser, SEARCH_REQUEST);
+
+    expect(solveCaptchaMock).not.toHaveBeenCalled();
   });
 
   // The bug this pins: immowelt's edge answers 403 once the /classifiedList path grows past about

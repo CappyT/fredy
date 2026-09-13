@@ -111,6 +111,7 @@ An adapter *configuration* is separate from the adapter itself: it is a row in `
 | SqliteConnection | `lib/services/storage/SqliteConnection.js` | Singleton, WAL mode; `execute()`, `query()`, `withTransaction()` |
 | Migrations | `lib/services/storage/migrations/` | Numbered JS files each exporting `up(db)`; checksum-tracked in `schema_migrations` |
 | Extractor | `lib/services/extractor/` | Orchestrates Puppeteer + Cheerio; shared browser instance per job |
+| DataDome | `lib/services/datadome/` | `captcha.js` clears the wall DataDome puts in front of a page: waits out the variant that lifts itself, drags the slider of the one that asks. Providers rendering through the extractor opt in per navigation with `datadome: true` (or via `puppeteerOptions` on the provider config, which the pipeline and price tracking spread into the extractor); callers that manage their own pages (`idealistaSearch`, `immoweltBff`) hand the solver their navigation's response directly |
 
 ### Frontend
 
