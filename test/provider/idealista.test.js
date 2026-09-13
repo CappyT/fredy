@@ -241,8 +241,7 @@ describe('#idealista provider testsuite()', () => {
    * Every site disallows its own publication ordering in robots.txt - `/*?ordine=pubblicazione-desc`
    * on .it, `/*?ordenado-por=fecha-publicacion-` on .com - so the provider deliberately ships no
    * sort parameter. The api orders by publication date with no such rule, and the website fallback
-   * reads every result page rather than the head of a ranking. Tecnocasa is the other provider in
-   * this position.
+   * reads every result page rather than the head of a ranking.
    */
   it('asks for no ordering, which the sites disallow in robots.txt', () => {
     expect(provider.config.sortByDateParam).toBeUndefined();

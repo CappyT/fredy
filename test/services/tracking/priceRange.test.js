@@ -37,9 +37,8 @@ const RECORDED_SEARCHES = [
     { min: 500, max: 1000 },
   ],
   // idealista is three national sites in one provider, and each of them spells its bounds
-  // differently - Italy's upper bound is the bare `prezzo`, one dash away from its own lower one,
-  // and Portugal writes the segment with an `m`. All three are listed because a URL is understood
-  // by its path, not by the domain it came from.
+  // differently - Italy's upper bound is the bare `prezzo`, one dash away from its own lower one.
+  // All three are listed because a URL is understood by its path, not by the domain it came from.
   [
     'idealista',
     'https://www.idealista.com/alquiler-viviendas/madrid-madrid/con-precio-desde_500,precio-hasta_1000/',
