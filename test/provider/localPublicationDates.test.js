@@ -55,9 +55,9 @@ describe('portal-local publication dates', () => {
     expect(localPublicationDate(raw, 'Europe/Berlin')).toBeUndefined();
   });
 
-  it('rejects invalid timezones and chooses the earlier instant during a DST overlap', () => {
+  it('rejects invalid timezones and reads a repeated DST hour with the offset after the change', () => {
     expect(localPublicationDate('2026-09-11', 'Invalid/Zone')).toBeUndefined();
-    expect(localPublicationDate('2026-10-25 02:30', 'Europe/Berlin')).toBe(Date.parse('2026-10-25T00:30:00Z'));
+    expect(localPublicationDate('2026-10-25 02:30', 'Europe/Berlin')).toBe(Date.parse('2026-10-25T01:30:00Z'));
   });
 
   it.each([
