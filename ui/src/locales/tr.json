@@ -529,7 +529,7 @@
   "settings.addAddress": "Adres ekle",
   "settings.removeAddress": "Adresi kaldır",
   "settings.providerDetails": "Sağlayıcı Detayları",
-  "settings.providerDetailsHelp": "İlanlar için ek detaylar (açıklama, özellikler, danışman bilgisi) getirir. İlan başına ek bir API çağrısı gerektirir.",
+  "settings.providerDetailsHelp": "İlanlar için ek detaylar (açıklama, özellikler, danışman bilgisi) getirir. İlan başına ek bir API çağrısı gerektirir. Bazı sağlayıcılarda ilan tarihi yalnızca detaylar etkinleştirildiğinde alınabilir.",
   "settings.providerDetailsWarning": "Bunu etkinleştirmek, bu özelliği uygulayan sağlayıcılara yapılan API isteklerini önemli ölçüde artırır ve oran sınırlaması veya engellenme riskini yükseltir. Kendi sorumluluğunuzda kullanın.",
   "settings.providerDetailsPlaceholder": "Detay alınacak sağlayıcıları seçin...",
   "settings.blacklistFilterOnProviderDetails": "Sağlayıcı Detaylarında Kara Liste Filtrelemesi",

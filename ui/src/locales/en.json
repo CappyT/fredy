@@ -544,7 +544,7 @@
   "settings.addAddress": "Add address",
   "settings.removeAddress": "Remove address",
   "settings.providerDetails": "Provider Details",
-  "settings.providerDetailsHelp": "Fetch additional details (description, attributes, agent info) for listings. Needs an extra API call per listing.",
+  "settings.providerDetailsHelp": "Fetch additional details (description, attributes, agent info) for listings. Needs an extra API call per listing. For some providers, listing dates are only available when details are enabled.",
   "settings.providerDetailsWarning": "Enabling this significantly increases API requests to providers that have implemented this feature, raising the chance of rate limiting or blocking. Use at your own risk.",
   "settings.providerDetailsPlaceholder": "Select providers to fetch details from...",
   "settings.blacklistFilterOnProviderDetails": "Blacklist-Filtering on Provider Details",
