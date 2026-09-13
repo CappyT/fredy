@@ -68,8 +68,10 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
     // The stored row is still the one from before, now carrying the price the portal answers with
     // and the hash that price produces.
     expect(mockStore.appliedPriceChanges).toEqual([
-      { listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number), newHash: 'hash-of-239k' },
+      { listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number), newHash: null },
     ]);
+    expect(mockStore.renamedHashes).toEqual([{ listingId: 'hash-of-249k', newHash: 'hash-of-239k' }]);
+    expect(mockStore.getKnownListingHashesForJob('job-1')).toEqual(['hash-of-239k']);
     expect(mockStore.recordedPriceObservations).toEqual([
       { listingId: 'hash-of-249k', price: 239000, observedAt: expect.any(Number), source: 'scrape' },
     ]);
@@ -147,8 +149,12 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
     await runOnePass(configWith({ id: 'hash-of-249k', title: oldListing.title, link: oldListing.link, price: 249000 }));
 
     expect(mockStore.appliedPriceChanges).toEqual([
-      { listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number), newHash: 'hash-of-239k' },
-      { listingId: 'hash-of-239k', newPrice: 249000, changedAt: expect.any(Number), newHash: 'hash-of-249k' },
+      { listingId: 'hash-of-249k', newPrice: 239000, changedAt: expect.any(Number), newHash: null },
+      { listingId: 'hash-of-239k', newPrice: 249000, changedAt: expect.any(Number), newHash: null },
+    ]);
+    expect(mockStore.renamedHashes).toEqual([
+      { listingId: 'hash-of-249k', newHash: 'hash-of-239k' },
+      { listingId: 'hash-of-239k', newHash: 'hash-of-249k' },
     ]);
   });
 
@@ -189,8 +195,9 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
     await runOnePass(configWith({ id: 'hash-of-249k', title: oldListing.title, link: oldListing.link, price: 249000 }));
 
     expect(mockStore.appliedPriceChanges).toEqual([
-      { listingId: 'hash-of-239k', newPrice: 249000, changedAt: expect.any(Number), newHash: 'hash-of-249k' },
+      { listingId: 'hash-of-239k', newPrice: 249000, changedAt: expect.any(Number), newHash: null },
     ]);
+    expect(mockStore.renamedHashes).toEqual([{ listingId: 'hash-of-239k', newHash: 'hash-of-249k' }]);
   });
 
   it('keeps treating a hidden listing as new, so a scrape never moves it', async () => {

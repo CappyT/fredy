@@ -28,6 +28,10 @@ vi.mock('../lib/services/sse/sse-broker.js', () => ({
   },
 }));
 vi.mock('../lib/notification/notify.js', () => ({ send, sendPriceChange }));
+// The link lane wraps its price change and hash rename in a transaction; the mock store has no database.
+vi.mock('../lib/services/storage/SqliteConnection.js', () => ({
+  default: { withTransaction: (callback) => callback() },
+}));
 
 vi.mock('../lib/services/extractor/puppeteerExtractor.js', async (importOriginal) => {
   if (process.env.TEST_MODE !== 'offline') {
