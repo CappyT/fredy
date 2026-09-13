@@ -62,9 +62,8 @@ On top of the listing itself, Fredy answers two questions:
 
 ## ✨ Key Features
 
--   🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭 🇪🇸 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
-    WG-Gesucht, Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and
-    [14 more](#provider-)
+-   🏠 Scrapes **24 portals** across 🇩🇪 🇦🇹 🇨🇭 🇪🇸 🇮🇹 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
+    WG-Gesucht, willhaben, Flatfox, idealista, Subito and [16 more](#provider-)
 -   ⚡ Instant notifications: Slack, Telegram, Email (SMTP, SendGrid, Mailjet, Resend), ntfy,
     Discord, Mattermost, Pushover, Apprise and more
 -   🔎 Uses the **ImmoScout Mobile API** (reverse engineered)
@@ -104,24 +103,10 @@ Fredy is supported by the **JetBrains Open Source Support Program**.
 ## 👨‍🏫 Demo
 You can try out Fredy here: [Fredy Demo](https://fredy-demo.orange-coding.net/)
 
+> This fork adds Italian providers and more: see [ITALY.md](./ITALY.md).
 ------------------------------------------------------------------------
 
 ## 🚀 Quick Start
-
-On Linux, an extractor call with `datadome: true` uses a windowed browser by default
-when it creates its own browser. It always starts a private Xvfb display, isolated
-from the desktop X11/Wayland session, and closes it with the browser. Install `xvfb` for this path
-on native Linux (the Docker image already includes it). Other calls retain their
-headless default. `puppeteerHeadless: true` explicitly opts out; a shared browser
-retains the display and mode chosen when it was launched.
-
-Fredy restores DataDome cookies before browser navigation and saves their latest values
-when closing the browser. Only cookies named `datadome` are cached, under
-`conf/datadome-cookies/` (persisted by the Docker conf volume), in files readable only
-by their owner. Cookie domains, paths and expiry are preserved; session cookies are
-kept for at most 24 hours. Direct connections and different proxy configurations use
-separate caches. Remove this directory while Fredy is stopped to clear the cache.
-Reusing a cookie does not guarantee that the site will skip its challenge.
 
 ### With Docker
 
@@ -193,7 +178,7 @@ the platform into Fredy.\
 ⚠️ Always make sure the search results are sorted by **date**, so Fredy picks up the newest
 listings first.
 
-Fredy ships with 25 providers:
+Fredy ships with 24 providers:
 
 **🇩🇪 Germany**
 
@@ -206,27 +191,17 @@ Fredy ships with 25 providers:
 | InBerlinWohnen | Kleinanzeigen | Sparkasse Immobilien |
 | McMakler | Wg gesucht | |
 
-**🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
-**🇪🇸 Spain · 🇵🇹 Portugal** · Idealista  
 **🇦🇹 Austria** · willhaben  
-**🇨🇭 Switzerland** · Flatfox
+**🇨🇭 Switzerland** · Flatfox  
+**🇪🇸 Spain · 🇮🇹 Italy · 🇵🇹 Portugal** · idealista\
+**🇮🇹 Italy** · Subito · Tecnocasa · Tecnorete · Casa.it
 
 Idealista uses the mobile APIs for idealista.com, idealista.it and idealista.pt.
 The search URL determines the country.
 The provider supports `/multi/` URLs and rejects unrelated domains.
-Searches with filters or categories unsupported by the APIs use Fredy's browser,
-which attempts to clear DataDome's automatic interstitials and simple slider challenges.
-Unsupported or persistent challenges can still block the browser fallback.
+Searches with filters or categories unsupported by the APIs use Fredy's browser.
+DataDome can block the browser fallback.
 See the [provider documentation](./reverse-engineered-idealista.md) for supported endpoints and filters.
-
-Immobiliare.it uses its search API and geography service to resolve location URLs.
-If its search API responds with HTTP 403, Fredy opens the homepage
-in the browser, runs the DataDome handler, and requests the API from that session.
-The homepage is needed because map URLs can return a JSON refusal without a captcha iframe. Map polygons and filters are preserved,
-and the remaining pages of that run use the browser session as well.
-Searches that cannot be translated into API requests use the job's browser.
-The provider reads up to twenty pages.
-See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
 
 Tecnocasa and Tecnorete are the two agency networks of the Tecnocasa group and list different adverts.
 Both sites ignore the requested sort order, so Fredy reads each search to the end, up to forty pages.
