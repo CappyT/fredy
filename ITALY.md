@@ -94,3 +94,5 @@ Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
 | Date | Fork commit | Upstream | Lines added | Lines deleted | Files |
 |---|---|---|---|---|---|
 | 2026-09-13 | `620c77e` | `b7c7e68` (27.6.1) | 2719 | 285 | 79 |
+| 2026-09-14 | `2349cc9` | `b7c7e68` (27.6.1) | 2768 | 290 | 80 |
+| 2026-09-14 | `cda6d47` | `b7c7e68` (27.6.1) | 2611 | 217 | 72 |
