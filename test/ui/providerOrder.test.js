@@ -115,6 +115,7 @@ describe('the providers Fredy actually ships', () => {
     const countries = sortProviders(metas).map(groupCountryOf);
     const ranks = countries.map((code) => COUNTRY_ORDER.indexOf(code));
 
+    expect(ranks, `every shipped country needs a rank in COUNTRY_ORDER: ${countries.join(', ')}`).not.toContain(-1);
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
     // The group is one country per provider, and every provider Fredy ships is grouped under one of
     // the four markets that have a portal of their own.

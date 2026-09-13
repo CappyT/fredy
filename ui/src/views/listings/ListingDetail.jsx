@@ -507,9 +507,9 @@ export default function ListingDetail() {
     },
   ];
 
-  // The date the portal itself states, when it states one at all - casa.it and idealista.it put it
-  // in the search answer, immobiliare.it only on the app's property detail - so it is pushed rather
-  // than shown as another "N/A" next to the figures every listing carries.
+  // The date the portal itself states, when it states one at all, which is what tells this row
+  // apart from "Added" above it. Not every portal does, so it is pushed rather than shown as
+  // another "N/A" next to the figures every listing carries.
   if (listing.published_at) {
     data.push({
       key: t('listing.detail.fieldPublished'),

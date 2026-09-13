@@ -251,9 +251,11 @@ The listing's page is `https://www.casa.it/immobili/<listing_id>/`, which is the
 own store uses. The api also offers `meta.links.pretty.href`, which is not needed.
 
 There is no publication date on the advert. What the api stamps it with is the last edit -
-`modified`, with `last_relevant_update` alongside - in a compact UTC form (`20260826T003616Z`),
-which is what the site's own "aggiornato il" reads. Fredy keeps the later of the two and orders by
-it. The rendered store carries neither stamp, so a search read off the website has no date to give.
+`modified`, with `last_relevant_update` alongside - in a compact form (`20260826T003616Z`), which
+is what the site's own "aggiornato il" reads. The trailing `Z` is decoration: the stamp is a Rome
+wall clock, and read as UTC it dates an advert edited this afternoon into the future. Fredy reads
+`modified`, falls back to `last_relevant_update`, and orders by it. The rendered store carries
+neither stamp, so a search read off the website has no date to give.
 
 ## Numbers to check a change against
 

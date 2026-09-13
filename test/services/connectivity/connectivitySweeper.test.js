@@ -4,7 +4,6 @@
  */
 
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { metaInformation as idealista } from '../../../lib/provider/idealista.js';
 
 const root = (await import('node:path')).resolve('.');
 const listingsStoragePath = root + '/lib/services/storage/listingsStorage.js';
@@ -21,18 +20,18 @@ let state;
 /**
  * The sweeper with everything under it replaced.
  *
- * @param {boolean} [realCountries] Leave the country resolver in place and mock the provider list
- *   underneath it instead. The narrowing test needs the real resolution - a mocked resolver would
- *   only be testing the mock - and `sources.js` is never mocked either way, so which register a
- *   country reaches is decided by the same table the running instance uses.
+ * @param {Object[]} [providers] Leave the country resolver in place and mock the provider list
+ *   underneath it with these instead. The narrowing tests need the real resolution - a mocked
+ *   resolver would only be testing the mock - and `sources.js` is never mocked either way, so which
+ *   register a country reaches is decided by the same table the running instance uses.
  * @returns {Promise<any>}
  */
-async function loadSweeper(realCountries = false) {
+async function loadSweeper(providers = null) {
   vi.resetModules();
   // `doMock` registrations outlive `resetModules`, so each mode has to undo the other's.
-  if (realCountries) {
+  if (providers != null) {
     vi.doUnmock(providerCountriesPath);
-    vi.doMock(utilsPath, () => ({ getProviders: async () => [{ metaInformation: idealista }] }));
+    vi.doMock(utilsPath, () => ({ getProviders: async () => providers }));
     vi.doMock(jobStoragePath, () => ({ getJobs: () => [] }));
   } else {
     vi.doUnmock(utilsPath);
@@ -46,7 +45,7 @@ async function loadSweeper(realCountries = false) {
       state.stored.push({ id, connectivity, columns, checkedAt }),
   }));
   vi.doMock(settingsPath, () => ({ getSettings: async () => state.settings }));
-  if (!realCountries) {
+  if (providers == null) {
     vi.doMock(providerCountriesPath, () => ({
       getCountriesForListing: async (providerId) => {
         if (providerId === 'explodes') {
@@ -295,13 +294,30 @@ describe('services/connectivity/connectivitySweeper', () => {
 /**
  * Which register answers for a listing found by a provider covering several countries.
  *
- * idealista serves Spain, Italy and Portugal, and Italy is the only one of the three anybody has
- * written a coverage client for. Asked about the provider rather than about the row, every Madrid
- * and Lisboa listing was sent to the Italian checkers - which read the address as Italian, spend
- * one of fibermap's five requests an hour on it, and get a null that is then stamped on the row for
- * the next six months. The advert's own link is what says which of the three it is on.
+ * Asked about the provider rather than about the row, a provider spanning two markets sends every
+ * one of its listings to whichever register happens to be listed first in `sources.js` - a Swiss
+ * address to the German register, which does not hold it, and the null that comes back is then
+ * stamped on the row for the whole retry interval. The advert's own link is what says which market
+ * it is on, and `metaInformation.countryOf` is how a provider reads it.
+ *
+ * idealista is the shipped implementation of that, over Spain, Italy and Portugal, and Italy is the
+ * only one of the three with a coverage register here.
  */
 describe('services/connectivity/connectivitySweeper, on a provider covering several countries', () => {
+  /**
+   * Which of its two markets an advert is on, by the site it links to, answering null where the
+   * link says nothing. idealista's shape, over two countries a register exists for.
+   */
+  const alpine = [
+    {
+      metaInformation: {
+        id: 'alpine',
+        countries: ['de', 'ch'],
+        countryOf: (listing) => /^https:\/\/alpine\.(ch|de)\//.exec(listing?.link ?? '')?.[1] ?? null,
+      },
+    },
+  ];
+
   beforeEach(() => {
     state = {
       settings: { connectivityEnabled: true, connectivityLimitPerRun: 50, connectivityMaxAgeDays: 180 },
@@ -313,11 +329,45 @@ describe('services/connectivity/connectivitySweeper, on a provider covering seve
       tracked: [],
       paused: [],
       disabledSources: [],
-      answer: { maxDownMbit: 1000, fiber: true, source: 'it-navigabene' },
+      answer: { maxDownMbit: 1000, fiber: true, source: 'ch-bakom' },
     };
   });
 
-  it('asks the Italian register only about the listing that is in Italy', async () => {
+  it('asks the Swiss register about the listing that links to the Swiss site', async () => {
+    state.pending = [{ id: 'ch-1', latitude: 47.37, longitude: 8.54, provider: 'alpine', link: 'https://alpine.ch/1' }];
+
+    const tally = await (await loadSweeper(alpine))({ now: 1000 });
+
+    expect(tally.enriched).toBe(1);
+    expect(state.lookups).toEqual([{ lat: 47.37, lng: 8.54, countries: ['ch'] }]);
+  });
+
+  it('asks the German one about the listing that links to the German site', async () => {
+    state.pending = [
+      { id: 'de-1', latitude: 52.52, longitude: 13.405, provider: 'alpine', link: 'https://alpine.de/1' },
+    ];
+
+    await (
+      await loadSweeper(alpine)
+    )({ now: 1000 });
+
+    expect(state.lookups).toEqual([{ lat: 52.52, lng: 13.405, countries: ['de'] }]);
+  });
+
+  // A row whose link is gone keeps every country the provider declares, which is the answer the
+  // sweep gave before any of them could be told apart.
+  it('keeps both countries for a row whose link is gone', async () => {
+    state.pending = [{ id: 'x-1', latitude: 47.37, longitude: 8.54, provider: 'alpine', link: null }];
+
+    await (
+      await loadSweeper(alpine)
+    )({ now: 1000 });
+
+    expect(state.lookups).toEqual([{ lat: 47.37, lng: 8.54, countries: ['ch', 'de'] }]);
+  });
+
+  it('asks the Italian register only about the idealista listing that is in Italy', async () => {
+    const { metaInformation } = await import(root + '/lib/provider/idealista.js');
     state.pending = [
       {
         id: 'it-1',
@@ -329,49 +379,35 @@ describe('services/connectivity/connectivitySweeper, on a provider covering seve
       },
     ];
 
-    const sweep = await loadSweeper(true);
-    const tally = await sweep({ now: 1000 });
+    const tally = await (await loadSweeper([{ metaInformation }]))({ now: 1000 });
 
     expect(tally.enriched).toBe(1);
     expect(state.lookups).toEqual([{ lat: 45.46, lng: 9.19, countries: ['it'] }]);
   });
 
   /**
-   * No register covers Spain, so the row is stamped and left alone - the same answer an Austrian
-   * listing gets, and the whole point: no request is spent, and none of Italy's throttle is either.
+   * idealista's own narrowing, read through the shipped `countryOf`. No register covers Spain, so
+   * the row is stamped and left alone - no request is spent, and the sweep does not come back to it
+   * on every run.
    */
-  it('spends no Italian request on a listing in Spain', async () => {
+  it('spends no request on an idealista listing in a country no register covers', async () => {
+    const { metaInformation } = await import(root + '/lib/provider/idealista.js');
     state.pending = [
       {
         id: 'es-1',
         latitude: 40.42,
         longitude: -3.7,
         provider: 'idealista',
-        address: 'Calle de Alcalá 1, Madrid',
         link: 'https://www.idealista.com/inmueble/1/',
       },
     ];
 
-    const sweep = await loadSweeper(true);
-    const tally = await sweep({ now: 1000 });
+    const tally = await (await loadSweeper([{ metaInformation }]))({ now: 1000 });
 
     expect(state.lookups).toEqual([]);
     expect(tally).toMatchObject({ enriched: 0, empty: 1 });
     expect(state.stored).toEqual([
       { id: 'es-1', connectivity: null, columns: { maxDown: null, fiber: null, mobile: null }, checkedAt: 1000 },
     ]);
-  });
-
-  // A row whose link says nothing keeps every country the provider declares, which is the answer
-  // the sweep gave before any of them could be told apart.
-  it('keeps all three countries for a row whose link is gone', async () => {
-    state.pending = [
-      { id: 'x-1', latitude: 38.7, longitude: -9.14, provider: 'idealista', address: 'Rua Augusta 1', link: null },
-    ];
-
-    const sweep = await loadSweeper(true);
-    await sweep({ now: 1000 });
-
-    expect(state.lookups).toEqual([{ lat: 38.7, lng: -9.14, countries: ['es', 'it', 'pt'] }]);
   });
 });

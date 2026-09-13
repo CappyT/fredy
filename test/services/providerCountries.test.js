@@ -203,10 +203,10 @@ describe('the providers of a set of countries', () => {
  *
  * A provider covering several markets answers for all of them at once, and that is the right answer
  * to "where does this provider search" and the wrong one to "where is this flat": the geocoder can
- * hand back a Spanish street for an Italian address, and the connectivity sweep sends a Madrid
- * listing to Italy's register, which spends a throttled request on it and stamps the row empty for
- * six months. So a provider may narrow it per listing, and everything that cannot be narrowed is
- * left exactly as wide as it was.
+ * hand back a Spanish street for an Italian address, and the connectivity sweep sends the listing
+ * to whichever of the provider's countries happens to have a register, which spends a throttled
+ * request on it and stamps the row empty until the answer goes stale. So a provider may narrow it
+ * per listing, and everything that cannot be narrowed is left exactly as wide as it was.
  */
 describe('the countries of one listing', () => {
   const meta = (countryOf) => iberian(countryOf).metaInformation;

@@ -32,8 +32,8 @@ export const getKnownListingHashesForJob = (jobKey) => {
 /**
  * Forget every stored listing.
  *
- * The dedup the real store performs is memory across runs, which a test that runs the same
- * listing twice under one job does not want carried from the previous case.
+ * What the real store keeps is memory across runs, which a test running the same listings again is
+ * not asking to inherit from the case before it.
  * @returns {void}
  */
 export const resetListings = () => {
@@ -113,6 +113,14 @@ export const deleteListingsById = (ids) => {
 export const deleteListingsByHash = (hashes) => {
   deletedIds.push(...hashes);
 };
+/**
+ * The real one reads every stored listing around each new one to work out what a square metre costs
+ * there. There is no table behind these mocks to read, and no assertion in the pipeline tests looks
+ * at the figures, so here it only has to exist - the pipeline calls it on every run.
+ */
+export const applyMarketBenchmark = (jobId, listings) => {
+  // noop
+};
 
 /**
  * Every photograph the pipeline kept, in order.
@@ -137,11 +145,6 @@ export const getListingsMissingStoredImage = () => [];
  * export that is missing here throws the moment anything reaches for it.
  */
 export const getListingsMissingDetails = () => [];
-/**
- * The benchmark pass runs on every stored batch; without this the pipeline logged a mock-shaped
- * warning for each one, which is noise in every suite that stores a listing.
- */
-export const applyMarketBenchmark = () => {};
 export const markDetailBackfillAttempt = () => {};
 export const updateListingDescription = () => {};
 export const updateListingPublishedAt = () => {};

@@ -53,9 +53,15 @@ describe('pipeline detail fetch pacing', () => {
         return listing;
       },
     };
-    const fredy = new Fredy(providerConfig, { id: 'job-1', notificationAdapter: null }, providerId, {}, undefined, {
-      maxDetailFetches: 3,
-    });
+    const similarityCache = { checkAndAddEntry: () => false };
+    const fredy = new Fredy(
+      providerConfig,
+      { id: 'job-1', notificationAdapter: null },
+      providerId,
+      similarityCache,
+      undefined,
+      { maxDetailFetches: 3 },
+    );
     await fredy.execute();
     return fredy;
   };

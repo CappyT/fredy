@@ -82,15 +82,6 @@
     "enabled": true,
     "mapSearchUrl": "https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&idNazione=IT&fkRegione=laz&idProvincia=RM&idComune=6737&__lang=it"
   },
-  "casa": {
-    "url": "https://www.casa.it/affitto/residenziale/roma/",
-    "enabled": true,
-    "mapSearchUrl": "https://www.casa.it/srp/map/?tr=affitto&propertyTypeGroup=case&geopolygon={%22polygon%22:[[41.93%2C12.44]%2C[41.93%2C12.55]%2C[41.87%2C12.55]%2C[41.87%2C12.44]%2C[41.93%2C12.44]]}"
-  },
-  "subito": {
-    "url": "https://www.subito.it/annunci-lazio/affitto/appartamenti/roma/",
-    "enabled": true
-  },
   "tecnocasa": {
     "url": "https://www.tecnocasa.it/annunci/immobili/lazio/roma/roma.html",
     "enabled": true
@@ -102,6 +93,15 @@
   "idealista": {
     "url": "https://www.idealista.it/affitto-case/roma-roma/",
     "otherSiteUrls": ["https://www.idealista.com/alquiler-viviendas/madrid-madrid/"],
+    "enabled": true
+  },
+  "casa": {
+    "url": "https://www.casa.it/affitto/residenziale/roma/",
+    "enabled": true,
+    "mapSearchUrl": "https://www.casa.it/srp/map/?tr=affitto&propertyTypeGroup=case&geopolygon={%22polygon%22:[[41.93%2C12.44]%2C[41.93%2C12.55]%2C[41.87%2C12.55]%2C[41.87%2C12.44]%2C[41.93%2C12.44]]}"
+  },
+  "subito": {
+    "url": "https://www.subito.it/annunci-lazio/affitto/appartamenti/roma/",
     "enabled": true
   }
 }
