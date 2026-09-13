@@ -220,6 +220,10 @@ Unsupported or persistent challenges can still block the browser fallback.
 See the [provider documentation](./reverse-engineered-idealista.md) for supported endpoints and filters.
 
 Immobiliare.it uses its search API and geography service to resolve location URLs.
+If its search API responds with HTTP 403, Fredy opens the homepage
+in the browser, runs the DataDome handler, and requests the API from that session.
+The homepage is needed because map URLs can return a JSON refusal without a captcha iframe. Map polygons and filters are preserved,
+and the remaining pages of that run use the browser session as well.
 Searches that cannot be translated into API requests use the job's browser.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
