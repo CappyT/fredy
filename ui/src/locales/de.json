@@ -538,7 +538,7 @@
   "settings.addAddress": "Adresse hinzufügen",
   "settings.removeAddress": "Adresse entfernen",
   "settings.providerDetails": "Anbieter-Details",
-  "settings.providerDetailsHelp": "Zusätzliche Details (Beschreibung, Attribute, Maklerinfos) für Inserate abrufen. Erfordert einen zusätzlichen API-Aufruf pro Inserat.",
+  "settings.providerDetailsHelp": "Zusätzliche Details (Beschreibung, Attribute, Maklerinfos) für Inserate abrufen. Erfordert einen zusätzlichen API-Aufruf pro Inserat. Bei einigen Anbietern ist das Inseratsdatum nur verfügbar, wenn die Details aktiviert sind.",
   "settings.providerDetailsWarning": "Das Aktivieren dieser Funktion erhöht die API-Anfragen an Anbieter erheblich und erhöht das Risiko von Rate-Limiting oder Blockierung. Auf eigene Gefahr verwenden.",
   "settings.providerDetailsPlaceholder": "Anbieter für Detail-Abruf auswählen...",
   "settings.blacklistFilterOnProviderDetails": "Blacklist-Filter auf Anbieter-Details anwenden",
