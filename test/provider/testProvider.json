@@ -12,6 +12,11 @@
     "url": "https://www.imaxx.de/immobilien/?post_type=immomakler_object&radius=1&center&vermarktungsart%5B0%5D=kauf&typ%5B0%5D=wohnung",
     "enabled": true
   },
+  "immobiliare": {
+    "url": "https://www.immobiliare.it/affitto-case/roma/",
+    "enabled": true,
+    "mapSearchUrl": "https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&idNazione=IT&fkRegione=laz&idProvincia=RM&idComune=6737&__lang=it"
+  },
   "immobilienDe": {
     "url": "https://www.immobilien.de/suche?kategorie=wohnen&typ=mieten&objektart=wohnung&ort=D%C3%BCsseldorf&umkreis=15&flaeche_von=50&preis_bis=1200",
     "enabled": true
@@ -76,11 +81,6 @@
   "flatfox": {
     "url": "https://flatfox.ch/de/search/?east=8.62&north=47.43&south=47.32&west=8.44&object_category=APARTMENT&offer_type=RENT",
     "enabled": true
-  },
-  "immobiliare": {
-    "url": "https://www.immobiliare.it/affitto-case/roma/",
-    "enabled": true,
-    "mapSearchUrl": "https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&idNazione=IT&fkRegione=laz&idProvincia=RM&idComune=6737&__lang=it"
   },
   "tecnocasa": {
     "url": "https://www.tecnocasa.it/annunci/immobili/lazio/roma/roma.html",
