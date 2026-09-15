@@ -42,7 +42,23 @@ vi.mock('../lib/services/extractor/puppeteerExtractor.js', async (importOriginal
     // the options carry the provider's run name, which is the only way to map detail pages
     // that live on a partner domain back to their fixture
     default: (url, waitForSelector, options) => readFixture(url, options),
-    launchBrowser: async () => ({ close: async () => {}, isConnected: () => true }),
+    // The offline browser answers a navigation out of the same fixture table the fetch mock reads,
+    // so a provider that asks its api inside the browser is served what one asking over fetch got.
+    launchBrowser: async () => ({
+      close: async () => {},
+      isConnected: () => true,
+      createBrowserContext: async () => ({
+        newPage: async () => ({
+          goto: async (url) => {
+            const answer = await globalThis.fetch(url);
+            const body = typeof answer.json === 'function' ? JSON.stringify(await answer.json()) : await answer.text();
+            return { status: () => answer.status ?? 200, text: async () => body };
+          },
+          close: async () => {},
+        }),
+        close: async () => {},
+      }),
+    }),
     closeBrowser: async () => {},
     // A provider that reads an api inside the browser opens each read in a context of its own.
     // Mirrored rather than imported: the real one pulls in the CloakBrowser binary, and the stub

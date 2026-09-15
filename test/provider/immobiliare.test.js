@@ -7,6 +7,7 @@ import { describe, it, expect, beforeAll, vi } from 'vitest';
 import * as similarityCache from '../../lib/services/similarity-check/similarityCache.js';
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/immobiliare.js';
+import { launchBrowser } from '../../lib/services/extractor/puppeteerExtractor.js';
 
 /**
  * Immobiliare.it, Italy's largest property portal and the first provider Fredy ships for Italy.
@@ -38,7 +39,10 @@ describe.each(searchShapes)('#immobiliare provider testsuite() - $shape', ({ sha
     // per job, so they have to run as two jobs or the second one finds nothing new.
     const job = { id: `immobiliare-${shape}`, notificationAdapter: null, spatialFilter: null, specFilter: null };
 
-    const fredy = new Fredy(runConfig, job, provider.metaInformation.id, similarityCache, undefined);
+    // The search endpoint is read inside the browser, so the run needs one: offline it answers from
+    // the fixtures, live it is the real thing.
+    const browser = await launchBrowser(runConfig.url, {});
+    const fredy = new Fredy(runConfig, job, provider.metaInformation.id, similarityCache, browser);
     listings = await fredy.execute();
   }, TEST_TIMEOUT);
 
@@ -269,35 +273,57 @@ describe('#immobiliare provider configuration()', () => {
   });
 
   /**
+   * A browser that answers the endpoint the way the provider asks it: a context of its own for each
+   * read, a page inside that context, and the payload as the navigation's body.
+   *
+   * @param {number} maxPages how many pages the endpoint claims the search has
+   * @returns {{browser: any, state: {asked: number[], opened: number, closed: number}}}
+   */
+  function stubBrowser(maxPages) {
+    const state = { asked: [], opened: 0, closed: 0 };
+    const browser = {
+      createBrowserContext: async () => {
+        state.opened++;
+        return {
+          newPage: async () => ({
+            goto: async (url) => {
+              const page = Number(new URL(String(url)).searchParams.get('pag'));
+              state.asked.push(page);
+              return {
+                status: () => 200,
+                text: async () => JSON.stringify({ maxPages, results: [{ realEstate: { id: page } }] }),
+              };
+            },
+            close: async () => {},
+          }),
+          close: async () => {
+            state.closed++;
+          },
+        };
+      },
+    };
+    return { browser, state };
+  }
+
+  /**
    * The endpoint answers 25 adverts at a time and counts the pages itself, so a search of any size
    * has to be walked rather than read once.
    */
   it('reads every page the endpoint counts', async () => {
-    const asked = [];
-    const originalFetch = globalThis.fetch;
-    globalThis.fetch = async (url) => {
-      const page = Number(new URL(String(url)).searchParams.get('pag'));
-      asked.push(page);
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ maxPages: 3, currentPage: page, results: [{ realEstate: { id: page } }] }),
-      };
-    };
+    const { browser, state } = stubBrowser(3);
 
     // The walk waits between pages, which a real run wants and a test does not.
     vi.useFakeTimers();
     try {
       const runConfig = provider.createConfig({ url: providerConfig.immobiliare.mapSearchUrl }, []);
-      const walk = runConfig.getListings(runConfig.url, undefined);
+      const walk = runConfig.getListings(runConfig.url, browser);
       await vi.runAllTimersAsync();
       const results = await walk;
 
-      expect(asked).toEqual([1, 2, 3]);
+      expect(state.asked).toEqual([1, 2, 3]);
       expect(results).toHaveLength(3);
     } finally {
       vi.useRealTimers();
-      globalThis.fetch = originalFetch;
     }
   });
 
@@ -346,39 +372,15 @@ describe('#immobiliare provider configuration()', () => {
   });
 
   /**
-   * The endpoint answers a plain http client with a `bv` challenge, the kind no cookie solves, so a
-   * run that has a browser asks with it instead. Each page gets a context of its own: a context
-   * that has met the challenge carries the refusal over to every later read.
+   * The endpoint answers a plain http client with a `bv` challenge, the kind no cookie solves, so
+   * the read is made in the run's browser and nowhere else. Each page gets a context of its own: a
+   * context that has met the challenge carries the refusal over to every later read.
    */
   it('reads the endpoint in the run browser, in a fresh context per page', async () => {
-    const asked = [];
-    let opened = 0;
-    let closed = 0;
-    const browser = {
-      createBrowserContext: async () => {
-        opened++;
-        return {
-          newPage: async () => ({
-            goto: async (url) => {
-              const page = Number(new URL(String(url)).searchParams.get('pag'));
-              asked.push(page);
-              return {
-                status: () => 200,
-                text: async () => JSON.stringify({ maxPages: 2, results: [{ realEstate: { id: page } }] }),
-              };
-            },
-            close: async () => {},
-          }),
-          close: async () => {
-            closed++;
-          },
-        };
-      },
-    };
-
+    const { browser, state } = stubBrowser(2);
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => {
-      throw new Error('a run with a browser must not ask the endpoint over fetch');
+      throw new Error('the endpoint must not be asked over fetch');
     };
 
     vi.useFakeTimers();
@@ -388,9 +390,9 @@ describe('#immobiliare provider configuration()', () => {
       await vi.runAllTimersAsync();
       const results = await walk;
 
-      expect(asked).toEqual([1, 2]);
-      expect(opened).toBe(2);
-      expect(closed).toBe(2);
+      expect(state.asked).toEqual([1, 2]);
+      expect(state.opened).toBe(2);
+      expect(state.closed).toBe(2);
       expect(results).toHaveLength(2);
     } finally {
       vi.useRealTimers();

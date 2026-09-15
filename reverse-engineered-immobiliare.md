@@ -236,7 +236,7 @@ What decides the challenge type is the client, not the address. Measured from on
 | `fetch` carrying a `datadome` cookie a browser had just earned | the minting exit | 403, `t=bv` |
 | CloakBrowser | residential IT | 200, the listings |
 
-So the endpoint is read in the run's browser (`requestApiPageInBrowser`). A `bv` challenge is not
+So the endpoint is read in the run's browser (`requestApiPage`). A `bv` challenge is not
 one capsolver can be paid to solve, and the cookie a browser earns does not transfer to an http
 client here, whatever user agent it copies.
 
