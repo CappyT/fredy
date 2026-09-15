@@ -151,6 +151,22 @@ The white label alert endpoints were not tested.
 Not run, so still unknown: maximum accepted `size`, rate limits, and `/search/listings-by-url` with
 Swiss web URLs.
 
+## Minting the cookie without the app
+
+Measured 2026-09-15, same recipe as the Homegate file, which describes it in full. The CH specific
+values are the ones the challenge carries: `referer=https://api.immoscout24.ch/search/listings` and
+the same client key `F366DD7CF4DB76FA9B54F971FAB24F`, so one solver covers both portals.
+
+Verified: with a Swiss residential proxy, a capsolver `DatadomeSliderTask` on the `t=fe` challenge,
+and a replay through the same proxy session with the same `User-Agent` and `Cookie: datadome=...`,
+`POST /search/listings` for Zurich answered 200 with 1256 listings. The response carries
+`address.geoCoordinates` and `address.geoTags`, so the geocoding step can be skipped.
+
+The same binding matrix as the Homegate file was measured: the cookie answered 200 on the minting IP
+with a different Chrome version, on the minting IP with the app `User-Agent`, and on a second Swiss
+residential IP with both user agents. All five combinations answered 200, so neither the IP nor the
+`User-Agent` is enforced in the tested scope. The cookie carries `Max-Age=31536000`.
+
 ## How to verify
 
 Same as the Homegate file: no TLS pinning, release builds trust only system CAs, so use the Frida

@@ -429,3 +429,37 @@ the `frida` CLI (`frida -U -p <pid> -l script.js`).
 
 Do not sleep on the script thread for staleness tests: the blocking sleep trips the Frida script load
 timeout ("Failed to load script"). Use `setTimeout` for the delayed variants.
+
+## Minting the cookie without the app
+
+Measured 2026-09-15 through a Swiss residential proxy, without the app and without the OTP signature.
+
+| Step | What happens |
+|---|---|
+| Request without a cookie | 403. JSON body `{"url": "https://geo.captcha-delivery.com/captcha/?...&t=fe&..."}`, header `x-dd-b: 1`. The `hash` field is the DataDome client key `F366DD7CF4DB76FA9B54F971FAB24F`, the same key the Android SDK carries |
+| Challenge | `t=fe` is solvable. `t=bv` means the asking IP is the reason for the block and only an IP change helps, see `isSolveable` |
+| Solve | capsolver task `DatadomeSliderTask` with the `captchaUrl`, a `User-Agent` from capsolver's fixed set (Chrome 137 to 151) and a residential proxy |
+| Cookie | the solution is `datadome=...; Max-Age=31536000`, one year |
+| Replay | same proxy session, same `User-Agent`, header `Cookie: datadome=...` answers 200 with the listings |
+
+Results: 412 listings for Lugano on `api.homegate.ch`, 1256 for Zurich on `api.immoscout24.ch`. Both
+portals answer the same client key, so one solver covers both.
+
+Constraints, measured:
+
+- The cookie is bound to neither the IP nor the `User-Agent` in the tested scope. Minted on one Swiss
+  residential IP with one Chrome user agent, the same cookie answered 200 on the minting IP with a
+  different Chrome version, on the minting IP with the app `User-Agent`, and on a second Swiss
+  residential IP with both user agents. All five combinations answered 200, on both portals.
+  Datacenter IPs and non Swiss IPs were not tested.
+- One mint is therefore enough for a long time: the cookie carries `Max-Age=31536000`, so the
+  on-disk store in `lib/services/datadome.js` holds it for a year and a run pays for a solve only
+  when the endpoint refuses again.
+- The mobile API does not check the OTP signature or the app `User-Agent` when the cookie is valid. A
+  cookie minted by the web challenge from a desktop browser user agent is accepted. This is what makes
+  a server-side provider possible, with no device and no app.
+- `lib/services/datadome.js` already implements this flow: challenge detection, `DatadomeSliderTask`,
+  `SOLVE_USER_AGENT`, the on-disk token store and the `t=bv` rejection. The two Swiss providers only
+  need to call it and send the `Cookie` header.
+- The listing response carries `address.geoCoordinates` and `address.geoTags` (`geo-city-...`,
+  `geo-zipcode-...`, `geo-canton-...`), so the geocoding step can be skipped.
