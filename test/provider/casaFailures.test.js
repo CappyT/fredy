@@ -31,7 +31,7 @@ describe('Casa search failures', () => {
     const browser = {};
 
     await expect(config.getListings(URL, browser)).resolves.toEqual(listings);
-    expect(puppeteerExtractor).toHaveBeenCalledWith(URL, 'body', expect.objectContaining({ browser, name: 'casa' }));
+    expect(puppeteerExtractor).toHaveBeenCalledWith(URL, 'body', { browser, name: 'casa' });
   });
 
   it.each(Object.keys(failures))('retains page one after a second-page %s failure', async (kind) => {

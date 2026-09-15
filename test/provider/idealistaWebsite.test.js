@@ -3,15 +3,12 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { readSearch } from '../../lib/services/idealista/website.js';
 
 // The transport reports a run it could not get through as a point of interest, and that reporter
 // reaches for the job storage. Nothing here is a job.
 vi.mock('../../lib/services/tracking/Tracker.js', () => ({ trackPoi: async () => {} }));
-
-const { solveCaptchaMock } = vi.hoisted(() => ({ solveCaptchaMock: vi.fn() }));
-vi.mock('../../lib/services/datadome/captcha.js', () => ({ solveCaptcha: solveCaptchaMock }));
 
 const SEARCH = 'https://www.idealista.it/vendita-terreni/roma-roma/';
 
@@ -63,11 +60,6 @@ function stubBrowser({ html = null, cleared = true, status = 403 } = {}) {
 }
 
 describe('the website read through the run own browser', () => {
-  beforeEach(() => {
-    solveCaptchaMock.mockReset();
-    solveCaptchaMock.mockResolvedValue(false);
-  });
-
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -79,9 +71,6 @@ describe('the website read through the run own browser', () => {
 
     const adverts = await readSearch(SEARCH, browser);
 
-    expect(solveCaptchaMock).toHaveBeenCalledTimes(1);
-    expect(solveCaptchaMock.mock.calls[0][0]).toBe(pages[0]);
-    expect(solveCaptchaMock.mock.calls[0][1].response.status()).toBe(403);
     expect(adverts).toHaveLength(1);
     expect(adverts[0]).toMatchObject({
       id: '42',
@@ -109,15 +98,6 @@ describe('the website read through the run own browser', () => {
     const { browser, pages, visited } = stubBrowser({ status: 429, html: card('7') });
     expect(await readSearch(SEARCH, browser)).toEqual([]);
     expect(visited).toHaveLength(1);
-    expect(solveCaptchaMock).not.toHaveBeenCalled();
-    expect(pages.every((page) => page.closed)).toBe(true);
-  });
-
-  it('closes the page when the solver throws', async () => {
-    const { browser, pages } = stubBrowser({ html: card('42') });
-    solveCaptchaMock.mockRejectedValue(new Error('frame detached'));
-
-    expect(await readSearch(SEARCH, browser)).toEqual([]);
     expect(pages.every((page) => page.closed)).toBe(true);
   });
 
