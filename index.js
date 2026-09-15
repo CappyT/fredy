@@ -14,6 +14,7 @@ import { reloadEnabledFromSettings } from './lib/services/debug/debugLogStorage.
 import { initActiveCheckerCron } from './lib/services/crons/listing-alive-cron.js';
 import { initGeocodingCron } from './lib/services/crons/geocoding-cron.js';
 import { getSettings } from './lib/services/storage/settingsStorage.js';
+import { syncOutboundProxy } from './lib/services/http/outboundProxy.js';
 import SqliteConnection, { computeDbPath } from './lib/services/storage/SqliteConnection.js';
 import { initJobExecutionService } from './lib/services/jobs/jobExecutionService.js';
 import { ensureValidBinary } from './lib/services/ensureValidBinary.js';
@@ -71,6 +72,11 @@ try {
 }
 
 const settings = await getSettings();
+
+// The portals judge the scraper by its IP before anything else. The browser is launched through the
+// proxy per job; the calls that reach a portal without a browser (search apis, detail apis, images,
+// the alive check) have to leave from the same address, so the proxy is installed for `fetch` here.
+syncOutboundProxy(settings);
 
 // Restore the persisted on/off flag for opt-in DB log capture so it survives a
 // Fredy restart. reloadEnabledFromSettings() also (un)wires the logger sink based

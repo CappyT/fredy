@@ -58,6 +58,26 @@ exchange rate to fetch and none to go out of date.
 Listings stored before this change are labelled with their currency on the next start. A franc
 listing among them also has its market median measured again against franc listings only.
 
+## Proxy
+
+The proxy url in **Administration -> Execution -> Proxy URL** (or `FREDY_PROXY_URL`) carries every
+call to a portal, not only the headless browser. This replaces what
+[Providers & scraping](./doc/providers.md) says about the proxy reaching browser providers alone.
+
+- **Through the proxy.** The headless browser, the search and detail apis the api-based providers
+  read (Immobiliare.it, Idealista, Casa.it, Subito, willhaben, Flatfox, Immoscout, ...), the listing
+  images, and the alive check. They all use the global `fetch`, and
+  `lib/services/http/outboundProxy.js` installs the proxy as undici's global dispatcher.
+- **Direct.** Notifications (Telegram, ntfy, Slack, e-mail, the HTTP webhook), geocoding,
+  connectivity, transit, the version check and telemetry. They use `node-fetch`, which ignores the
+  global dispatcher, so a metered residential proxy carries portal traffic only. The HTTP
+  notification adapter uses the global `fetch` and asks for the direct dispatcher explicitly.
+- **Schemes.** `http://`, `https://`, `socks4://`, `socks5://`, with optional `user:pass@`. A socks
+  proxy is dialed through the `socks` package, because undici's `ProxyAgent` speaks HTTP CONNECT
+  only. An unusable url is logged and the previous proxy stays in force: a scrape that fails is
+  better than one that silently leaves from the server's own IP.
+- **When it takes effect.** At startup, and on every save of the settings page, with no restart.
+
 ## For coding agents
 
 Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
