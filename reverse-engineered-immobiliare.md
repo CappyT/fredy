@@ -9,10 +9,10 @@ search the endpoint answers is in `lib/services/immobiliare/`.
 
 ## Two hosts
 
-| Host                        | Serves                                                                               | Protected                          |
-| --------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
-| `www.immobiliare.it`        | the website, and `/api-next/search-list/listings/`, which its pages call for results | the pages are, the endpoint is not |
-| `android-imm-v4.ws-app.com` | the android app's api: properties, and a geography service                           | no                                 |
+| Host                        | Serves                                                                               | Protected                                   |
+| --------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `www.immobiliare.it`        | the website, and `/api-next/search-list/listings/`, which its pages call for results | the pages and, since 2026-09-15, the endpoint |
+| `android-imm-v4.ws-app.com` | the android app's api: properties, and a geography service                           | the search api is, detail and geography are not |
 
 The provider searches through the website's own endpoint, and looks places up through the app's
 geography service. That pairing is deliberate, and the section on the app's search api says why.
@@ -211,3 +211,30 @@ failing, so only known values may be sent.
 The app's search payload is richer than the website's, and worth knowing about: it carries
 `creationDate` and `lastModified` as timestamps, `price.raw`, `geography.geolocation` with a
 `visibilityType`, the street, the zipcode, and both photos and floor plans.
+
+## DataDome
+
+Measured 2026-09-15. The website endpoint above is behind DataDome now; a request without a
+`datadome` cookie answers 403:
+
+```
+GET https://www.immobiliare.it/api-next/search-list/listings/?idNazione=IT&idContratto=1&idCategoria=1&idComune=8042&path=%2Fvendita-case%2Fmilano%2F
+-> 403 {"url":"https://geo.captcha-delivery.com/captcha/?initialCid=...&hash=BCBF2FCE4AED082640C3D1753C3381&t=fe&..."}
+```
+
+The `hash` is the DataDome client key, and it is the same key the android app carries: the key is
+`BCBF2FCE4AED082640C3D1753C3381` in the apk (`x00/g.java`, its `K()`), and the block page names it.
+The `t` value decides solvability: `fe` is the challenge capsolver answers, `bv` means the asking IP
+is the reason for the block.
+
+The token is minted by capsolver (`DatadomeSliderTask`, see `lib/services/datadome.js`) and sent as
+`Cookie: datadome=...`. With a solved cookie the endpoint answers its ordinary payload - the 422 in
+the example above is the endpoint's own parameter validation, not a block - so the provider attaches
+the token in `requestApiPage` and refreshes it when a read is refused again.
+
+The android app's search api is blocked the same way: `/b2c/v1/properties` answers the ws-app.com
+challenge (`t=bv`) without a cookie. The app earns its cookie from its own DataDome SDK (client key
+above), which stores it in SharedPreferences `datadome_storage_BCBF2FCE4AED082640C3D1753C3381` under
+`PREF_COOKIES`, with `Domain=.ws-app.com`. The detail api (`/b2c/v2/properties/<id>`) and the
+geography service answer plainly, which is why the provider still enriches and resolves through them
+without a token.

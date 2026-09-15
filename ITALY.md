@@ -90,9 +90,24 @@ Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
 
 ### Bot protection
 
-The fork adds nothing to get past bot protection such as DataDome: no captcha solvers, no cached
-challenge cookies, no virtual display to make the browser look windowed. A page or api that answers
-with a challenge is a failed read, the way upstream treats it.
+Upstream treats a challenge as a failed read. This fork keeps that default, with one exception: a
+DataDome challenge on a portal the fork reads through an api is solved with a paid service
+(capsolver), and the `datadome` cookie it returns is reused.
+
+- The solver is off unless `CAPSOLVER_API_KEY` and `CAPSOLVER_PROXY` are set. Without both, every
+  provider behaves exactly as upstream: a blocked read is a failed read.
+- The cookie is kept on disk beside the database (`datadome-tokens.json`, or `FREDY_DATADOME_STORE`)
+  with the `Max-Age` the challenge stated, so a restart does not pay for a solve twice.
+- Only DataDome is handled this way. The other guards the fork meets stay unsolved.
+- `lib/services/datadome.js` holds the whole mechanism. `lib/provider/immobiliare.js` uses its token
+  on the website search endpoint; `lib/services/idealista/idealistaSearch.js` hands one to the
+  browser fallback before it navigates.
+
+The challenge has to be the `fe` kind. A `bv` challenge means the asking IP is blocked, which no
+cookie fixes; capsolver refuses it and the read stays failed.
+
+`reverse-engineered-immobiliare.md` and `reverse-engineered-idealista.md` record where each portal's
+challenge was measured.
 
 ## Syncing with upstream
 

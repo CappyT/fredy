@@ -377,3 +377,28 @@ aste_no,alta-efficienza/` is reported by the website as **300** adverts. The par
 five codes to their location ids - the last of them, `dJY`, is `0-EU-IT-BS-02`, "Sebino-Franciacorta",
 which the local sampling of borders cannot name because its adverts' ids disagree at the zone
 level - and the search by those ids answers the same 300.
+
+## DataDome, and where it does not reach
+
+Measured 2026-09-15.
+
+The android app is not behind DataDome. `com.idealista.android` 15.5.1 (821267) carries no
+`co.datadome.sdk`, no `captcha-delivery.com` and no `datadome` string at all - the only occurrence is
+the Didomi consent list naming "DataDome SA". Frida finds no SDK class, no `datadome_storage_*`
+preference exists, and no api response carries a `datadome` cookie. The mobile api's guard is its
+own, and it is the one this file already documents: the client key, the HMAC `Signature` over
+`seed + method + query + body`, the device id and a bearer token.
+
+DataDome guards the website only. A plain request to `https://www.idealista.it/...` answers 403 with
+`server: DataDome` and `x-datadome: protected`, as a JSON block or as an HTML interstitial:
+
+```
+var dd={'rt':'c','cid':'...','hsh':'AC81AADC3279CA4C7B968B717FBB30','t':'bv','qp':'','s':17156,'e':'...'}
+```
+
+`hsh` is idealista's DataDome client key, `AC81AADC3279CA4C7B968B717FBB30`. The `t` value is the
+solvability: a `fe` challenge is what capsolver answers, and a `bv` one means the asking IP is the
+reason for the block. On the addresses tried, `www.idealista.it` answered `bv` while the same
+address answered `fe` for immobiliare.it, so the website fallback's token path needs an IP
+idealista has not flagged. There is no token to harvest from the app, which is why only the browser
+fallback could ever use one.
