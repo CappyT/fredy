@@ -31,7 +31,9 @@ See the [provider documentation](./reverse-engineered-idealista.md) for supporte
 ### Immobiliare.it
 
 Immobiliare.it uses its search API and geography service to resolve location URLs.
-Searches that cannot be translated into API requests use the job's browser.
+The search endpoint is read in the job's browser: it answers a plain http client with a DataDome
+`bv` challenge, whatever the exit address. Searches that cannot be translated into API requests use
+the same browser to render the page.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
 
@@ -118,9 +120,11 @@ DataDome challenge on a portal the fork reads through an api is solved with a pa
   refused at the same moment share one solve. A search that keeps being refused fails the read
   instead of buying a solve for each of its twenty pages.
 - Only DataDome is handled this way. The other guards the fork meets stay unsolved.
-- `lib/services/datadome.js` holds the whole mechanism. `lib/provider/immobiliare.js` uses its token
-  on the website search endpoint; `lib/services/idealista/idealistaSearch.js` hands one to the
-  browser fallback before it navigates.
+- `lib/services/datadome.js` holds the whole mechanism. `lib/services/idealista/idealistaSearch.js`
+  hands a token to the browser fallback before it navigates. `lib/provider/immobiliare.js` keeps the
+  token path for a caller that lends it no browser, and asks with the browser otherwise: the
+  endpoint answers a plain http client `bv`, which is not a challenge capsolver can be paid to
+  solve.
 
 The challenge has to be the `fe` kind. A `bv` challenge means the asking IP is blocked, which no
 cookie fixes; capsolver refuses it and the read stays failed.

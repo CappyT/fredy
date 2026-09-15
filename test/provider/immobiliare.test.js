@@ -344,4 +344,57 @@ describe('#immobiliare provider configuration()', () => {
     expect(endpoint.searchParams.get('idComune')).toBe('8042');
     expect(endpoint.searchParams.get('ordine')).toBe('desc');
   });
+
+  /**
+   * The endpoint answers a plain http client with a `bv` challenge, the kind no cookie solves, so a
+   * run that has a browser asks with it instead. Each page gets a context of its own: a context
+   * that has met the challenge carries the refusal over to every later read.
+   */
+  it('reads the endpoint in the run browser, in a fresh context per page', async () => {
+    const asked = [];
+    let opened = 0;
+    let closed = 0;
+    const browser = {
+      createBrowserContext: async () => {
+        opened++;
+        return {
+          newPage: async () => ({
+            goto: async (url) => {
+              const page = Number(new URL(String(url)).searchParams.get('pag'));
+              asked.push(page);
+              return {
+                status: () => 200,
+                text: async () => JSON.stringify({ maxPages: 2, results: [{ realEstate: { id: page } }] }),
+              };
+            },
+            close: async () => {},
+          }),
+          close: async () => {
+            closed++;
+          },
+        };
+      },
+    };
+
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      throw new Error('a run with a browser must not ask the endpoint over fetch');
+    };
+
+    vi.useFakeTimers();
+    try {
+      const runConfig = provider.createConfig({ url: providerConfig.immobiliare.mapSearchUrl }, []);
+      const walk = runConfig.getListings(runConfig.url, browser);
+      await vi.runAllTimersAsync();
+      const results = await walk;
+
+      expect(asked).toEqual([1, 2]);
+      expect(opened).toBe(2);
+      expect(closed).toBe(2);
+      expect(results).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+      globalThis.fetch = originalFetch;
+    }
+  });
 });

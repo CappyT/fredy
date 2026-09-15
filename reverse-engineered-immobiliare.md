@@ -227,10 +227,23 @@ The `hash` is the DataDome client key, and it is the same key the android app ca
 The `t` value decides solvability: `fe` is the challenge capsolver answers, `bv` means the asking IP
 is the reason for the block.
 
-The token is minted by capsolver (`DatadomeSliderTask`, see `lib/services/datadome.js`) and sent as
-`Cookie: datadome=...`. With a solved cookie the endpoint answers its ordinary payload - the 422 in
-the example above is the endpoint's own parameter validation, not a block - so the provider attaches
-the token in `requestApiPage` and refreshes it when a read is refused again.
+What decides the challenge type is the client, not the address. Measured from one pod, same minute:
+
+| Client | Exit | Answer |
+|---|---|---|
+| `fetch` (undici) | datacenter, and residential IT, CH, DE, FR (9 exits) | 403, `t=bv` |
+| `fetch` with Chrome 137, 141 or 151 and full `sec-ch-ua` headers | residential IT | 403, `t=bv` |
+| `fetch` carrying a `datadome` cookie a browser had just earned | the minting exit | 403, `t=bv` |
+| CloakBrowser | residential IT | 200, the listings |
+
+So the endpoint is read in the run's browser (`requestApiPageInBrowser`). A `bv` challenge is not
+one capsolver can be paid to solve, and the cookie a browser earns does not transfer to an http
+client here, whatever user agent it copies.
+
+Each read takes a browser context of its own. The website's own search page (`/vendita-case/...`)
+answers 403 with an interstitial that does not resolve itself, headed or headless, and a context
+that has been sent there is answered `t=it` on every later endpoint read. A fresh context is
+answered the listings.
 
 The android app's search api is blocked the same way: `/b2c/v1/properties` answers the ws-app.com
 challenge (`t=bv`) without a cookie. The app earns its cookie from its own DataDome SDK (client key
