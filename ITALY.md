@@ -77,6 +77,14 @@ call to a portal, not only the headless browser. This replaces what
   only. An unusable url is logged and the previous proxy stays in force: a scrape that fails is
   better than one that silently leaves from the server's own IP.
 - **When it takes effect.** At startup, and on every save of the settings page, with no restart.
+- **IPRoyal.** IPRoyal reads its per-request settings out of the proxy password, as
+  `<password>_country-ch_session-hFtcrtN8_lifetime-5m`. When the host is `iproyal.com`, the settings
+  page shows a country picker, a rotating/sticky switch and a lifetime in minutes, and writes them
+  into that password; a password with no suffix rotates on every request. The countries offered are
+  the ones the configured providers serve. `ui/src/services/proxy/iproyal.js` parses and rewrites the
+  password, and carries through what the form knows nothing about, such as a city or `streaming`. No
+  other proxy provider gets this: the same wishes are spelled differently everywhere else, so the
+  controls stay hidden rather than writing a password that quietly does nothing.
 
 ## For coding agents
 

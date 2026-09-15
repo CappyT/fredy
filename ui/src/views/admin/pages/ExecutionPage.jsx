@@ -10,6 +10,23 @@ import { useMemo } from 'react';
 
 import { SegmentPart } from '../../../components/segment/SegmentPart';
 import { timeZoneOptions } from '../../../services/time/timeService';
+import { useSelector } from '../../../services/state/store';
+import { flagFor } from '../../../services/countryFlags';
+import {
+  countriesFromProviders,
+  randomSessionId,
+  readIproyalOptions,
+  writeIproyalOptions,
+} from '../../../services/proxy/iproyal';
+
+/** Country names in the reader's own language; the code itself when the browser has no name for it. */
+function countryName(code) {
+  try {
+    return new Intl.DisplayNames(undefined, { type: 'region' }).of(code.toUpperCase()) ?? code.toUpperCase();
+  } catch {
+    return code.toUpperCase();
+  }
+}
 
 /**
  * @param {number} ts
@@ -44,6 +61,20 @@ function formatFromTBackend(time) {
 export default function ExecutionPage() {
   const { t, form, setField, setWorkingHour, executionDirty, savingExecution, saveExecution } = useOutletContext();
   const zones = useMemo(() => timeZoneOptions(form.workingHours.timeZone), [form.workingHours.timeZone]);
+  const providers = useSelector((state) => state.provider);
+  // Read back out of the url on every render rather than held beside it: the field stays the one
+  // source of truth, so a password pasted by hand fills these controls in, and a control moved here
+  // shows up in the field the operator can still read.
+  const iproyal = readIproyalOptions(form.proxyUrl);
+  const countryOptions = useMemo(
+    () =>
+      countriesFromProviders(providers).map((code) => ({
+        value: code,
+        label: `${flagFor(code)} ${countryName(code)}`,
+      })),
+    [providers],
+  );
+  const setIproyal = (patch) => setField('proxyUrl', writeIproyalOptions(form.proxyUrl, { ...iproyal, ...patch }));
 
   return (
     <div className="settingsShell__page">
@@ -102,6 +133,59 @@ export default function ExecutionPage() {
           value={form.proxyUrl}
           onChange={(value) => setField('proxyUrl', value)}
         />
+
+        {/*
+          Only for IPRoyal, because only IPRoyal reads these out of the password. Another provider
+          spells the same wishes differently, or offers them as separate endpoints, so showing the
+          controls for one of them next to another provider's url would write a password that
+          silently does nothing.
+        */}
+        {iproyal != null && (
+          <>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
+              <Select
+                filter
+                allowCreate
+                showClear
+                optionList={countryOptions}
+                value={iproyal.country ?? undefined}
+                placeholder={t('settings.proxyIproyalCountryAny')}
+                insetLabel={t('settings.proxyIproyalCountry')}
+                onChange={(value) => setIproyal({ country: value == null || value === '' ? null : value })}
+                style={{ minWidth: 220 }}
+              />
+              <Select
+                optionList={[
+                  { value: 'rotating', label: t('settings.proxyIproyalRotating') },
+                  { value: 'sticky', label: t('settings.proxyIproyalSticky') },
+                ]}
+                value={iproyal.sticky ? 'sticky' : 'rotating'}
+                insetLabel={t('settings.proxyIproyalRotation')}
+                // Five minutes when the operator has never set one: a sticky session with no
+                // lifetime is held for IPRoyal's own default, which is not what the field then shows.
+                onChange={(value) => setIproyal({ sticky: value === 'sticky', ttlMinutes: iproyal.ttlMinutes ?? 5 })}
+                style={{ minWidth: 200 }}
+              />
+              {iproyal.sticky && (
+                <>
+                  <InputNumber
+                    min={1}
+                    max={1440}
+                    insetLabel={t('settings.proxyIproyalTtl')}
+                    suffix={t('settings.proxyIproyalTtlSuffix')}
+                    value={iproyal.ttlMinutes ?? undefined}
+                    onChange={(value) => setIproyal({ ttlMinutes: value })}
+                    style={{ maxWidth: 220 }}
+                  />
+                  <Button onClick={() => setIproyal({ sessionId: randomSessionId() })}>
+                    {t('settings.proxyIproyalNewSession')}
+                  </Button>
+                </>
+              )}
+            </div>
+            <div style={{ marginTop: 8, opacity: 0.7 }}>{t('settings.proxyIproyalHint')}</div>
+          </>
+        )}
       </SegmentPart>
 
       {/*
