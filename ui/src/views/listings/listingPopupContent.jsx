@@ -7,7 +7,7 @@ import { renderToString } from 'react-dom/server';
 import { IconChevronLeft, IconChevronRight, IconDelete, IconEyeOpened, IconLink } from '@douyinfe/semi-icons';
 import no_image from '../../assets/no_image.png';
 import { availableModes, formatMinutes, hasAnyTime } from '../../components/transit/travelTimeFormat.js';
-import { formatEuroPrice } from '../../services/price/priceService.js';
+import { formatPrice } from '../../services/price/currency.js';
 import { formatDecimal } from '../../services/number/numberService.js';
 
 /**
@@ -138,7 +138,7 @@ function renderListingBody(listing, index, total, t, locale) {
     />
     <h4>${listing.title}</h4>
     <div class="info">
-      <span><strong>${t('map.popupPrice')}</strong> ${listing.price ? formatEuroPrice(listing.price, locale) : t('common.na')}</span>
+      <span><strong>${t('map.popupPrice')}</strong> ${listing.price ? formatPrice(listing.price, locale, listing.currency) : t('common.na')}</span>
       <span><strong>${t('map.popupAddress')}</strong> ${listing.address || t('common.na')}</span>
       <span><strong>${t('map.popupJob')}</strong> ${listing.job_name || t('common.na')}</span>
       <span><strong>${t('map.popupProvider')}</strong> ${capitalizedProvider}</span>

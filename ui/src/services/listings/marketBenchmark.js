@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { formatEuroPrice } from '../price/priceService.js';
+import { formatPrice } from '../price/currency.js';
 
 /**
  * Reading the price per square metre a listing carries, and how it compares to the area.
@@ -99,7 +99,7 @@ export function marketVerdict(percent) {
  *
  * @param {Object|null|undefined} listing A row as the listings API returns it.
  * @returns {{pricePerSqm: number, median: number|null, sampleSize: number|null, radiusKm: number|null,
- *   percent: number|null, verdict: ('below'|'inline'|'above'|null)}|null}
+ *   percent: number|null, verdict: ('below'|'inline'|'above'|null), currency: string|null}|null}
  *   `null` when the listing has no price per square metre at all, which is the case for anything
  *   the provider did not state a size for.
  */
@@ -117,6 +117,9 @@ export function readMarketBenchmark(listing) {
     radiusKm: toNumber(listing?.market_radius_km),
     percent,
     verdict: marketVerdict(percent),
+    // Both figures are in the listing's own currency: the server only measures it against neighbours
+    // priced in the same one.
+    currency: listing?.currency ?? null,
   };
 }
 
@@ -125,9 +128,10 @@ export function readMarketBenchmark(listing) {
  *
  * @param {number} value
  * @param {string} locale BCP 47 locale, from `useLocale()`.
+ * @param {string|null} [currency] The listing's currency; missing means euros.
  * @returns {string} e.g. `12,40 €/m²`.
  */
-export function formatPricePerSqm(value, locale) {
+export function formatPricePerSqm(value, locale, currency = null) {
   const parsed = toNumber(value);
   if (parsed == null) {
     return '';
@@ -137,7 +141,7 @@ export function formatPricePerSqm(value, locale) {
   // square metre to the cent.
   const whole = parsed >= WHOLE_EURO_ABOVE;
   const rounded = whole ? Math.round(parsed) : Math.round(parsed * 100) / 100;
-  return `${formatEuroPrice(rounded, locale, whole ? 0 : 2)}/m²`;
+  return `${formatPrice(rounded, locale, currency, whole ? 0 : 2)}/m²`;
 }
 
 /**
