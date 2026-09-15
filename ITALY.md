@@ -9,9 +9,9 @@ covers the differences.
 
 -   🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭 🇪🇸 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
     WG-Gesucht, Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and
-    [14 more](./README.md#provider-)
+    [14 more](./doc/providers.md)
 
-Fredy ships with 25 providers. The German ones are listed in the [README](./README.md#provider-);
+Fredy ships with 25 providers. The German ones are listed in [Providers & scraping](./doc/providers.md);
 the rest are offered Italy first:
 
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
@@ -70,3 +70,4 @@ with a challenge is a failed read, the way upstream treats it.
 | 2026-09-13 | `620c77e` | `b7c7e68` (27.6.1) | 2719 | 285 | 79 |
 | 2026-09-14 | `2349cc9` | `b7c7e68` (27.6.1) | 2768 | 290 | 80 |
 | 2026-09-14 | `cda6d47` | `b7c7e68` (27.6.1) | 2611 | 217 | 72 |
+| 2026-09-15 | `e8e1cda` | `45f42ad` (28.1.0) | 2118 | 190 | 64 |
