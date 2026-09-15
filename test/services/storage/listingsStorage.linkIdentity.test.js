@@ -66,6 +66,7 @@ describe('listingsStorage.getKnownListingsByLinkForJob', () => {
         provider         TEXT,
         link             TEXT,
         price            REAL,
+        currency         TEXT,
         created_at       INTEGER,
         is_active        INTEGER,
         manually_deleted INTEGER DEFAULT 0

@@ -68,6 +68,7 @@ describe('queryListings affordability band against real SQLite', () => {
         id TEXT PRIMARY KEY,
         job_id TEXT,
         price REAL,
+        currency TEXT,
         size REAL,
         title TEXT,
         address TEXT,

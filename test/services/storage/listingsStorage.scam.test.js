@@ -32,6 +32,7 @@ describe('scam signals and overrides in the listings table', () => {
         provider TEXT,
         job_id TEXT,
         price REAL,
+        currency TEXT,
         size REAL,
         rooms REAL,
         build_year INTEGER,

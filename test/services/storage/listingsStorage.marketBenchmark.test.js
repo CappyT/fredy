@@ -35,6 +35,7 @@ describe('market benchmark against the listings table', () => {
         id TEXT PRIMARY KEY,
         job_id TEXT,
         price INTEGER,
+        currency TEXT,
         size INTEGER,
         latitude REAL,
         longitude REAL,

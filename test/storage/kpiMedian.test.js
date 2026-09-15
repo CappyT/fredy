@@ -26,6 +26,7 @@ describe('getListingsKpisForJobIds', () => {
         id TEXT PRIMARY KEY,
         job_id TEXT,
         price REAL,
+        currency TEXT,
         is_active INTEGER,
         manually_deleted INTEGER DEFAULT 0,
         price_per_sqm REAL
@@ -72,11 +73,17 @@ describe('getListingsKpisForJobIds', () => {
   }
 
   it('returns zeros without job ids', () => {
-    expect(kpis([])).toEqual({ numberOfActiveListings: 0, medianPriceOfListings: 0, medianPricePerSqm: null });
+    expect(kpis([])).toEqual({
+      numberOfActiveListings: 0,
+      medianPriceOfListings: 0,
+      medianPricePerSqm: null,
+      currency: 'EUR',
+    });
     expect(listingsStorage.getListingsKpisForJobIds()).toEqual({
       numberOfActiveListings: 0,
       medianPriceOfListings: 0,
       medianPricePerSqm: null,
+      currency: 'EUR',
     });
   });
 
@@ -121,7 +128,12 @@ describe('getListingsKpisForJobIds', () => {
   it('excludes hidden listings from both numbers', () => {
     add(1000);
     add(50_000, { deleted: 1 });
-    expect(kpis()).toEqual({ numberOfActiveListings: 1, medianPriceOfListings: 1000, medianPricePerSqm: null });
+    expect(kpis()).toEqual({
+      numberOfActiveListings: 1,
+      medianPriceOfListings: 1000,
+      medianPricePerSqm: null,
+      currency: 'EUR',
+    });
   });
 
   it('spans several jobs', () => {
@@ -135,12 +147,18 @@ describe('getListingsKpisForJobIds', () => {
       numberOfActiveListings: 5,
       medianPriceOfListings: referenceMedian(prices),
       medianPricePerSqm: null,
+      currency: 'EUR',
     });
   });
 
   it('reports a zero median when no listing has a price', () => {
     add(null);
-    expect(kpis()).toEqual({ numberOfActiveListings: 1, medianPriceOfListings: 0, medianPricePerSqm: null });
+    expect(kpis()).toEqual({
+      numberOfActiveListings: 1,
+      medianPriceOfListings: 0,
+      medianPricePerSqm: null,
+      currency: 'EUR',
+    });
   });
 
   it('agrees with the reference implementation over a larger random set', () => {
