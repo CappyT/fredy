@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventEmitter } from 'node:events';
 
 describe('services/jobs/jobExecutionService', () => {
@@ -91,8 +91,6 @@ describe('services/jobs/jobExecutionService', () => {
     return mod;
   }
 
-  afterEach(() => vi.unstubAllEnvs());
-
   beforeEach(() => {
     bus = new EventEmitter();
     calls = {
@@ -179,14 +177,7 @@ describe('services/jobs/jobExecutionService', () => {
     expect(update.timestamp).toBeLessThanOrEqual(after);
   });
 
-  it.each([
-    [undefined, undefined, true],
-    ['true', ':99', false],
-    ['true', undefined, true],
-    [undefined, ':0', true],
-  ])('reuses one browser with IS_DOCKER=%s, DISPLAY=%s, headless=%s', async (docker, display, headless) => {
-    vi.stubEnv('IS_DOCKER', docker);
-    vi.stubEnv('DISPLAY', display);
+  it('launches and reuses a single shared browser across all providers in a job', async () => {
     // Providers hand out a fresh config per run instead of mutating a shared one, so the double
     // mirrors that: createConfig() returns a new object every time it is called.
     const provider = (id, config) => ({
@@ -215,7 +206,7 @@ describe('services/jobs/jobExecutionService', () => {
     bus.emit('jobs:runOne', { jobId: 'j1' });
     await vi.waitFor(() => expect(calls.markFinished).toEqual(['j1']));
 
-    expect(calls.launchBrowser).toEqual([['https://api.example/', { humanize: false, puppeteerHeadless: headless }]]);
+    expect(calls.launchBrowser).toEqual([['https://api.example/', {}]]);
     expect(calls.pipeline.map(({ browser }) => browser)).toEqual([state.browser, state.browser, state.browser]);
     expect(calls.closeBrowser).toEqual([state.browser]);
   });

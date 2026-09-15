@@ -17,7 +17,7 @@ FROM node:22-trixie-slim
 # resulting CLOAKBROWSER_SUPPRESS_FONT_WARNING startup notice is expected.
 # tini is the container's init (see ENTRYPOINT below) and must survive the build-tool purge.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates tini xvfb fonts-liberation libasound2t64 \
+    curl ca-certificates tini fonts-liberation libasound2t64 \
     libatk-bridge2.0-0t64 libatk1.0-0t64 libcups2t64 libdbus-1-3 \
     libdrm2 libgbm1 libgtk-3-0t64 libnspr4 libnss3 \
     libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 xdg-utils \
@@ -31,7 +31,6 @@ WORKDIR /fredy
 
 ENV NODE_ENV=production \
     IS_DOCKER=true \
-    DISPLAY=:99 \
     CLOAKBROWSER_SUPPRESS_FONT_WARNING=1
 
 COPY package.json yarn.lock ./
@@ -80,10 +79,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 # left two more `[chrome] <defunct>` entries behind until the container hit the pid limit.
 # tini reaps whatever it inherits and forwards signals (-g: to the whole process group), so
 # shutdown keeps working as before.
-#
-# Xvfb gives the browser a real windowed display: bot guards score headless Chrome lower than a
-# windowed one even when its fingerprint is patched, and a wall that a solved captcha should
-# clear re-arms itself against a headless session. Xvfb is waited for via its socket, which
-# appears once the server is accepting connections.
 ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1366x768x24 -nolisten tcp & for i in $(seq 1 50); do [ -S /tmp/.X11-unix/X99 ] && break; sleep 0.1; done; [ -S /tmp/.X11-unix/X99 ] || { echo \"Xvfb did not become ready\" >&2; exit 1; }; exec node index.js"]
+CMD ["node", "index.js"]
