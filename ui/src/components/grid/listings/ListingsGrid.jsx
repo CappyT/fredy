@@ -16,7 +16,7 @@ import {
   IconRefresh,
 } from '@douyinfe/semi-icons';
 import no_image from '../../../assets/no_image.png';
-import { formatEuroPrice } from '../../../services/price/priceService.js';
+import { formatPrice } from '../../../services/price/currency.js';
 import * as timeService from '../../../services/time/timeService.js';
 import StatusControl from '../../listings/StatusControl.jsx';
 import ExternalListingLink from '../../listings/ExternalListingLink.jsx';
@@ -100,12 +100,13 @@ const ListingsGrid = ({
             {item.price && (
               <div className="listingsGrid__card__price">
                 <IconCart size="small" />
-                {formatEuroPrice(item.price, locale)}
+                {formatPrice(item.price, locale, item.currency)}
                 <AffordabilityChip verdict={item.affordabilityVerdict} dealType={item.dealType} />
                 <PriceChangeBadge
                   price={item.price}
                   previousPrice={item.previous_price}
                   changedAt={item.price_changed_at}
+                  currency={item.currency}
                 />
                 {/* Next to the price rather than on a line of its own: it is the same figure said
                     a second way, and reading the two together is the whole point. */}

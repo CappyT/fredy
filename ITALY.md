@@ -35,9 +35,38 @@ Searches that cannot be translated into API requests use the job's browser.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
 
+## Swiss francs
+
+Prices are shown in the currency they were advertised in. Flatfox serves Switzerland, so its listings
+are in Swiss francs (CHF). Every other provider is in euros. Nothing is converted, so there is no
+exchange rate to fetch and none to go out of date.
+
+- **Where it shows.** Notifications, MCP answers and the web interface label a franc price in
+  francs: the listings, the map and its price filter, the listing detail, the price per m², the
+  price history and the price change badge.
+- **What it keeps apart.** The market benchmark compares a listing only with listings in the same
+  currency, so a flat in Basel is not measured against rents across the German border. The dashboard
+  medians use the currency most of your priced listings are in, and name it.
+- **What it leaves out.** The finance tools use a German mortgage and euro thresholds. Franc listings
+  get no affordability verdict, no costing, no calculator shortcut, and they are skipped by the
+  affordability filter and scan. External price observations are not sent for jobs whose listings
+  are mostly in francs.
+- **Job filter.** The maximum price applies to each listing in its own currency. The job form shows
+  the currencies of the selected providers next to the field, for example `CHF` for a search on
+  Flatfox only, or `€ / CHF` for a search across the border.
+
+Listings stored before this change are labelled with their currency on the next start. A franc
+listing among them also has its market median measured again against franc listings only.
+
 ## For coding agents
 
 Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
+
+### Key services
+
+| Service | Location | Notes |
+|---|---|---|
+| Currency | `lib/utils/currency.js`, `ui/src/services/price/currency.js` | Country to currency table, formatting, and the euro-only checks. The two tables must match, `test/ui/currencyInSync.test.js` enforces it. The pipeline stores `listings.currency` (migration `900.listing-currency.js`); `lib/services/listings/currencyBackfill.js` fills older rows at startup. SQL reads a NULL currency as `EUR` |
 
 ### Bot protection
 

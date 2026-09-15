@@ -18,6 +18,7 @@ import SqliteConnection, { computeDbPath } from './lib/services/storage/SqliteCo
 import { initJobExecutionService } from './lib/services/jobs/jobExecutionService.js';
 import { ensureValidBinary } from './lib/services/ensureValidBinary.js';
 import { removeObsoleteProviders } from './lib/services/providers/providerCleanup.js';
+import { backfillListingCurrency } from './lib/services/listings/currencyBackfill.js';
 import { seedDemo, warnOnDefaultAdminPassword } from './lib/services/demo/demoService.js';
 import { initDemoCleanupCron } from './lib/services/crons/demo-cleanup-cron.js';
 import { initSessionCleanupCron } from './lib/services/crons/session-cleanup-cron.js';
@@ -90,6 +91,10 @@ const providers = await getProviders();
 // of existing jobs and in the listings it found). Those leftovers can never be scraped or
 // re-checked again, so they are pruned before anything starts working with jobs or listings.
 removeObsoleteProviders(providers);
+
+// Needs the providers, which is why migration 900 could only add the column. Before the API starts,
+// so no screen reads a franc listing as euros.
+backfillListingCurrency(providers);
 
 similarityCache.initSimilarityCache();
 similarityCache.startSimilarityCacheReloader();

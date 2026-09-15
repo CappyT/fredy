@@ -205,7 +205,7 @@ describe('POST /affordability', () => {
     const body = response.json();
     expect(body.items).toHaveLength(1);
     expect(body.items[0].id).toBe('buy');
-    expect(body.skipped).toEqual({ noPrice: 1, incompleteProfile: 0 });
+    expect(body.skipped).toEqual({ noPrice: 1, incompleteProfile: 0, otherCurrency: 0 });
   });
 
   it('falls back to the price heuristic when a listing has no deal type', async () => {

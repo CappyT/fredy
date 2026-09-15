@@ -25,6 +25,7 @@ import { xhrDelete, errorMessage } from '../../services/xhr.js';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import ListingDeletionModal from '../../components/ListingDeletionModal.jsx';
 import { createListingPopupContent } from './listingPopupContent.jsx';
+import { currenciesLabel, currenciesOfListings } from '../../services/price/currency.js';
 // Not imported as `Map`. This module is itself called Map.jsx, and a component of that name shadows
 // the global `Map` constructor for the whole file: `new Map()` then invokes a React function
 // component with no props, which fails somewhere inside it rather than where it was written.
@@ -577,7 +578,8 @@ export default function MapView() {
 
                 <div className="map-panel__row">
                   <Text size="small" strong className="map-panel__label">
-                    {t('map.filterPriceLabel')}
+                    {/* The slider runs over raw prices, so the label names the currencies they are in. */}
+                    {t('map.filterPriceLabel').replace('€', currenciesLabel(currenciesOfListings(listings)))}
                   </Text>
                   <div className="map-view-container__price-slider">
                     <div className="map__rangesliderLabels">

@@ -14,7 +14,7 @@ import {
   IconRefresh,
 } from '@douyinfe/semi-icons';
 import no_image from '../../assets/no_image.png';
-import { formatEuroPrice } from '../../services/price/priceService.js';
+import { formatPrice } from '../../services/price/currency.js';
 import * as timeService from '../../services/time/timeService.js';
 import StatusControl from '../listings/StatusControl.jsx';
 import ExternalListingLink from '../listings/ExternalListingLink.jsx';
@@ -73,12 +73,13 @@ const ListingsTable = ({
           <div className="listingsTable__row__price">
             {item.price ? (
               <>
-                {formatEuroPrice(item.price, locale)}
+                {formatPrice(item.price, locale, item.currency)}
                 <AffordabilityChip verdict={item.affordabilityVerdict} dealType={item.dealType} />
                 <PriceChangeBadge
                   price={item.price}
                   previousPrice={item.previous_price}
                   changedAt={item.price_changed_at}
+                  currency={item.currency}
                 />
                 <PricePerSqmBadge listing={item} />
               </>

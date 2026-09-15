@@ -46,7 +46,7 @@ import MapCanvas, { HOME_MARKER_COLOR } from '../../components/map/Map.jsx';
 import { useProviderCountries } from '../../hooks/useProviderCountries.js';
 import no_image from '../../assets/no_image.png';
 import * as timeService from '../../services/time/timeService.js';
-import { formatEuroPrice } from '../../services/price/priceService.js';
+import { formatPrice, isDefaultCurrency } from '../../services/price/currency.js';
 import { formatDecimal } from '../../services/number/numberService.js';
 import { getBoundsFromCoords } from './mapUtils.js';
 import { applyRouteLayers, buildRouteData, placeTargets } from './detailMapLayers.js';
@@ -459,7 +459,7 @@ export default function ListingDetail() {
     {
       key: t('listing.detail.fieldPrice'),
       value: listing.price ? (
-        <span className="listing-detail__price">{formatEuroPrice(listing.price, locale)}</span>
+        <span className="listing-detail__price">{formatPrice(listing.price, locale, listing.currency)}</span>
       ) : (
         t('common.na')
       ),
@@ -548,6 +548,8 @@ export default function ListingDetail() {
   // with the listing from the server, decided against the same profile and thresholds the
   // affordability filter uses, so this page can never disagree with the row the user clicked.
   const affordabilityVerdict = listing.affordabilityVerdict ?? null;
+  // The finance model lends in euros, so only a euro price has a costing to offer or to set up for.
+  const financeablePrice = listing.price != null && isDefaultCurrency(listing.currency);
   const isRental = listing.dealType === 'rent';
 
   if (affordabilityVerdict) {
@@ -819,7 +821,7 @@ export default function ListingDetail() {
                   <Title heading={6} style={{ marginBottom: '0.75rem' }}>
                     {t('listing.detail.priceHistory')}
                   </Title>
-                  <PriceHistoryChart data={priceHistory} locale={locale} />
+                  <PriceHistoryChart data={priceHistory} locale={locale} currency={listing.currency} />
                 </>
               )}
 
@@ -861,7 +863,7 @@ export default function ListingDetail() {
 
               {/* Without the matching half of the profile there is nothing to compute, so offer
                   the way to create it instead of hiding the feature completely. */}
-              {!(isRental ? rentComplete : buyComplete) && listing.price != null && (
+              {!(isRental ? rentComplete : buyComplete) && financeablePrice && (
                 <>
                   <Divider margin="1.5rem" />
                   <Space align="center" wrap>

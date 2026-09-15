@@ -23,7 +23,7 @@ import { loadDraft, saveDraft, clearDraft } from '../../../services/jobs/jobDraf
 import { missingRequirements } from '../../../services/jobs/jobValidation.js';
 import { summariseJobRefinements } from '../../../services/jobs/jobSummary.js';
 import { withReturnTo } from '../../../services/routes/returnTo.js';
-import { formatEuro } from '../../../components/cards/chartTheme.js';
+import { currenciesForProviders, currencyLabel, formatPriceInCurrencies } from '../../../services/price/currency.js';
 // The frontend copy of the server's detection. The two must agree: the pipeline falls back to its
 // own when a job carries no deal type, so a form that guessed differently would show one thing and
 // store another. Kept in step by test/ui/dealTypeCopyInSync.test.js.
@@ -55,6 +55,7 @@ export default function JobMutator() {
   const jobs = useSelector((state) => state.jobsData.jobs);
   const shareableUserList = useSelector((state) => state.jobsData.shareableUserList);
   const allChannels = useSelector((state) => state.notificationChannels.channels);
+  const providerCatalogue = useSelector((state) => state.provider);
   const params = useParams();
   const location = useLocation();
 
@@ -225,6 +226,12 @@ export default function JobMutator() {
     navigate('/jobs');
   };
 
+  // Which currencies the price ceiling will be read in: one per ticked provider's country.
+  const priceCurrencies = currenciesForProviders(
+    providerCatalogue,
+    providerData.map((provider) => provider?.id),
+  );
+
   const handleSpecFilterChange = (key, value) => {
     if (!SPEC_FILTERS.map(({ key }) => key).includes(key)) return;
 
@@ -238,7 +245,7 @@ export default function JobMutator() {
   // What the collapsed section holds, so it does not have to be opened to find out.
   const refinementSummary = summariseJobRefinements(
     { blacklist, specFilter, spatialFilter, commuteFilter },
-    { t, formatPrice: (value) => formatEuro(value, locale) },
+    { t, formatPrice: (value) => formatPriceInCurrencies(value, locale, priceCurrencies) },
   );
 
   const handleProviderEdit = (data) => {
@@ -499,6 +506,13 @@ export default function JobMutator() {
                       placeholder={t('jobs.mutation.criteriaNumberPlaceholder')}
                       value={specFilter?.[filter.key]}
                       onChange={(value) => handleSpecFilterChange(filter.key, value)}
+                      // The ceiling is compared in each listing's own currency, so it names the ones
+                      // the ticked providers advertise in.
+                      suffix={
+                        filter.key === 'maxPrice' && priceCurrencies.length > 0
+                          ? priceCurrencies.map(currencyLabel).join(' / ')
+                          : undefined
+                      }
                     />
                   </div>
                 ))}
