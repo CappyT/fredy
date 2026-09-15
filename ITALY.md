@@ -106,6 +106,9 @@ DataDome challenge on a portal the fork reads through an api is solved with a pa
   provider behaves exactly as upstream: a blocked read is a failed read.
 - The cookie is kept on disk beside the database (`datadome-tokens.json`, or `FREDY_DATADOME_STORE`)
   with the `Max-Age` the challenge stated, so a restart does not pay for a solve twice.
+- A solve is paid for, so a host is asked of capsolver at most once every ten minutes, and two jobs
+  refused at the same moment share one solve. A search that keeps being refused fails the read
+  instead of buying a solve for each of its twenty pages.
 - Only DataDome is handled this way. The other guards the fork meets stay unsolved.
 - `lib/services/datadome.js` holds the whole mechanism. `lib/provider/immobiliare.js` uses its token
   on the website search endpoint; `lib/services/idealista/idealistaSearch.js` hands one to the
