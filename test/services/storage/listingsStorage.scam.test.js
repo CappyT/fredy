@@ -43,6 +43,8 @@ describe('scam signals and overrides in the listings table', () => {
         link TEXT,
         created_at INTEGER,
         is_active INTEGER,
+        inactive_since INTEGER,
+        active_check_failures INTEGER DEFAULT 0,
         latitude REAL,
         longitude REAL,
         published_at INTEGER,
