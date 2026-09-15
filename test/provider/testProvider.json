@@ -82,6 +82,10 @@
     "url": "https://flatfox.ch/de/search/?east=8.62&north=47.43&south=47.32&west=8.44&object_category=APARTMENT&offer_type=RENT",
     "enabled": true
   },
+  "homegate": {
+    "url": "https://www.homegate.ch/rent/real-estate-listings/city-zurich",
+    "enabled": true
+  },
   "tecnocasa": {
     "url": "https://www.tecnocasa.it/annunci/immobili/lazio/roma/roma.html",
     "enabled": true

@@ -59,6 +59,7 @@ export const PROVIDER_SIZE_ORDER = [
   // Austria
   'willhaben',
   // Switzerland
+  'homegate',
   'flatfox',
   // Spain, Italy and Portugal
   'immobiliare',

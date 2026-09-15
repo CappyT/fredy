@@ -143,6 +143,10 @@ const NO_RANGE_IN_URL = [
   ['regionalimmobilien24', 'https://www.regionalimmobilien24.de/rostock/rostock/kaufen/haus/-/-/-/?rd=5'],
   ['wgGesucht', 'https://www.wg-gesucht.de/wg-zimmer-in-Duesseldorf.30.0.1.0.html'],
   ['willhaben', 'https://www.willhaben.at/iad/immobilien/mietwohnungen/wien'],
+  // Homegate spells its price filter in no URL that was recorded: the portal's web search URLs are
+  // refused by the mobile API, and the structured query has no place for a filter the pasted URL
+  // has not been read into. Its template declares no parameters, which is what this asserts.
+  ['homegate', 'https://www.homegate.ch/rent/real-estate-listings/city-zurich'],
 ];
 
 const IMMOSCOUT = 'https://www.immobilienscout24.de/Suche/de/nordrhein-westfalen/duesseldorf';

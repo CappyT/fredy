@@ -1,0 +1,4404 @@
+{
+  "from": 0,
+  "size": 20,
+  "total": 533,
+  "maxFrom": 40,
+  "results": [
+    {
+      "id": "1000000000",
+      "listingType": "PREMIUM",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000000",
+        "offerType": "buy",
+        "prices": {
+          "currency": "CHF",
+          "rent": null,
+          "buy": {
+            "price": 890000,
+            "extra": null,
+            "area": "ALL"
+          }
+        },
+        "localization": {
+          "primary": "fr",
+          "de": null,
+          "fr": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000000/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 38,
+          "yearBuilt": 1948,
+          "yearLastRenovated": 2019,
+          "floor": 0,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-14T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-15T00:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000000"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000001",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000001",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1825,
+            "gross": 2065,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000001/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000001/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 40,
+          "yearBuilt": 1949,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T23:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000001"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000002",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000002",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1850,
+            "gross": 2090,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000002/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000002/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 42,
+          "yearBuilt": 1950,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T22:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000002"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000003",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000003",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1875,
+            "gross": 2115,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000003/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000003/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 44,
+          "yearBuilt": 1951,
+          "yearLastRenovated": 2019,
+          "floor": 3,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T21:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000003"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000004",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000004",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1900,
+            "gross": 2140,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000004/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000004/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 46,
+          "yearBuilt": 1952,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T20:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000004"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000005",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000005",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 2805,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000005/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000005/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 48,
+          "yearBuilt": 1953,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T09:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T19:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000005"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000006",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000006",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1950,
+            "gross": 2190,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000006/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000006/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 50,
+          "yearBuilt": 1954,
+          "yearLastRenovated": 2019,
+          "floor": 1,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T06:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T18:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000006"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000007",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000007",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 1975,
+            "gross": 2215,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000007/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 52,
+          "yearBuilt": 1955,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T03:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T17:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000007"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000008",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000008",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2000,
+            "gross": 2240,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000008/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000008/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 54,
+          "yearBuilt": 1956,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-13T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T16:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000008"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000009",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000009",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2025,
+            "gross": 2265,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000009/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000009/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 56,
+          "yearBuilt": 1957,
+          "yearLastRenovated": 2019,
+          "floor": 4,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T15:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000009"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000010",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000010",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 2930,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000010/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000010/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 58,
+          "yearBuilt": 1958,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T14:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000010"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000011",
+      "listingType": "PREMIUM",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000011",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2075,
+            "gross": 2315,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000011/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000011/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 60,
+          "yearBuilt": 1959,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T13:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000011"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000012",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000012",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2100,
+            "gross": 2340,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000012/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000012/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 62,
+          "yearBuilt": 1960,
+          "yearLastRenovated": 2019,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T12:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000012"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000013",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000013",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2125,
+            "gross": 2365,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "fr",
+          "de": null,
+          "fr": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000013/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000013/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 64,
+          "yearBuilt": 1961,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T09:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T11:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000013"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000014",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000014",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2150,
+            "gross": 2390,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000014/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 66,
+          "yearBuilt": 1962,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T06:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T10:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000014"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000015",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000015",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3055,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000015/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000015/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 68,
+          "yearBuilt": 1963,
+          "yearLastRenovated": 2019,
+          "floor": 0,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T03:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T09:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000015"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000016",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000016",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2200,
+            "gross": 2440,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000016/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000016/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 70,
+          "yearBuilt": 1964,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-12T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T08:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000016"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000017",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000017",
+        "offerType": "buy",
+        "prices": {
+          "currency": "CHF",
+          "rent": null,
+          "buy": {
+            "price": 975000,
+            "extra": null,
+            "area": "ALL"
+          }
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000017/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000017/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 72,
+          "yearBuilt": 1965,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T07:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000017"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000018",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000018",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2250,
+            "gross": 2490,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000018/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000018/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 74,
+          "yearBuilt": 1966,
+          "yearLastRenovated": 2019,
+          "floor": 3,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T06:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000018"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000019",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000019",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2275,
+            "gross": 2515,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000019/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000019/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 76,
+          "yearBuilt": 1967,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T05:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000019"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000020",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000020",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3180,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000020/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000020/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 78,
+          "yearBuilt": 1968,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T04:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000020"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000021",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000021",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2325,
+            "gross": 2565,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000021/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 80,
+          "yearBuilt": 1969,
+          "yearLastRenovated": 2019,
+          "floor": 1,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T09:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T03:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000021"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000022",
+      "listingType": "PREMIUM",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000022",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2350,
+            "gross": 2590,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000022/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000022/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 82,
+          "yearBuilt": 1970,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T06:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T02:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000022"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000023",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000023",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2375,
+            "gross": 2615,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000023/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000023/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 84,
+          "yearBuilt": 1971,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T03:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T01:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000023"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000024",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000024",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2400,
+            "gross": 2640,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000024/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000024/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 86,
+          "yearBuilt": 1972,
+          "yearLastRenovated": 2019,
+          "floor": 4,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-11T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-14T00:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000024"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000025",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000025",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3305,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000025/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000025/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 88,
+          "yearBuilt": 1973,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T23:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000025"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000026",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000026",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2450,
+            "gross": 2690,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "fr",
+          "de": null,
+          "fr": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000026/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000026/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 90,
+          "yearBuilt": 1974,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T22:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000026"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000027",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000027",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2475,
+            "gross": 2715,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000027/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000027/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 92,
+          "yearBuilt": 1975,
+          "yearLastRenovated": 2019,
+          "floor": 2,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T21:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000027"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000028",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000028",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2500,
+            "gross": 2740,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000028/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 94,
+          "yearBuilt": 1976,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T20:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000028"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000029",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000029",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2525,
+            "gross": 2765,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000029/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000029/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 96,
+          "yearBuilt": 1977,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T09:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T19:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000029"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000030",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000030",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3430,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000030/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000030/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 98,
+          "yearBuilt": 1978,
+          "yearLastRenovated": 2019,
+          "floor": 0,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T06:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T18:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000030"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000031",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000031",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2575,
+            "gross": 2815,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000031/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000031/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 100,
+          "yearBuilt": 1979,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T03:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T17:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000031"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000032",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000032",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2600,
+            "gross": 2840,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000032/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000032/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 102,
+          "yearBuilt": 1980,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-10T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T16:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000032"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000033",
+      "listingType": "PREMIUM",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000033",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2625,
+            "gross": 2865,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000033/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000033/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 104,
+          "yearBuilt": 1981,
+          "yearLastRenovated": 2019,
+          "floor": 3,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T15:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000033"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000034",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000034",
+        "offerType": "buy",
+        "prices": {
+          "currency": "CHF",
+          "rent": null,
+          "buy": {
+            "price": 1060000,
+            "extra": null,
+            "area": "ALL"
+          }
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000034/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000034/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 106,
+          "yearBuilt": 1982,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T14:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000034"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000035",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000035",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3555,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000035/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 108,
+          "yearBuilt": 1983,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T13:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000035"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000036",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000036",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2700,
+            "gross": 2940,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000036/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000036/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 110,
+          "yearBuilt": 1984,
+          "yearLastRenovated": 2019,
+          "floor": 1,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T12:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000036"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000037",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000037",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2725,
+            "gross": 2965,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000037/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000037/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 112,
+          "yearBuilt": 1985,
+          "yearLastRenovated": null,
+          "floor": 2,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T09:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T11:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000037"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000038",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000038",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2750,
+            "gross": 2990,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000038/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000038/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 3,
+          "livingSpace": 114,
+          "yearBuilt": 1986,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T06:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T10:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000038"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000039",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000039",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2775,
+            "gross": 3015,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "fr",
+          "de": null,
+          "fr": {
+            "text": {
+              "title": "Moderne 2.5-Zimmer-Wohnung im Neubau",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000039/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000039/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 116,
+          "yearBuilt": 1987,
+          "yearLastRenovated": 2019,
+          "floor": 4,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T03:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T09:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000039"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000040",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000040",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": null,
+            "gross": 3680,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Attraktive 5.5-Zimmer-Familienwohnung",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000040/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000040/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4,
+          "livingSpace": 118,
+          "yearBuilt": 1988,
+          "yearLastRenovated": null,
+          "floor": 0,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-09T00:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T08:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000040"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000041",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000041",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2825,
+            "gross": 3065,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Studiowohnung mit Blick über die Stadt",
+              "description": "Ruhige Lage, gute Anbindung an den öffentlichen Verkehr und Einkaufsmöglichkeiten in Gehweite.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000041/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000041/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 4.5,
+          "livingSpace": 120,
+          "yearBuilt": 1989,
+          "yearLastRenovated": null,
+          "floor": 1,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-08T21:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T07:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000041"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Langstrasse",
+          "houseNumber": "45",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000042",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000042",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2850,
+            "gross": 3090,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Helle 3.5-Zimmer-Wohnung mit Balkon",
+              "description": "Der Grundriss ist hell und gut eingeteilt, der Balkon geht nach Süden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000042/grundriss.pdf"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 1.5,
+          "livingSpace": 122,
+          "yearBuilt": 1990,
+          "yearLastRenovated": 2019,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-08T18:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T06:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000042"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Hardturmstrasse",
+          "houseNumber": "3",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8005",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000043",
+      "listingType": "STANDARD",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000043",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2875,
+            "gross": 3115,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Grosszügige 4.5-Zimmer-Maisonette-Wohnung",
+              "description": "Die Liegenschaft wurde 2019 umfassend saniert, die Küche ist neu.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000043/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000043/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 124,
+          "yearBuilt": 1991,
+          "yearLastRenovated": null,
+          "floor": 3,
+          "hasBalcony": false,
+          "hasParking": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-08T15:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T05:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000043"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Zürichstrasse",
+          "houseNumber": "88",
+          "zip": "8700",
+          "city": "Küsnacht",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8700",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    },
+    {
+      "id": "1000000044",
+      "listingType": "PREMIUM",
+      "isNewItem": false,
+      "listingCard": {
+        "size": "M"
+      },
+      "newConstructionData": null,
+      "districtName": null,
+      "listing": {
+        "id": "1000000044",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": {
+            "net": 2900,
+            "gross": 3140,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
+          "buy": null
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Charmante Altbauwohnung an zentraler Lage",
+              "description": "Die Wohnung liegt im dritten Stock eines gepflegten Mehrfamilienhauses und ist ab sofort bezugsbereit.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": "Grundriss",
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "DOCUMENT",
+                "url": "https://media.homegate.ch/1000000044/grundriss.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.homegate.ch/1000000044/bild-1.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "fr": null
+        },
+        "characteristics": {
+          "numberOfRooms": 2.5,
+          "livingSpace": 126,
+          "yearBuilt": 1992,
+          "yearLastRenovated": null,
+          "floor": 4,
+          "hasBalcony": true,
+          "hasParking": true
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-01T00:00:00Z",
+          "createdAt": "2026-09-08T12:00:00.000Z",
+          "schemaVersion": 2,
+          "softwareName": "homegate",
+          "updatedAt": "2026-09-13T04:00:00.000Z"
+        },
+        "lister": {
+          "id": "lister-1",
+          "name": "Beispiel AG"
+        },
+        "externalIds": {
+          "platformListingId": "1000000044"
+        },
+        "categories": [],
+        "platforms": [],
+        "valueAddedServices": [],
+        "address": {
+          "street": "Badenerstrasse",
+          "houseNumber": "12",
+          "zip": "8004",
+          "city": "Zürich",
+          "geoCoordinates": {
+            "latitude": 47.3769,
+            "longitude": 8.5417
+          },
+          "geoTags": [
+            "geo-zipcode-8004",
+            "geo-city-zurich",
+            "geo-canton-zurich"
+          ]
+        }
+      }
+    }
+  ],
+  "query": {},
+  "sortBy": "dateCreated",
+  "sortDirection": "desc"
+}

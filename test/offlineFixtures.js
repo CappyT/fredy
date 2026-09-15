@@ -186,6 +186,8 @@ export function buildFetchMock() {
   let flatfoxPins = null;
   let flatfoxListings = null;
   let immobiliareListData = null;
+  let homegateLocations = null;
+  let homegateListData = null;
 
   return async (url, init) => {
     const urlStr = String(url);
@@ -310,6 +312,28 @@ export function buildFetchMock() {
         flatfoxListings = raw ? JSON.parse(raw) : { results: [] };
       }
       return { ok: true, status: 200, json: () => Promise.resolve(flatfoxListings) };
+    }
+
+    // Homegate is read through the mobile api its app talks to. The location lookup turns the slug
+    // of the pasted url into the geo tag the search query wants, and the search then answers one
+    // page per `from`. The recorded page holds more results than its own `maxFrom` allows, so the
+    // walk ends on the portal's ceiling rather than on an empty page.
+    if (urlStr.includes('api.homegate.ch/geo/locations')) {
+      if (homegateLocations == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'homegate_locations.json'));
+        homegateLocations = raw ? JSON.parse(raw) : [];
+      }
+      return { ok: true, status: 200, json: () => Promise.resolve(homegateLocations) };
+    }
+
+    if (urlStr.includes('api.homegate.ch/search/listings')) {
+      if (homegateListData == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'homegate_list.json'));
+        homegateListData = raw ? JSON.parse(raw) : { results: [] };
+      }
+      const from = Number(JSON.parse(init?.body ?? '{}')?.from) || 0;
+      const results = (homegateListData.results ?? []).slice(from, from + 20);
+      return { ok: true, status: 200, json: () => Promise.resolve({ ...homegateListData, from, results }) };
     }
 
     // Immobiliare reads its results out of the endpoint the search page calls, so the fixture is

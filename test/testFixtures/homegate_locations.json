@@ -1,0 +1,32 @@
+[
+  {
+    "id": "geo-city-zurich",
+    "name": "Zürich",
+    "type": "CITY",
+    "canton": "ZH"
+  },
+  {
+    "id": "geo-district-zurich",
+    "name": "Zürich (Stadt)",
+    "type": "DISTRICT",
+    "canton": "ZH"
+  },
+  {
+    "id": "geo-city-zuerich-nord",
+    "name": "Zürich Nord",
+    "type": "CITY",
+    "canton": "ZH"
+  },
+  {
+    "id": "geo-zipcode-8004",
+    "name": "8004 Zürich",
+    "type": "ZIPCODE",
+    "canton": "ZH"
+  },
+  {
+    "id": "geo-canton-zurich",
+    "name": "Zürich (Kanton)",
+    "type": "CANTON",
+    "canton": "ZH"
+  }
+]

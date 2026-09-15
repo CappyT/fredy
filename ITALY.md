@@ -17,7 +17,7 @@ the rest are offered Italy first:
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
 **🇪🇸 Spain · 🇵🇹 Portugal** · Idealista  
 **🇦🇹 Austria** · willhaben  
-**🇨🇭 Switzerland** · Flatfox
+**🇨🇭 Switzerland** · Homegate · Flatfox
 
 ### Idealista
 
@@ -36,6 +36,17 @@ The search endpoint is read in the job's browser: it answers a plain http client
 the same browser to render the page.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
+
+### Homegate
+
+Homegate uses the mobile API of its Android app, because the website refuses a plain client.
+The provider reads the pasted search URL into the API's structured query: the offer type, the
+category and the location slug, which it resolves through the portal's own location autocomplete.
+The location endpoint is open; only the search endpoint sits behind DataDome.
+A `datadome` cookie gets the search in, minted once by the solver and reused.
+Sorting is `dateCreated desc` and travels in the request body.
+The provider reads up to five pages of twenty listings.
+See the [provider documentation](./reverse-engineered-homegate.md) for the query fields and the response model.
 
 ## Swiss francs
 
