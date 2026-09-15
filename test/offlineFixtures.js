@@ -185,6 +185,8 @@ export function buildFetchMock() {
   let willhabenHtml = null;
   let flatfoxPins = null;
   let flatfoxListings = null;
+  let immoscout24chLocations = null;
+  let immoscout24chListings = null;
   let immobiliareListData = null;
   let homegateLocations = null;
   let homegateListData = null;
@@ -334,6 +336,30 @@ export function buildFetchMock() {
       const from = Number(JSON.parse(init?.body ?? '{}')?.from) || 0;
       const results = (homegateListData.results ?? []).slice(from, from + 20);
       return { ok: true, status: 200, json: () => Promise.resolve({ ...homegateListData, from, results }) };
+    }
+
+    // ImmoScout24.ch reads the mobile api of its own host. A pasted url is turned into a structured
+    // query, and the place it names is resolved through the location autocomplete first, so both
+    // endpoints have to be served for the provider to get through its own flow.
+    if (urlStr.includes('api.immoscout24.ch/geo/locations')) {
+      if (immoscout24chLocations == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immoscout24ch_locations.json'));
+        immoscout24chLocations = raw ? JSON.parse(raw) : [];
+      }
+      return { ok: true, status: 200, json: () => Promise.resolve(immoscout24chLocations) };
+    }
+
+    // The recording holds one page, so it answers as the last one there is - and a page after the
+    // recorded one answers empty, which is what stops the walk instead of serving the same adverts
+    // again.
+    if (urlStr.includes('api.immoscout24.ch/search/listings')) {
+      if (immoscout24chListings == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immoscout24ch_listings.json'));
+        immoscout24chListings = raw ? JSON.parse(raw) : { results: [], maxFrom: 0 };
+      }
+      const from = Number(JSON.parse(init?.body ?? '{}')?.from) || 0;
+      const page = from === 0 ? immoscout24chListings : { ...immoscout24chListings, results: [], maxFrom: 0 };
+      return { ok: true, status: 200, json: () => Promise.resolve(page) };
     }
 
     // Immobiliare reads its results out of the endpoint the search page calls, so the fixture is

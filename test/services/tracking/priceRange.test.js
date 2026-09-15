@@ -140,6 +140,9 @@ const NO_RANGE_IN_URL = [
     'https://www.imaxx.de/immobilien/?post_type=immomakler_object&radius=1&vermarktungsart%5B0%5D=kauf&typ%5B0%5D=wohnung',
   ],
   ['inberlinwohnen', 'https://inberlinwohnen.de/wohnungsfinder/'],
+  // Not recorded: this portal is read through its mobile API, and the provider translates only the
+  // path of the pasted URL into a query, so no price band ever comes off it.
+  ['immoscout24ch', 'https://www.immoscout24.ch/de/immobilien/mieten/wohnung/ort-zuerich'],
   ['regionalimmobilien24', 'https://www.regionalimmobilien24.de/rostock/rostock/kaufen/haus/-/-/-/?rd=5'],
   ['wgGesucht', 'https://www.wg-gesucht.de/wg-zimmer-in-Duesseldorf.30.0.1.0.html'],
   ['willhaben', 'https://www.willhaben.at/iad/immobilien/mietwohnungen/wien'],

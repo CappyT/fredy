@@ -86,6 +86,10 @@
     "url": "https://www.homegate.ch/rent/real-estate-listings/city-zurich",
     "enabled": true
   },
+  "immoscout24ch": {
+    "url": "https://www.immoscout24.ch/de/immobilien/mieten/wohnung/ort-zuerich",
+    "enabled": true
+  },
   "tecnocasa": {
     "url": "https://www.tecnocasa.it/annunci/immobili/lazio/roma/roma.html",
     "enabled": true

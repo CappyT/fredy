@@ -1,0 +1,233 @@
+{
+  "from": 0,
+  "size": 20,
+  "total": 3,
+  "maxFrom": 0,
+  "query": {
+    "offerType": "RENT",
+    "propertyType": "APARTMENT",
+    "location": { "geoTags": ["geo-city-zurich"] }
+  },
+  "sortBy": "dateCreated",
+  "sortDirection": "desc",
+  "results": [
+    {
+      "id": "4001234567",
+      "listingType": "PREMIUM",
+      "listingCard": { "size": "LARGE" },
+      "dateAdded": 1789700000000,
+      "isNewItem": true,
+      "isFavorite": false,
+      "isOffline": false,
+      "listing": {
+        "id": "4001234567",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": { "net": 1850, "gross": 2050, "extra": null, "area": "ALL", "interval": "MONTH" },
+          "buy": null
+        },
+        "address": {
+          "country": "CH",
+          "street": "Seefeldstrasse",
+          "streetNumber": "12",
+          "zip": "8008",
+          "city": "Zürich",
+          "geoCoordinates": { "latitude": 47.3549, "longitude": 8.5571 },
+          "geoTags": ["geo-city-zurich", "geo-zipcode-8008", "geo-canton-zurich"]
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "3.5-Zimmer-Wohnung mit Balkon am Seefeld",
+              "description": "Helle Wohnung mit Blick ins Grüne, Küche und Bad renoviert.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": null,
+                "description": null,
+                "publication": null,
+                "title": "Grundriss",
+                "type": "PLAN",
+                "url": "https://media.immoscout24.ch/4001234567/plan.pdf"
+              },
+              {
+                "alt": "Wohnzimmer",
+                "description": null,
+                "publication": null,
+                "title": "Wohnzimmer",
+                "type": "IMAGE",
+                "url": "https://media.immoscout24.ch/4001234567/living-room.jpg"
+              }
+            ],
+            "urls": []
+          },
+          "en": {
+            "text": {
+              "title": "3.5 room apartment with balcony in Seefeld",
+              "description": "Bright apartment with a view of the greenery.",
+              "translatedTitle": "3.5 room apartment with balcony in Seefeld",
+              "translatedDescription": "Bright apartment with a view of the greenery.",
+              "translationStatus": "TRANSLATED"
+            },
+            "attachments": [],
+            "urls": []
+          }
+        },
+        "characteristics": {
+          "numberOfRooms": 3.5,
+          "livingSpace": 92,
+          "yearBuilt": 1968,
+          "yearLastRenovated": 2019,
+          "floor": 2,
+          "hasBalcony": true,
+          "hasParking": false,
+          "isGroundFloor": false,
+          "isNewBuilding": false
+        },
+        "availableFrom": "2026-10-01",
+        "meta": {
+          "created": "2026-09-10",
+          "createdAt": "2026-09-10T08:15:00Z",
+          "updatedAt": "2026-09-11T09:00:00Z",
+          "schemaVersion": "1.0",
+          "softwareName": "SMG"
+        },
+        "lister": { "id": "agency-1", "name": "Seefeld Immobilien AG", "allowToContact": true },
+        "externalIds": { "platformListingId": "4001234567" }
+      }
+    },
+    {
+      "id": "4001234568",
+      "listingType": "STANDARD",
+      "listingCard": { "size": "MEDIUM" },
+      "dateAdded": 1789600000000,
+      "isNewItem": true,
+      "isFavorite": false,
+      "isOffline": false,
+      "listing": {
+        "id": "4001234568",
+        "offerType": "rent",
+        "prices": {
+          "currency": "CHF",
+          "rent": { "net": null, "gross": 2100, "extra": null, "area": "ALL", "interval": "MONTH" },
+          "buy": null
+        },
+        "address": {
+          "country": "CH",
+          "street": "Hardstrasse",
+          "streetNumber": "43",
+          "zip": "8005",
+          "city": "Zürich",
+          "geoCoordinates": { "latitude": 47.3885, "longitude": 8.5234 },
+          "geoTags": ["geo-city-zurich", "geo-zipcode-8005"]
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "2-Zimmer-Wohnung im Kreis 5",
+              "description": "Gut erschlossene Wohnung nahe dem Bahnhof Hardbrücke.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": null,
+                "description": null,
+                "publication": null,
+                "title": "Küche",
+                "type": "IMAGE",
+                "url": "https://media.immoscout24.ch/4001234568/kitchen.png"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": { "numberOfRooms": 2, "livingSpace": 58, "yearBuilt": 2004 },
+        "availableFrom": "2026-11-01",
+        "meta": {
+          "created": "2026-09-09",
+          "createdAt": "2026-09-09T14:30:00Z",
+          "updatedAt": "2026-09-09T14:30:00Z",
+          "schemaVersion": "1.0",
+          "softwareName": "SMG"
+        },
+        "lister": { "id": "agency-2", "name": "Kreis 5 Verwaltung", "allowToContact": true }
+      }
+    },
+    {
+      "id": "4001234569",
+      "listingType": "TOP",
+      "listingCard": { "size": "MEDIUM" },
+      "dateAdded": 1789500000000,
+      "isNewItem": true,
+      "isFavorite": false,
+      "isOffline": false,
+      "listing": {
+        "id": "4001234569",
+        "offerType": "buy",
+        "prices": {
+          "currency": "CHF",
+          "rent": null,
+          "buy": { "price": 1250000, "extra": null, "area": "ALL" }
+        },
+        "address": {
+          "country": "CH",
+          "street": "Zürcherstrasse",
+          "streetNumber": "7",
+          "zip": "8400",
+          "city": "Winterthur",
+          "geoCoordinates": { "latitude": 47.4989, "longitude": 8.7241 },
+          "geoTags": ["geo-city-winterthur", "geo-zipcode-8400"]
+        },
+        "localization": {
+          "primary": "de",
+          "de": {
+            "text": {
+              "title": "Einfamilienhaus mit Umschwung in Winterthur",
+              "description": "Ruhige Lage, grosser Garten, Garage vorhanden.",
+              "translatedTitle": null,
+              "translatedDescription": null,
+              "translationStatus": "ORIGINAL"
+            },
+            "attachments": [
+              {
+                "alt": null,
+                "description": null,
+                "publication": null,
+                "title": "Exposé",
+                "type": "SALES_BROCHURE",
+                "url": "https://media.immoscout24.ch/4001234569/expose.pdf"
+              },
+              {
+                "alt": "Garten",
+                "description": null,
+                "publication": null,
+                "title": "Garten",
+                "type": "IMAGE",
+                "url": "https://media.immoscout24.ch/4001234569/garden.webp"
+              }
+            ],
+            "urls": []
+          }
+        },
+        "characteristics": { "numberOfRooms": 6, "livingSpace": 180, "lotSize": 620, "yearBuilt": 1975 },
+        "availableFrom": "2026-12-01",
+        "meta": {
+          "created": "2026-09-08",
+          "createdAt": "2026-09-08T07:45:00Z",
+          "updatedAt": "2026-09-08T07:45:00Z",
+          "schemaVersion": "1.0",
+          "softwareName": "SMG"
+        },
+        "lister": { "id": "agency-3", "name": "Winterthur Haus AG", "allowToContact": true }
+      }
+    }
+  ]
+}

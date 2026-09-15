@@ -1,0 +1,17 @@
+[
+  {
+    "id": "geo-canton-zurich",
+    "name": "Kanton Zürich",
+    "type": "CANTON"
+  },
+  {
+    "id": "geo-city-zurich",
+    "name": "Zürich",
+    "type": "CITY"
+  },
+  {
+    "id": "geo-zipcode-8001",
+    "name": "8001 Zürich",
+    "type": "ZIPCODE"
+  }
+]

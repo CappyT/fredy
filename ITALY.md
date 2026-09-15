@@ -17,7 +17,7 @@ the rest are offered Italy first:
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
 **🇪🇸 Spain · 🇵🇹 Portugal** · Idealista  
 **🇦🇹 Austria** · willhaben  
-**🇨🇭 Switzerland** · Homegate · Flatfox
+**🇨🇭 Switzerland** · Homegate · ImmoScout24.ch · Flatfox
 
 ### Idealista
 
@@ -47,6 +47,18 @@ A `datadome` cookie gets the search in, minted once by the solver and reused.
 Sorting is `dateCreated desc` and travels in the request body.
 The provider reads up to five pages of twenty listings.
 See the [provider documentation](./reverse-engineered-homegate.md) for the query fields and the response model.
+
+### ImmoScout24.ch
+
+ImmoScout24.ch uses the mobile API of its own app, `api.immoscout24.ch`.
+The search URL a user pastes is translated into a structured query, and its place is resolved
+through the portal's location autocomplete.
+The search endpoint answers a request without a `datadome` cookie with a challenge, so the cookie
+comes from the fork's solver, `lib/services/datadome.js`.
+Without a capsolver key and a proxy the read stays refused, like any other blocked read.
+The provider reads up to five pages.
+See the [provider documentation](./reverse-engineered-immoscout24ch.md) for supported endpoints and
+filters.
 
 ## Swiss francs
 
