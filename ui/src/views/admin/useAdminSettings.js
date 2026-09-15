@@ -68,6 +68,7 @@ export const EXECUTION_FIELDS = [
   'interval',
   'workingHours',
   'proxyUrl',
+  'capsolverApiKey',
   'priceTrackingEnabled',
   'priceCheckIntervalDays',
   'priceCheckLimitPerRun',
@@ -117,6 +118,7 @@ function toForm(settings) {
       timeZone: settings?.workingHours?.timeZone ?? null,
     },
     proxyUrl: settings?.proxyUrl ?? '',
+    capsolverApiKey: settings?.capsolverApiKey ?? '',
     priceTrackingEnabled: settings?.priceTrackingEnabled === true,
     priceCheckIntervalDays: settings?.priceCheckIntervalDays ?? 7,
     priceCheckLimitPerRun: settings?.priceCheckLimitPerRun ?? 100,
@@ -244,6 +246,7 @@ export function useAdminSettings(settings) {
         payload.priceCheckLimitPerRun = Number(form.priceCheckLimitPerRun);
         payload.priceChangeThresholdPercent = Number(form.priceChangeThresholdPercent);
         payload.proxyUrl = form.proxyUrl?.trim() ?? '';
+        payload.capsolverApiKey = form.capsolverApiKey?.trim() ?? '';
       }
 
       setSaving(fields);

@@ -102,8 +102,16 @@ Upstream treats a challenge as a failed read. This fork keeps that default, with
 DataDome challenge on a portal the fork reads through an api is solved with a paid service
 (capsolver), and the `datadome` cookie it returns is reused.
 
-- The solver is off unless `CAPSOLVER_API_KEY` and `CAPSOLVER_PROXY` are set. Without both, every
-  provider behaves exactly as upstream: a blocked read is a failed read.
+- The solver is off unless an api key is set, in **Administration -> Execution -> Capsolver API key**
+  or in `CAPSOLVER_API_KEY` for a deployment that keeps it in a secret store, and a proxy is
+  configured. Without both, every provider behaves exactly as upstream: a blocked read is a failed
+  read.
+- There is one proxy, the one the scrape uses. Capsolver refuses a DataDome task without a proxy, so
+  the solve is sent the same one, rewritten as the `host:port:user:pass` capsolver reads. It reads it
+  as an HTTP proxy, so a socks-only proxy scrapes but cannot solve.
+- The cookie is not bound to the address that earned it: one solved from another exit node is
+  accepted, as measured on the Swiss apps. It is bound to the user agent, which is why the browser is
+  made to use `SOLVE_USER_AGENT` before it navigates.
 - The cookie is kept on disk beside the database (`datadome-tokens.json`, or `FREDY_DATADOME_STORE`)
   with the `Max-Age` the challenge stated, so a restart does not pay for a solve twice.
 - A solve is paid for, so a host is asked of capsolver at most once every ten minutes, and two jobs

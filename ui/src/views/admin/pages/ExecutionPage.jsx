@@ -189,6 +189,20 @@ export default function ExecutionPage() {
       </SegmentPart>
 
       {/*
+        Under the proxy, because it depends on it: capsolver refuses a DataDome task without one, so
+        a key on its own solves nothing.
+      */}
+      <SegmentPart name={t('settings.capsolverApiKey')} helpText={t('settings.capsolverApiKeyHelp')}>
+        <Input
+          mode="password"
+          type="text"
+          placeholder={t('settings.capsolverApiKeyPlaceholder')}
+          value={form.capsolverApiKey}
+          onChange={(value) => setField('capsolverApiKey', value)}
+        />
+      </SegmentPart>
+
+      {/*
         One block rather than four. The three dials are meaningless on their own - they only
         describe how the sweep behaves once it exists - so presenting them as peers of the switch
         invited reading them as four independent knobs. They stay visible while disabled so an

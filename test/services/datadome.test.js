@@ -14,12 +14,23 @@ import {
   cookieValue,
   cookieExpiry,
   cookieParts,
+  capsolverProxy,
   solveChallenge,
   tokenForBlock,
   tokenForUrl,
   readToken,
   clearTokens,
 } from '../../lib/services/datadome.js';
+
+/**
+ * The api key and the proxy are read from the global settings, so the settings are what a test sets.
+ * Mocked rather than seeded into a database: this suite is about the solver, and a real read would
+ * pull sqlite and the config file into every one of its cases.
+ */
+const storedSettings = vi.hoisted(() => ({ value: {} }));
+vi.mock('../../lib/services/storage/settingsStorage.js', () => ({
+  getSettings: async () => storedSettings.value,
+}));
 
 /**
  * The DataDome token service. What these tests pin is the reading of the two block shapes that were
@@ -106,6 +117,26 @@ describe('reading a DataDome block', () => {
   });
 });
 
+describe('the proxy capsolver is given', () => {
+  it('rewrites the configured url into capsolver notation', () => {
+    expect(capsolverProxy('http://user:pass@geo.iproyal.com:12321')).toBe('geo.iproyal.com:12321:user:pass');
+  });
+
+  it('decodes what the url escaped', () => {
+    expect(capsolverProxy('http://user:p%40ss%3Aword@geo.example:8080')).toBe('geo.example:8080:user:p@ss:word');
+  });
+
+  it('carries a proxy that needs no credentials', () => {
+    expect(capsolverProxy('http://geo.example:8080')).toBe('geo.example:8080');
+  });
+
+  it('has nothing to give without a proxy, a port, or a url at all', () => {
+    expect(capsolverProxy('')).toBe(null);
+    expect(capsolverProxy('http://geo.example')).toBe(null);
+    expect(capsolverProxy('not a url')).toBe(null);
+  });
+});
+
 describe('solving a challenge through capsolver', () => {
   /** @type {string} */
   let dir;
@@ -116,7 +147,8 @@ describe('solving a challenge through capsolver', () => {
     dir = mkdtempSync(join(tmpdir(), 'datadome-'));
     process.env.FREDY_DATADOME_STORE = join(dir, 'datadome-tokens.json');
     process.env.CAPSOLVER_API_KEY = 'test-key';
-    process.env.CAPSOLVER_PROXY = 'host:1234:user:pass';
+    // The one proxy the deployment has. Capsolver is sent this, rewritten into its own notation.
+    storedSettings.value = { proxyUrl: 'http://user:pass@geo.example:1234' };
     clearTokens();
     originalFetch = globalThis.fetch;
   });
@@ -125,7 +157,7 @@ describe('solving a challenge through capsolver', () => {
     globalThis.fetch = originalFetch;
     delete process.env.FREDY_DATADOME_STORE;
     delete process.env.CAPSOLVER_API_KEY;
-    delete process.env.CAPSOLVER_PROXY;
+    storedSettings.value = {};
     rmSync(dir, { recursive: true, force: true });
   });
 
@@ -203,6 +235,27 @@ describe('solving a challenge through capsolver', () => {
     const cookie = await tokenForBlock({ status: 403, body: JSON_BLOCK, host: 'x', userAgent: 'ua' });
     expect(cookie).toBeNull();
     expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('does not solve when there is no proxy, because capsolver refuses the task without one', async () => {
+    storedSettings.value = {};
+    globalThis.fetch = vi.fn();
+    const cookie = await tokenForBlock({ status: 403, body: JSON_BLOCK, host: 'x', userAgent: 'ua' });
+    expect(cookie).toBeNull();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
+  });
+
+  it('prefers the api key from the settings page and sends the configured proxy', async () => {
+    delete process.env.CAPSOLVER_API_KEY;
+    storedSettings.value = { capsolverApiKey: ' from-the-page ', proxyUrl: 'http://user:pass@geo.example:1234' };
+    globalThis.fetch = capsolverFetch({ create: created, result: ready });
+
+    await tokenForBlock({ status: 403, body: JSON_BLOCK, host: 'www.immobiliare.it', userAgent: 'ua' });
+
+    const [, options] = globalThis.fetch.mock.calls.find(([url]) => String(url).endsWith('/createTask'));
+    const sent = JSON.parse(options.body);
+    expect(sent.clientKey).toBe('from-the-page');
+    expect(sent.task.proxy).toBe('geo.example:1234:user:pass');
   });
 
   it('gives a browser the token by asking the url once when the host is unknown', async () => {
