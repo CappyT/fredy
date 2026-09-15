@@ -44,6 +44,13 @@ vi.mock('../lib/services/extractor/puppeteerExtractor.js', async (importOriginal
     default: (url, waitForSelector, options) => readFixture(url, options),
     launchBrowser: async () => ({ close: async () => {}, isConnected: () => true }),
     closeBrowser: async () => {},
+    // A provider that reads an api inside the browser opens each read in a context of its own.
+    // Mirrored rather than imported: the real one pulls in the CloakBrowser binary, and the stub
+    // browsers the tests hand it carry no proxy credentials to apply.
+    newIsolatedPage: async (browser) => {
+      const context = await browser.createBrowserContext();
+      return { page: await context.newPage(), context };
+    },
   };
 });
 
