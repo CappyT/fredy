@@ -187,15 +187,33 @@ Read from `SearchCriteria` and the converter in `SearchConverterRepository` / `S
 | `propertySubTypes` | string[] | e.g. `APARTMENT`, `ATTIC_FLAT`, ... |
 | `monthlyRent` | `{from, to}` | rent searches. The converter writes `priceRange` here or into `purchasePrice` depending on `offerType` |
 | `purchasePrice` | `{from, to}` | buy searches |
-| `yearlyRentPerSqmRange` | `{from, to}` | |
+| `yearlyRentPerSqm` | `{from, to}` | |
 | `numberOfRooms` | `{from, to}` | |
-| `surfaceLivingRange` | `{from, to}` | living space |
-| `surfacePropertyRange` | `{from, to}` | lot size |
-| `totalFloorSpace` | `{from}` | written from `surfaceUsableRange.from` |
-| `singleFloorSpace` | `{to}` | written from `surfaceUsableRange.to` |
-| `volumeRange` | `{from, to}` | cubage |
-| `buildYearRange` | `{from, to}` | |
-| `floorType` | number | `ground_floor` becomes `{from: 0, to: 0.5}`, anything else `{from: 1}` |
+| `livingSpace` | `{from, to}` | living space |
+| `lotSize` | `{from, to}` | lot size |
+| `totalFloorSpace` | `{from}` | usable surface, lower bound |
+| `singleFloorSpace` | `{to}` | usable surface, upper bound |
+| `cubage` | `{from, to}` | |
+| `yearBuilt` | `{from, to}` | |
+| `floor` | `{from, to}` | ground floor is `{from: 0, to: 0.5}`, anything else `{from: 1}` |
+
+The seven names above are the ones the endpoint honors. The decompiled `SearchCriteria` spells five of
+them differently, because that class is the client's own model and the converter renames the fields
+before they reach the wire. A model name sent as a query field is accepted and ignored, which returns
+the unfiltered result set rather than an error, so the mistake is silent.
+
+Measured on both hosts against a Chiasso rent search. `api.homegate.ch`, control 260:
+`livingSpace {from: 200}` answers 6 and `surfaceLivingRange {from: 200}` answers 260;
+`yearBuilt {from: 2020}` answers 14 and `buildYearRange` answers 260;
+`floor {from: 0, to: 0.5}` answers 25 and `floorType` answers 260;
+`yearlyRentPerSqm {from: 200}` answers 141 and `yearlyRentPerSqmRange` answers 260;
+`totalFloorSpace {from: 100}` answers 25 and `surfaceUsableRange` answers 260.
+`lotSize {from: 5000}` answers 12 against a control of 543 on Ticino plots, where
+`surfacePropertyRange` answers 543. `api.immoscout24.ch` gives the same verdict against a control of
+257: `livingSpace` 6, `lotSize` 4, `totalFloorSpace` 44, and each `*Range` spelling 257.
+
+A field that returns exactly the control total is being ignored. That is the test to repeat whenever
+a new field is added here, because an ignored filter widens the user's search in silence.
 | `isPriceDefined` | boolean | |
 | `availableDate` | text range | |
 | `location` | object | see below |
