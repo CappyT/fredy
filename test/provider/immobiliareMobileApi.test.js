@@ -363,6 +363,19 @@ describe('the search the app api is asked for', () => {
     expect(params.get('points')).toBe('45.1,9.1 45.1,9.2 45.2,9.2 45.2,9.1');
   });
 
+  /**
+   * The website intersects a drawn area with the place the url also names. The api reads one scope
+   * per request, so sending the area alone would answer beyond the place: the url is refused and the
+   * website renders it.
+   */
+  it('refuses a drawn area that also names a place, rather than widening it', async () => {
+    expect(
+      await buildAppSearch(
+        'https://www.immobiliare.it/search-list/?idContratto=1&idCategoria=1&idComune=8042&vrt=45.1%2C9.1%3B45.2%2C9.2',
+      ),
+    ).toBeNull();
+  });
+
   it('takes the most specific scope a url carries', async () => {
     const params = await buildAppSearch(
       'https://www.immobiliare.it/search-list/?idContratto=1&idCategoria=1&idNazione=IT&fkRegione=lom&idProvincia=MI&idComune=8042',
