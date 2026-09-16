@@ -845,6 +845,22 @@ describe('the poisoned answers the search endpoint serves', () => {
     expect(warnings.mock.calls[0][0]).toContain('could not be verified');
   });
 
+  it('judges the page against the room sort the URL named, which travels beside the query', async () => {
+    const rooms = (count) => ({
+      ...BUY_ROW,
+      listing: { ...BUY_ROW.listing, characteristics: { numberOfRooms: count } },
+    });
+    const { searches } = stubPortal([{ results: [rooms(3), rooms(1), rooms(5)], maxFrom: 0 }]);
+    const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+
+    const listings = await getListings(`${BUY_URL}?o=nr-desc`);
+
+    expect(listings).toEqual([]);
+    expect(searches).toHaveLength(7);
+    expect(spy.mock.calls[0][0]).toContain('numberOfRooms desc breaks');
+  });
+
   it('returns no row and logs one line when the page stays poisoned', async () => {
     const { searches } = stubPortal([{ results: [POISONED_ROW], maxFrom: 0 }]);
     const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});

@@ -95,6 +95,7 @@ describe('the SMG poison detector', () => {
   });
 
   it('calls a page poisoned when the room sort steps backwards', () => {
+    // The sort is sent beside the query, and the provider merges it into the query it hands here.
     const row = (rooms) => ({ ...POISONED_ROW, characteristics: { numberOfRooms: rooms } });
     const verdict = detect(
       [row(1), row(1.8), row(3.5)],
