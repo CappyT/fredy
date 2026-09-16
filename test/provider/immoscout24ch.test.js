@@ -797,6 +797,7 @@ describe('the poisoned answers the search endpoint serves', () => {
     expect(searches).toHaveLength(7);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.mock.calls[0][0]).toContain('stayed poisoned');
+    expect(spy.mock.calls[0][0]).toContain('the walk stops there');
     expect(spy.mock.calls[0][0]).toContain(SEARCH_URL);
   });
 });
