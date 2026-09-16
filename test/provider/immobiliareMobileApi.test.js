@@ -19,6 +19,17 @@ import {
  * token store. `answer.solved` is the cookie the solver would hand back, per test.
  */
 const datadome = vi.hoisted(() => ({ token: null, solved: null }));
+
+/** What the app api writes to the log, so a refusal line can be read back. */
+const logged = vi.hoisted(() => []);
+vi.mock('../../lib/services/logger.js', () => ({
+  default: {
+    error: (...args) => logged.push(args.join(' ')),
+    warn: (...args) => logged.push(args.join(' ')),
+    info: () => {},
+    debug: () => {},
+  },
+}));
 vi.mock('../../lib/services/datadome.js', () => ({
   SOLVE_USER_AGENT: 'test-solve-agent',
   readToken: () => datadome.token,
@@ -402,6 +413,7 @@ describe('reading the app api', () => {
     originalFetch = globalThis.fetch;
     datadome.token = null;
     datadome.solved = null;
+    logged.length = 0;
   });
 
   afterEach(() => {
@@ -434,6 +446,11 @@ describe('reading the app api', () => {
     }
   });
 
+  /**
+   * The kind is the whole of what the line is worth reading for: `it` and `bv` want another exit
+   * address, `fe` wants a solver. It sits at the end of a url no log line keeps, so the line names
+   * it, along with the page of the walk that was refused.
+   */
   it('answers null when the api refuses the exit, so the provider renders instead', async () => {
     globalThis.fetch = vi.fn(async () => ({
       ok: false,
@@ -442,6 +459,25 @@ describe('reading the app api', () => {
     }));
 
     await expect(getAppListings(MAP_URL)).resolves.toBeNull();
+    expect(logged.join('\n')).toMatch(/DataDome it, not solvable/);
+    expect(logged.join('\n')).toMatch(/page 1 of the walk/);
+  });
+
+  /**
+   * A `fe` challenge the solver could not answer - no api key, no proxy, or a refused task - is the
+   * same fallback, and the line has to say which kind it was so the two remedies stay apart.
+   */
+  it('names a solvable challenge it could not buy back', async () => {
+    datadome.solved = null;
+    globalThis.fetch = vi.fn(async () => ({
+      ok: false,
+      status: 403,
+      text: async () => JSON.stringify({ url: 'https://geo.captcha-delivery.com/captcha/?t=fe' }),
+    }));
+
+    await expect(getAppListings(MAP_URL)).resolves.toBeNull();
+    expect(logged.join('\n')).toMatch(/DataDome fe, solvable/);
+    expect(logged.join('\n')).toMatch(/page 1 of the walk/);
   });
 
   /**
