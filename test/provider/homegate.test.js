@@ -813,6 +813,38 @@ describe('the poisoned answers the search endpoint serves', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
+  /** A purchase row: it carries no rent price, so the net-price signal cannot read it. */
+  const BUY_ROW = {
+    id: '1000000000',
+    listing: {
+      id: '1000000000',
+      offerType: 'buy',
+      prices: { currency: 'CHF', rent: null, buy: { price: 890000 } },
+      characteristics: { numberOfRooms: 4.5, livingSpace: 120 },
+      address: { street: 'Bahnhofstrasse 1', postalCode: '8001', locality: 'Zuerich' },
+      localization: { primary: 'de', de: { text: { title: '4.5-Zimmer-Wohnung' } } },
+    },
+  };
+
+  /** The portal's own country-wide purchase search: no numeric filter, so no signal to judge it. */
+  const BUY_URL = 'https://www.homegate.ch/buy/real-estate/city-zurich/matching-list';
+
+  it('keeps the rows of a purchase page no signal can judge, and says so once', async () => {
+    const { searches } = stubPortal([{ results: [BUY_ROW], maxFrom: 0 }]);
+    const errors = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const warnings = vi.spyOn(logger, 'warn').mockImplementation(() => {});
+    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+
+    const listings = await getListings(BUY_URL);
+
+    expect(listings).toHaveLength(1);
+    // The same request would answer the same unknown, so the page is asked for once.
+    expect(searches).toHaveLength(1);
+    expect(errors).not.toHaveBeenCalled();
+    expect(warnings).toHaveBeenCalledTimes(1);
+    expect(warnings.mock.calls[0][0]).toContain('could not be verified');
+  });
+
   it('returns no row and logs one line when the page stays poisoned', async () => {
     const { searches } = stubPortal([{ results: [POISONED_ROW], maxFrom: 0 }]);
     const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});

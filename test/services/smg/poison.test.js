@@ -188,6 +188,22 @@ describe('the bounded retry', () => {
     expect(result.answer).not.toBeNull();
   });
 
+  it('does not re-request a page the detector cannot judge, and hands its rows back', async () => {
+    const buyRow = { id: '5', offerType: 'buy', prices: { rent: null, buy: { price: 890000 } }, characteristics: {} };
+    let calls = 0;
+    const requestPage = async () => {
+      calls++;
+      return page(buyRow);
+    };
+
+    const result = await readVerifiedPage({ requestPage, body: {}, query: { offerType: 'BUY' }, expectNet: false });
+
+    // The same request would answer the same unknown every time, so one attempt is made.
+    expect(calls).toBe(1);
+    expect(result.verdict.verdict).toBe(UNKNOWN);
+    expect(result.answer.results).toHaveLength(1);
+  });
+
   it('stops without a verdict when the endpoint does not answer', async () => {
     const result = await readVerifiedPage({
       requestPage: async () => null,
