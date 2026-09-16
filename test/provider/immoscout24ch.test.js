@@ -21,8 +21,9 @@ import { clearTokens } from '../../lib/services/datadome.js';
  * location autocomplete before the search can run. The endpoint also sits behind DataDome, so the
  * cookie the solver earns is part of the read.
  *
- * The fixture is synthetic: it is built from the response model in `reverse-engineered-homegate.md`
- * with this portal's own values, not recorded from the live API.
+ * The listing fixture is synthetic: it is built from the response model in
+ * `reverse-engineered-homegate.md` with this portal's own values, not recorded from the live API.
+ * The location fixture is a real recording of `GET /geo/locations`, nested shape and all.
  *
  * Assertions are structural, because the same file runs against the fixture (`yarn test:offline`)
  * and against the live API (`yarn test`).
@@ -31,16 +32,39 @@ const TEST_TIMEOUT = 120_000;
 
 const SEARCH_URL = providerConfig.immoscout24ch.url;
 
+/** The real Italian search URL the provider failed to read, kept as a regression case. */
+const REAL_CHIASSO_URL =
+  'https://www.immoscout24.ch/it/appartamento/affittare/luogo-chiasso?slf=80&nrf=3&an=8000&pt=2000';
+
+/** The recorded live answer to `name=chiasso`. The shape is the endpoint's own, nested as served. */
+const CHIASSO_LOCATIONS = JSON.parse(
+  readFileSync(new URL('../testFixtures/immoscout24ch_locations_chiasso.json', import.meta.url), 'utf-8'),
+);
+
+/** The locations the autocomplete answers for `Zuerich`, in the nested shape it really uses. */
+const LOCATIONS = {
+  from: 0,
+  size: 2,
+  total: 2,
+  results: [
+    {
+      geoLocation: {
+        id: 'geo-canton-zurich',
+        urlNames: { de: 'kanton-zuerich', en: 'canton-zurich', fr: 'canton-zurich', it: 'cantone-zurigo' },
+      },
+    },
+    {
+      geoLocation: {
+        id: 'geo-city-zurich',
+        urlNames: { de: 'ort-zuerich', en: 'city-zurich', fr: 'lieu-zurich', it: 'luogo-zurigo' },
+      },
+    },
+  ],
+};
+
 const LIST_FIXTURE = JSON.parse(
   readFileSync(new URL('../testFixtures/immoscout24ch_listings.json', import.meta.url), 'utf-8'),
 );
-
-/** The locations the autocomplete answers for one name. The canton is first on purpose. */
-const LOCATIONS = [
-  { id: 'geo-canton-zurich', name: 'Kanton Zürich', type: 'CANTON' },
-  { id: 'geo-city-zurich', name: 'Zürich', type: 'CITY' },
-  { id: 'geo-zipcode-8001', name: '8001 Zürich', type: 'ZIPCODE' },
-];
 
 /** A DataDome refusal, in the JSON shape the two Swiss portals answer one. */
 const DATADOME_CHALLENGE = {
@@ -171,45 +195,98 @@ describe('#immoscout24ch provider testsuite()', () => {
 });
 
 describe('translating the pasted search URL', () => {
-  it('reads the offer type, the property type and the place, in all four languages', () => {
-    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/wohnung/ort-zuerich')).toEqual({
+  it('reads the two real search URLs', () => {
+    expect(provider.parseSearchUrl(REAL_CHIASSO_URL)).toEqual({
+      lang: 'it',
+      offerType: 'RENT',
+      propertyType: 'APARTMENT',
+      location: 'luogo-chiasso',
+    });
+    expect(provider.parseSearchUrl(SEARCH_URL)).toEqual({
       lang: 'de',
       offerType: 'RENT',
       propertyType: 'APARTMENT',
-      location: { name: 'zuerich', kindTag: 'geo-city-' },
-    });
-    expect(
-      provider.parseSearchUrl('https://www.immoscout24.ch/fr/immobilier/louer/appartement/ort-zurich'),
-    ).toMatchObject({ lang: 'fr', offerType: 'RENT', propertyType: 'APARTMENT' });
-    expect(provider.parseSearchUrl('https://www.immoscout24.ch/it/immobili/vendita/casa/ort-zurigo')).toMatchObject({
-      lang: 'it',
-      offerType: 'BUY',
-      propertyType: 'HOUSE_OR_CHALET_OR_RUSTICO',
-    });
-    expect(
-      provider.parseSearchUrl('https://www.immoscout24.ch/en/real-estate/rent/apartment/ort-zurich'),
-    ).toMatchObject({
-      lang: 'en',
-      offerType: 'RENT',
-      propertyType: 'APARTMENT',
+      location: 'ort-zuerich',
     });
   });
 
-  it('reads the kind of place the slug names without eating a hyphen inside a name', () => {
-    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/kanton-zuerich').location).toEqual({
-      name: 'zuerich',
-      kindTag: 'geo-canton-',
+  it('reads the offer type, the property type and the place, in all four languages', () => {
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/wohnung/mieten/ort-zuerich')).toEqual({
+      lang: 'de',
+      offerType: 'RENT',
+      propertyType: 'APARTMENT',
+      location: 'ort-zuerich',
     });
-    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/plz-8001').location).toEqual({
-      name: '8001',
-      kindTag: 'geo-zipcode-',
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/fr/appartement/louer/lieu-zurich')).toEqual({
+      lang: 'fr',
+      offerType: 'RENT',
+      propertyType: 'APARTMENT',
+      location: 'lieu-zurich',
     });
-    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/zuerich-seefeld').location).toEqual(
-      {
-        name: 'zuerich-seefeld',
-        kindTag: null,
-      },
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/it/casa/acquistare/luogo-chiasso')).toEqual({
+      lang: 'it',
+      offerType: 'BUY',
+      propertyType: 'HOUSE_OR_CHALET_OR_RUSTICO',
+      location: 'luogo-chiasso',
+    });
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/en/apartment/rent/city-zurich')).toEqual({
+      lang: 'en',
+      offerType: 'RENT',
+      propertyType: 'APARTMENT',
+      location: 'city-zurich',
+    });
+  });
+
+  it('keeps a hyphen that is part of the place name', () => {
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/zuerich-seefeld').location).toBe(
+      'zuerich-seefeld',
     );
+  });
+
+  it('ignores the trailing result page segment, in all four languages', () => {
+    for (const srp of ['matching-list', 'trefferliste', 'liste-annonces', 'lista-annunci']) {
+      expect(provider.parseSearchUrl(`https://www.immoscout24.ch/de/wohnung/mieten/ort-zuerich/${srp}`).location).toBe(
+        'ort-zuerich',
+      );
+    }
+  });
+
+  it('reads a URL that ends in the result page segment as the country-wide search', () => {
+    // A real agency URL: the trailing Italian result page segment names no place, so the path names
+    // none and the search covers the whole country.
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/it/immobili/affittare/lista-annunci')).toEqual({
+      lang: 'it',
+      offerType: 'RENT',
+      propertyType: null,
+      location: null,
+    });
+  });
+
+  it('reads the place that follows a property word it does not map', () => {
+    // A real drilldown URL: `buero` names no type this maps, so the place is the segment behind it.
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/de/immobilien/mieten/buero/ort-zuerich')).toEqual({
+      lang: 'de',
+      offerType: 'RENT',
+      propertyType: null,
+      location: 'ort-zuerich',
+    });
+  });
+
+  it('leaves the property type absent for an "everything" category', () => {
+    for (const category of ['real-estate', 'immobilien', 'immobilier', 'immobili']) {
+      const search = provider.parseSearchUrl(`https://www.immoscout24.ch/de/${category}/mieten/ort-zuerich`);
+      expect(search.propertyType, category).toBeNull();
+      expect(search.location).toBe('ort-zuerich');
+    }
+  });
+
+  it('reads the language off the offer type word when the path carries no prefix', () => {
+    expect(provider.parseSearchUrl('https://www.immoscout24.ch/immobilien/affittare/luogo-chiasso')).toEqual({
+      lang: 'it',
+      offerType: 'RENT',
+      propertyType: null,
+      location: 'luogo-chiasso',
+    });
   });
 
   it('leaves the place out when the path names none, and rejects a URL it cannot parse', () => {
@@ -232,7 +309,8 @@ describe('the structured search it runs', () => {
     expect(geo.searchParams.get('name')).toBe('zuerich');
     expect(geo.searchParams.get('lang')).toBe('de');
 
-    // The kind the slug named is what picks the city out of the three answers.
+    // The entry whose `urlNames` spell the URL's own slug is the place: `ort-zuerich` picks the
+    // city out of the two answers, not the canton that shares its name.
     const search = JSON.parse(calls[1].init.body);
     expect(search.query).toEqual({
       offerType: 'RENT',
@@ -245,6 +323,58 @@ describe('the structured search it runs', () => {
     expect(search.size).toBe(20);
     expect(search.from).toBe(0);
     expect(calls).toHaveLength(2);
+  });
+
+  it('resolves the real Italian URL to the city it names', async () => {
+    const calls = stubFetch((call) =>
+      call.url.includes('/geo/locations') ? answer(CHIASSO_LOCATIONS) : answer({ results: [], maxFrom: 0 }),
+    );
+
+    const runConfig = provider.createConfig({ url: REAL_CHIASSO_URL }, []);
+    await runConfig.getListings(runConfig.url);
+
+    // The Italian offer type word asks in Italian, and the place is `chiasso`, not the kind prefix.
+    const geo = new URL(calls[0].url);
+    expect(geo.searchParams.get('name')).toBe('chiasso');
+    expect(geo.searchParams.get('lang')).toBe('it');
+
+    const search = JSON.parse(calls[1].init.body);
+    expect(search.query).toEqual({
+      offerType: 'RENT',
+      propertyType: 'APARTMENT',
+      location: { geoTags: ['geo-city-chiasso'] },
+    });
+  });
+
+  it('carries the app user agent, which is the one DataDome answers with a solvable challenge', async () => {
+    const calls = stubFetch((call) =>
+      call.url.includes('/geo/locations') ? answer(LOCATIONS) : answer({ results: [], maxFrom: 0 }),
+    );
+
+    const runConfig = provider.createConfig({ url: SEARCH_URL }, []);
+    await runConfig.getListings(runConfig.url);
+
+    const search = calls.find((call) => call.url.includes('/search/listings'));
+    expect(search.init.headers['User-Agent']).toBe('immoscout24.ch.nextgen App Android/6.3.0');
+  });
+
+  it('fails the read when the place resolves nothing, rather than searching the whole country', async () => {
+    const calls = stubFetch((call) =>
+      call.url.includes('/geo/locations')
+        ? answer({
+            from: 0,
+            size: 1,
+            total: 1,
+            results: [{ geoLocation: { id: 'geo-city-lugano', urlNames: { it: 'luogo-lugano' } } }],
+          })
+        : answer({ results: [], maxFrom: 0 }),
+    );
+
+    const runConfig = provider.createConfig({ url: REAL_CHIASSO_URL }, []);
+    await expect(runConfig.getListings(runConfig.url)).resolves.toEqual([]);
+
+    // The search endpoint was never asked: a place that does not resolve fails the read.
+    expect(calls.filter((call) => call.url.includes('/search/listings'))).toHaveLength(0);
   });
 
   it('stops the walk once `from` would pass maxFrom', async () => {
@@ -288,6 +418,18 @@ describe('the structured search it runs', () => {
     const runConfig = provider.createConfig({ url: 'https://www.immoscout24.ch/de/immobilien/ort-zuerich' }, []);
     await expect(runConfig.getListings(runConfig.url)).resolves.toEqual([]);
     expect(calls).toHaveLength(0);
+  });
+
+  it('searches the whole country, and asks no location, for a URL that names no place', async () => {
+    // The portal publishes this form in its own drilldown sitemap, so it states a country-wide
+    // search rather than a URL that failed to parse.
+    const calls = stubFetch(() => answer({ results: [], maxFrom: 0 }));
+
+    const runConfig = provider.createConfig({ url: 'https://www.immoscout24.ch/it/appartamento/affittare' }, []);
+    await runConfig.getListings(runConfig.url);
+
+    expect(calls.filter((call) => call.url.includes('/geo/locations'))).toHaveLength(0);
+    expect(JSON.parse(calls[0].init.body).query).toEqual({ offerType: 'RENT', propertyType: 'APARTMENT' });
   });
 });
 

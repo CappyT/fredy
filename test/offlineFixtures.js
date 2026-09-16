@@ -59,6 +59,28 @@ async function tryReadFile(filepath) {
   }
 }
 
+/** The recorded `/geo/locations` answers, keyed by fixture file. The endpoint is an autocomplete,
+ * so its answer depends on the name asked for, and each recorded name has a file of its own. */
+const locationRecordings = new Map();
+
+/**
+ * Serve the recorded answer an SMG location autocomplete made to one name.
+ *
+ * Two places are recorded, Chiasso and Zurich, and the `name` of the request picks the recording.
+ *
+ * @param {string} base the fixture name without its suffix, for example `homegate_locations`
+ * @param {string} asked the `name` the provider asked the autocomplete for
+ * @returns {Promise<any>} the recorded answer, real nested shape and all
+ */
+async function readLocationRecording(base, asked) {
+  const file = asked.toLowerCase().includes('chiasso') ? `${base}_chiasso.json` : `${base}.json`;
+  if (!locationRecordings.has(file)) {
+    const raw = await tryReadFile(path.join(FIXTURES_DIR, file));
+    locationRecordings.set(file, raw ? JSON.parse(raw) : { from: 0, size: 0, total: 0, results: [] });
+  }
+  return locationRecordings.get(file);
+}
+
 function withRealEstateType(data, realEstateType) {
   if (!realEstateType?.length || !Array.isArray(data?.resultListItems)) {
     return data;
@@ -185,10 +207,8 @@ export function buildFetchMock() {
   let willhabenHtml = null;
   let flatfoxPins = null;
   let flatfoxListings = null;
-  let immoscout24chLocations = null;
   let immoscout24chListings = null;
   let immobiliareListData = null;
-  let homegateLocations = null;
   let homegateListData = null;
 
   return async (url, init) => {
@@ -321,11 +341,8 @@ export function buildFetchMock() {
     // page per `from`. The recorded page holds more results than its own `maxFrom` allows, so the
     // walk ends on the portal's ceiling rather than on an empty page.
     if (urlStr.includes('api.homegate.ch/geo/locations')) {
-      if (homegateLocations == null) {
-        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'homegate_locations.json'));
-        homegateLocations = raw ? JSON.parse(raw) : [];
-      }
-      return { ok: true, status: 200, json: () => Promise.resolve(homegateLocations) };
+      const asked = new URL(urlStr).searchParams.get('name') ?? '';
+      return { ok: true, status: 200, json: () => readLocationRecording('homegate_locations', asked) };
     }
 
     if (urlStr.includes('api.homegate.ch/search/listings')) {
@@ -342,11 +359,8 @@ export function buildFetchMock() {
     // query, and the place it names is resolved through the location autocomplete first, so both
     // endpoints have to be served for the provider to get through its own flow.
     if (urlStr.includes('api.immoscout24.ch/geo/locations')) {
-      if (immoscout24chLocations == null) {
-        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immoscout24ch_locations.json'));
-        immoscout24chLocations = raw ? JSON.parse(raw) : [];
-      }
-      return { ok: true, status: 200, json: () => Promise.resolve(immoscout24chLocations) };
+      const asked = new URL(urlStr).searchParams.get('name') ?? '';
+      return { ok: true, status: 200, json: () => readLocationRecording('immoscout24ch_locations', asked) };
     }
 
     // The recording holds one page, so it answers as the last one there is - and a page after the

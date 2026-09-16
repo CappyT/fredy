@@ -83,11 +83,11 @@
     "enabled": true
   },
   "homegate": {
-    "url": "https://www.homegate.ch/rent/real-estate-listings/city-zurich",
+    "url": "https://www.homegate.ch/rent/real-estate/city-zurich/matching-list",
     "enabled": true
   },
   "immoscout24ch": {
-    "url": "https://www.immoscout24.ch/de/immobilien/mieten/wohnung/ort-zuerich",
+    "url": "https://www.immoscout24.ch/de/wohnung/mieten/ort-zuerich",
     "enabled": true
   },
   "tecnocasa": {

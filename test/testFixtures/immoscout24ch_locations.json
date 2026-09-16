@@ -1,17 +1,363 @@
-[
-  {
-    "id": "geo-canton-zurich",
-    "name": "Kanton Zürich",
-    "type": "CANTON"
-  },
-  {
-    "id": "geo-city-zurich",
-    "name": "Zürich",
-    "type": "CITY"
-  },
-  {
-    "id": "geo-zipcode-8001",
-    "name": "8001 Zürich",
-    "type": "ZIPCODE"
-  }
-]
+{
+  "from": 0,
+  "size": 4,
+  "total": 4,
+  "results": [
+    {
+      "geoLocation": {
+        "type": "place",
+        "id": "geo-city-zurich",
+        "names": {
+          "de": [
+            "Zürich"
+          ],
+          "fr": [
+            "Zurich"
+          ],
+          "it": [
+            "Zurigo"
+          ],
+          "en": [
+            "Zurich"
+          ]
+        },
+        "urlNames": {
+          "en": "city-zurich",
+          "de": "ort-zuerich",
+          "fr": "lieu-zurich",
+          "it": "luogo-zurigo"
+        },
+        "center": {
+          "lat": 47.377194615088676,
+          "lon": 8.539285808314094
+        },
+        "children": [
+          "geo-zipcode-8001",
+          "geo-zipcode-8002",
+          "geo-zipcode-8003",
+          "geo-zipcode-8004",
+          "geo-zipcode-8005",
+          "geo-zipcode-8006",
+          "geo-zipcode-8008",
+          "geo-zipcode-8032",
+          "geo-zipcode-8037",
+          "geo-zipcode-8038",
+          "geo-zipcode-8041",
+          "geo-zipcode-8044",
+          "geo-zipcode-8045",
+          "geo-zipcode-8046",
+          "geo-zipcode-8047",
+          "geo-zipcode-8048",
+          "geo-zipcode-8049",
+          "geo-zipcode-8050",
+          "geo-zipcode-8051",
+          "geo-zipcode-8052",
+          "geo-zipcode-8053",
+          "geo-zipcode-8055",
+          "geo-zipcode-8057",
+          "geo-zipcode-8064",
+          "geo-cityregion-kreis-1",
+          "geo-cityregion-kreis-2",
+          "geo-cityregion-kreis-3",
+          "geo-cityregion-kreis-4",
+          "geo-cityregion-kreis-5",
+          "geo-cityregion-kreis-6",
+          "geo-cityregion-kreis-7",
+          "geo-cityregion-kreis-8",
+          "geo-cityregion-kreis-9",
+          "geo-cityregion-kreis-10",
+          "geo-cityregion-kreis-11",
+          "geo-cityregion-kreis-12"
+        ],
+        "parentPaths": [
+          [
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "Ort",
+          "fr": "Lieu",
+          "it": "Luogo",
+          "en": "City"
+        },
+        "is24UrlNames": {
+          "de": "ort-zuerich",
+          "fr": "lieu-zuerich",
+          "it": "luogo-zuerich",
+          "en": "city-zuerich"
+        },
+        "newId": "geo-city-zuerich",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "Zürich": [
+          {
+            "from": 0,
+            "to": 6
+          }
+        ]
+      }
+    },
+    {
+      "geoLocation": {
+        "type": "canton",
+        "id": "geo-canton-zurich",
+        "names": {
+          "de": [
+            "Zürich"
+          ],
+          "fr": [
+            "Zurich"
+          ],
+          "it": [
+            "Zurigo"
+          ],
+          "en": [
+            "Zurich"
+          ]
+        },
+        "urlNames": {
+          "de": "kanton-zuerich",
+          "en": "canton-zurich",
+          "fr": "canton-zurich",
+          "it": "cantone-zurigo"
+        },
+        "center": {
+          "lat": 47.41936545165778,
+          "lon": 8.666361227913432
+        },
+        "children": [
+          "geo-region-affoltern",
+          "geo-region-andelfingen",
+          "geo-region-bulach",
+          "geo-region-dielsdorf",
+          "geo-region-hinwil",
+          "geo-region-horgen",
+          "geo-region-meilen",
+          "geo-region-pfaffikon",
+          "geo-region-uster",
+          "geo-region-winterthur",
+          "geo-region-dietikon",
+          "geo-city-zurich"
+        ],
+        "parentPaths": [
+          [
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "Kanton",
+          "fr": "Canton",
+          "it": "Cantone",
+          "en": "Canton"
+        },
+        "is24UrlNames": {
+          "de": "kanton-zuerich",
+          "fr": "canton-zurich",
+          "it": "cantone-zurigo",
+          "en": "canton-zurich"
+        },
+        "iazi": {
+          "level": 2,
+          "id": 1
+        },
+        "newId": "geo-canton-zuerich",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "Zürich": [
+          {
+            "from": 0,
+            "to": 6
+          }
+        ]
+      }
+    },
+    {
+      "geoLocation": {
+        "type": "zip",
+        "id": "geo-zipcode-8001",
+        "names": {
+          "de": [
+            "8001",
+            "Zürich"
+          ],
+          "fr": [
+            "8001",
+            "Zurich"
+          ],
+          "it": [
+            "8001",
+            "Zurigo"
+          ],
+          "en": [
+            "8001",
+            "Zürich"
+          ]
+        },
+        "urlNames": {
+          "de": "plz-8001",
+          "fr": "npa-8001",
+          "it": "npa-8001",
+          "en": "zip-8001"
+        },
+        "center": {
+          "lat": 47.37150385892116,
+          "lon": 8.54520464730291
+        },
+        "children": [],
+        "parentPaths": [
+          [
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ],
+          [
+            "geo-citydistrict-rathaus",
+            "geo-cityregion-kreis-1",
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ],
+          [
+            "geo-citydistrict-hochschulen",
+            "geo-cityregion-kreis-1",
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ],
+          [
+            "geo-citydistrict-lindenhof",
+            "geo-cityregion-kreis-1",
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ],
+          [
+            "geo-citydistrict-city",
+            "geo-cityregion-kreis-1",
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "PLZ",
+          "fr": "NPA",
+          "it": "NPA",
+          "en": "Zip"
+        },
+        "is24UrlNames": {
+          "de": "plz-8001-zuerich",
+          "fr": "npa-8001-zuerich",
+          "it": "npa-8001-zuerich",
+          "en": "postcode-8001-zuerich"
+        },
+        "newId": "geo-zipcode-8001",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "8001": [],
+        "Zürich": [
+          {
+            "from": 0,
+            "to": 6
+          }
+        ]
+      }
+    },
+    {
+      "geoLocation": {
+        "type": "zip",
+        "id": "geo-zipcode-8002",
+        "names": {
+          "de": [
+            "8002",
+            "Zürich"
+          ],
+          "fr": [
+            "8002",
+            "Zurich"
+          ],
+          "it": [
+            "8002",
+            "Zurigo"
+          ],
+          "en": [
+            "8002",
+            "Zürich"
+          ]
+        },
+        "urlNames": {
+          "de": "plz-8002",
+          "fr": "npa-8002",
+          "it": "npa-8002",
+          "en": "zip-8002"
+        },
+        "center": {
+          "lat": 47.35983526315789,
+          "lon": 8.529749105263155
+        },
+        "children": [],
+        "parentPaths": [
+          [
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ],
+          [
+            "geo-citydistrict-enge",
+            "geo-cityregion-kreis-2",
+            "geo-city-zurich",
+            "geo-canton-zurich",
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "PLZ",
+          "fr": "NPA",
+          "it": "NPA",
+          "en": "Zip"
+        },
+        "is24UrlNames": {
+          "de": "plz-8002-zuerich",
+          "fr": "npa-8002-zuerich",
+          "it": "npa-8002-zuerich",
+          "en": "postcode-8002-zuerich"
+        },
+        "newId": "geo-zipcode-8002",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "8002": [],
+        "Zürich": [
+          {
+            "from": 0,
+            "to": 6
+          }
+        ]
+      }
+    }
+  ]
+}

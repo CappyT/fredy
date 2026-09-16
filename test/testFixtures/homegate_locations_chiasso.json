@@ -1,0 +1,145 @@
+{
+  "from": 0,
+  "size": 20,
+  "total": 2,
+  "results": [
+    {
+      "geoLocation": {
+        "type": "place",
+        "id": "geo-city-chiasso",
+        "names": {
+          "de": [
+            "Chiasso"
+          ],
+          "fr": [
+            "Chiasso"
+          ],
+          "it": [
+            "Chiasso"
+          ],
+          "en": [
+            "Chiasso"
+          ]
+        },
+        "urlNames": {
+          "de": "ort-chiasso",
+          "en": "city-chiasso",
+          "fr": "lieu-chiasso",
+          "it": "luogo-chiasso"
+        },
+        "center": {
+          "lat": 45.83340213917528,
+          "lon": 9.024954072164935
+        },
+        "children": [
+          "geo-zipcode-6830"
+        ],
+        "parentPaths": [
+          [
+            "geo-region-mendrisio",
+            "geo-canton-ticino",
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "Ort",
+          "fr": "Lieu",
+          "it": "Luogo",
+          "en": "City"
+        },
+        "is24UrlNames": {
+          "de": "ort-chiasso",
+          "fr": "lieu-chiasso",
+          "it": "luogo-chiasso",
+          "en": "city-chiasso"
+        },
+        "newId": "geo-city-chiasso",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "Chiasso": [
+          {
+            "from": 0,
+            "to": 7
+          }
+        ]
+      }
+    },
+    {
+      "geoLocation": {
+        "type": "zip",
+        "id": "geo-zipcode-6830",
+        "names": {
+          "de": [
+            "6830",
+            "Chiasso"
+          ],
+          "fr": [
+            "6830",
+            "Chiasso"
+          ],
+          "it": [
+            "6830",
+            "Chiasso"
+          ],
+          "en": [
+            "6830",
+            "Chiasso"
+          ]
+        },
+        "urlNames": {
+          "de": "plz-6830",
+          "fr": "npa-6830",
+          "it": "npa-6830",
+          "en": "zip-6830"
+        },
+        "center": {
+          "lat": 45.833250548780455,
+          "lon": 9.024638048780481
+        },
+        "children": [],
+        "parentPaths": [
+          [
+            "geo-city-chiasso",
+            "geo-region-mendrisio",
+            "geo-canton-ticino",
+            "geo-country-switzerland"
+          ]
+        ],
+        "typeLabel": {
+          "de": "PLZ",
+          "fr": "NPA",
+          "it": "NPA",
+          "en": "Zip"
+        },
+        "is24UrlNames": {
+          "de": "plz-6830-chiasso",
+          "fr": "npa-6830-chiasso",
+          "it": "npa-6830-chiasso",
+          "en": "postcode-6830-chiasso"
+        },
+        "newId": "geo-zipcode-6830",
+        "hg5": {
+          "de": "",
+          "en": "",
+          "fr": "",
+          "it": ""
+        }
+      },
+      "highlights": {
+        "6830": [],
+        "Chiasso": [
+          {
+            "from": 0,
+            "to": 7
+          }
+        ]
+      }
+    }
+  ]
+}
