@@ -12,6 +12,7 @@ import * as mockStore from '../mocks/mockStore.js';
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/immoscout24ch.js';
 import { clearTokens } from '../../lib/services/datadome.js';
+import logger from '../../lib/services/logger.js';
 
 /**
  * ImmoScout24.ch, the second Swiss provider Fredy ships.
@@ -582,7 +583,10 @@ describe('the structured search it runs', () => {
       if (call.url.includes('/geo/locations')) return answer(LOCATIONS);
       const body = JSON.parse(call.init.body);
       froms.push(body.from);
-      return answer({ results: [{ id: `p${body.from}`, listing: { id: `p${body.from}` } }], maxFrom: 20 });
+      return answer({
+        results: [{ id: `p${body.from}`, listing: { id: `p${body.from}`, prices: { rent: { net: 1500 } } } }],
+        maxFrom: 20,
+      });
     });
 
     const runConfig = provider.createConfig({ url: SEARCH_URL }, []);
@@ -599,7 +603,8 @@ describe('the structured search it runs', () => {
       froms.push(body.from);
       const results = Array.from({ length: 20 }, (_, index) => ({
         id: `p${body.from}-${index}`,
-        listing: { id: 'x' },
+        // A real row keeps its Nettomiete, which is what the poison detector reads as honest.
+        listing: { id: 'x', prices: { rent: { net: 1500 } } },
       }));
       return answer({ results, maxFrom: body.from + 20 });
     });
@@ -698,5 +703,82 @@ describe('a search the endpoint refuses', () => {
     // Asked once and not repeated: a refused read is a failed read, it is not paid for per page.
     expect(searches).toHaveLength(1);
     expect(searches[0].init.headers.Cookie).toBeUndefined();
+  });
+});
+
+describe('the poisoned answers the search endpoint serves', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  /**
+   * The same listing id in its two value sets: the honest copy keeps the Nettomiete, the poisoned
+   * copy has it removed. The free text is rewritten to match either set, so it is not asserted.
+   */
+  const HONEST_ROW = {
+    id: '4003474009',
+    offerType: 'rent',
+    prices: { currency: 'CHF', rent: { net: 990, gross: 990 }, buy: null },
+    characteristics: { numberOfRooms: 3, livingSpace: 70 },
+    address: { street: 'Via Pier Francesco Mola 3', postalCode: '6830', locality: 'Chiasso' },
+    localization: { primary: 'de', de: { text: { title: '3-Zimmer-Wohnung' } } },
+  };
+  const POISONED_ROW = {
+    id: '4003474009',
+    offerType: 'rent',
+    prices: { currency: 'CHF', rent: { gross: 1220 }, buy: null },
+    characteristics: { numberOfRooms: 1, livingSpace: 20 },
+    address: { street: 'Via Pier Francesco Mola 3', postalCode: '6830', locality: 'Chiasso' },
+    localization: { primary: 'de', de: { text: { title: '1-Zimmer-Wohnung' } } },
+  };
+
+  /**
+   * Answer the location lookup and then the search with the given pages, one per request.
+   *
+   * @param {any[]} pages the pages to answer, the last one repeated once the list runs out
+   * @returns {{searches: any[]}} the search requests, in order
+   */
+  function stubPortal(pages) {
+    const searches = [];
+    stubFetch((call) => {
+      if (call.url.includes('/geo/locations')) return answer(LOCATIONS);
+      searches.push(call);
+      return answer(pages[Math.min(searches.length - 1, pages.length - 1)]);
+    });
+    return { searches };
+  }
+
+  it('retries past a poisoned page and stores the honest copy of the listing', async () => {
+    const { searches } = stubPortal([
+      { results: [{ id: POISONED_ROW.id, listing: POISONED_ROW }], maxFrom: 0 },
+      { results: [{ id: HONEST_ROW.id, listing: HONEST_ROW }], maxFrom: 0 },
+    ]);
+    const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { getListings, normalize } = provider.createConfig(providerConfig.immoscout24ch, []);
+
+    const listings = await getListings(SEARCH_URL);
+
+    expect(searches).toHaveLength(2);
+    expect(listings).toHaveLength(1);
+    const listing = normalize(listings[0]);
+    expect(listing.rooms).toBe(3);
+    expect(listing.size).toBe(70);
+    expect(listing.price).toBe(990);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('returns no row and logs one line when the page stays poisoned', async () => {
+    const { searches } = stubPortal([{ results: [{ id: POISONED_ROW.id, listing: POISONED_ROW }], maxFrom: 0 }]);
+    const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { getListings } = provider.createConfig(providerConfig.immoscout24ch, []);
+
+    const listings = await getListings(SEARCH_URL);
+
+    expect(listings).toEqual([]);
+    expect(searches).toHaveLength(7);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0]).toContain('stayed poisoned');
+    expect(spy.mock.calls[0][0]).toContain(SEARCH_URL);
   });
 });

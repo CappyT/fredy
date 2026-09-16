@@ -9,6 +9,7 @@ import * as similarityCache from '../../lib/services/similarity-check/similarity
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/homegate.js';
 import { tokenForBlock } from '../../lib/services/datadome.js';
+import logger from '../../lib/services/logger.js';
 
 /**
  * Homegate, the Swiss portal read through its mobile API.
@@ -374,7 +375,12 @@ describe('the pages a search walks', () => {
       if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
       const body = JSON.parse(init.body);
       froms.push(body.from);
-      return answer({ results: Array.from({ length: 20 }, (_, index) => ({ id: `l-${body.from + index}` })), maxFrom });
+      const results = Array.from({ length: 20 }, (_, index) => {
+        const id = `l-${body.from + index}`;
+        // A real row keeps its Nettomiete, which is what the poison detector reads as honest.
+        return { id, listing: { id, prices: { rent: { net: 1500 } } } };
+      });
+      return answer({ results, maxFrom });
     };
   }
 
@@ -420,7 +426,7 @@ describe('a DataDome refusal', () => {
       if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
       searches.push(init?.headers?.Cookie ?? null);
       if (searches.length === 1) return answer(BLOCK_BODY, 403);
-      return answer({ results: [{ id: 'l-1', listing: { id: 'l-1' } }], maxFrom: 0 });
+      return answer({ results: [{ id: 'l-1', listing: { id: 'l-1', prices: { rent: { net: 1500 } } } }], maxFrom: 0 });
     };
     const { getListings } = provider.createConfig(providerConfig.homegate, []);
 
@@ -452,6 +458,7 @@ describe('the search a Homegate path spells', () => {
       propertyType: 'APARTMENT',
       locationSlug: 'luogo-chiasso',
       filters: { numberOfRooms: { from: 3 }, monthlyRent: { to: 2000 } },
+      commercial: false,
       radius: null,
       sort: { sortBy: 'numberOfRooms', sortDirection: 'desc' },
       page: 1,
@@ -462,6 +469,7 @@ describe('the search a Homegate path spells', () => {
       propertyType: null,
       locationSlug: 'city-zurich',
       filters: {},
+      commercial: false,
       radius: null,
       sort: { sortBy: 'dateCreated', sortDirection: 'desc' },
       page: 1,
@@ -672,5 +680,99 @@ describe('the filters a Homegate query string names', () => {
   it('keeps `view` out of the query, whatever value it carries', () => {
     expect(filters('?view=map')).toEqual({});
     expect(filters('?view=list')).toEqual({});
+  });
+});
+
+describe('the poisoned answers the search endpoint serves', () => {
+  /** @type {any} */
+  let originalFetch;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  /**
+   * The same listing id in its two value sets: the honest copy keeps the Nettomiete, the poisoned
+   * copy has it removed. The title and description are rewritten to match either set, so they are
+   * not asserted here.
+   */
+  const HONEST_ROW = {
+    id: '4003474009',
+    listing: {
+      id: '4003474009',
+      offerType: 'rent',
+      prices: { currency: 'CHF', rent: { net: 990, gross: 990 }, buy: null },
+      characteristics: { numberOfRooms: 3, livingSpace: 70 },
+      address: { street: 'Via Pier Francesco Mola 3', postalCode: '6830', locality: 'Chiasso' },
+      localization: { primary: 'de', de: { text: { title: '3-Zimmer-Wohnung' } } },
+    },
+  };
+  const POISONED_ROW = {
+    id: '4003474009',
+    listing: {
+      id: '4003474009',
+      offerType: 'rent',
+      prices: { currency: 'CHF', rent: { gross: 1220 }, buy: null },
+      characteristics: { numberOfRooms: 1, livingSpace: 20 },
+      address: { street: 'Via Pier Francesco Mola 3', postalCode: '6830', locality: 'Chiasso' },
+      localization: { primary: 'de', de: { text: { title: '1-Zimmer-Wohnung' } } },
+    },
+  };
+
+  /**
+   * Answer the location lookup and then the search with the given pages, one per request.
+   *
+   * @param {any[]} pages the pages to answer, the last one repeated once the list runs out
+   * @returns {{searches: any[]}} the search requests, in order
+   */
+  function stubPortal(pages) {
+    const searches = [];
+    globalThis.fetch = async (url, init) => {
+      if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
+      searches.push(init);
+      return answer(pages[Math.min(searches.length - 1, pages.length - 1)]);
+    };
+    return { searches };
+  }
+
+  it('retries past a poisoned page and stores the honest copy of the listing', async () => {
+    const { searches } = stubPortal([
+      { results: [POISONED_ROW], maxFrom: 0 },
+      { results: [HONEST_ROW], maxFrom: 0 },
+    ]);
+    const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { getListings, normalize } = provider.createConfig(providerConfig.homegate, []);
+
+    const listings = await getListings(SEARCH_URL);
+
+    // Two requests for the one page: the poisoned answer, then the honest one.
+    expect(searches).toHaveLength(2);
+    expect(listings).toHaveLength(1);
+    const listing = normalize(listings[0]);
+    expect(listing.rooms).toBe(3);
+    expect(listing.size).toBe(70);
+    expect(listing.price).toBe(990);
+    // The poisoned page was never stored, so nothing had to be reported as dropped.
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('returns no row and logs one line when the page stays poisoned', async () => {
+    const { searches } = stubPortal([{ results: [POISONED_ROW], maxFrom: 0 }]);
+    const spy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+
+    const listings = await getListings(SEARCH_URL);
+
+    expect(listings).toEqual([]);
+    // The read gives up at the cap rather than hammering the endpoint without bound.
+    expect(searches).toHaveLength(7);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0][0]).toContain('stayed poisoned');
+    expect(spy.mock.calls[0][0]).toContain(SEARCH_URL);
   });
 });
