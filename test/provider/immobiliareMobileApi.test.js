@@ -292,7 +292,7 @@ describe('the search the app api is asked for', () => {
   beforeEach(() => {
     originalFetch = globalThis.fetch;
     clearPlaceCache();
-    globalThis.fetch = serve({ erbusco: ERBUSCO, roma: ERBUSCO });
+    globalThis.fetch = serve({ erbusco: ERBUSCO, roma: ERBUSCO, brescia: BRESCIA, 'citta studi milano': CITTA_STUDI });
   });
 
   afterEach(() => {
@@ -396,6 +396,37 @@ describe('the search the app api is asked for', () => {
     expect(params.get('c')).toBe('8042');
     expect(params.get('pr')).toBeNull();
     expect(params.get('nationId')).toBeNull();
+  });
+
+  /**
+   * Every place level and every filter the translation claims, each on the url shape the website
+   * spells it with. A region and a nation have no url of their own - the path names a town, a
+   * province or a quarter - so those two arrive on a map search, which is where the website itself
+   * puts them.
+   */
+  it.each([
+    ['a province', 'https://www.immobiliare.it/vendita-case/brescia-provincia/', { pr: 'BS', c: null, regionId: null }],
+    ['a quarter', 'https://www.immobiliare.it/vendita-case/milano/citta-studi/', { z2: '10070', c: null }],
+    [
+      'a region',
+      'https://www.immobiliare.it/search-list/?idContratto=1&idCategoria=1&idNazione=IT&fkRegione=lom',
+      { regionId: 'lom', nationId: null },
+    ],
+    [
+      'a nation',
+      'https://www.immobiliare.it/search-list/?idContratto=1&idCategoria=1&idNazione=IT',
+      { nationId: 'IT' },
+    ],
+    [
+      'the price, surface and room bounds',
+      'https://www.immobiliare.it/affitto-case/erbusco/?prezzoMinimo=500&superficieMassima=120&localiMinimo=2&localiMassimo=4',
+      { pm: '500', sx: '120', lm: '2', lx: '4', t: 'a', c: '7369' },
+    ],
+  ])('reads %s into the app vocabulary', async (_name, url, expected) => {
+    const params = await buildAppSearch(url);
+
+    expect(params).toBeInstanceOf(URLSearchParams);
+    for (const [name, value] of Object.entries(expected)) expect([name, params.get(name)]).toEqual([name, value]);
   });
 
   it('expands a two-corner rectangle to four corners and passes a polygon through', () => {
