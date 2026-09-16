@@ -340,12 +340,18 @@ export function buildFetchMock() {
     // of the pasted url into the geo tag the search query wants, and the search then answers one
     // page per `from`. The recorded page holds more results than its own `maxFrom` allows, so the
     // walk ends on the portal's ceiling rather than on an empty page.
-    if (urlStr.includes('api.homegate.ch/geo/locations')) {
+    if (
+      urlStr.includes('api.homegate.ch/geo/locations') ||
+      urlStr.includes('api.re.swissmarketplace.group/geo/locations')
+    ) {
       const asked = new URL(urlStr).searchParams.get('name') ?? '';
       return { ok: true, status: 200, json: () => readLocationRecording('homegate_locations', asked) };
     }
 
-    if (urlStr.includes('api.homegate.ch/search/listings')) {
+    if (
+      urlStr.includes('api.homegate.ch/search/listings') ||
+      urlStr.includes('api.re.swissmarketplace.group/search/listings')
+    ) {
       if (homegateListData == null) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'homegate_list.json'));
         homegateListData = raw ? JSON.parse(raw) : { results: [] };

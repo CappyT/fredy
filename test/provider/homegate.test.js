@@ -206,7 +206,7 @@ describe('the search a pasted URL translates to', () => {
 
     const locationCall = asked.find((target) => target.includes('/geo/locations'));
     // `rent` is the English offer type word, so the lookup is made in English.
-    expect(locationCall).toBe('https://api.homegate.ch/geo/locations?lang=en&name=zurich');
+    expect(locationCall).toBe('https://api.re.swissmarketplace.group/geo/locations?lang=en&name=zurich');
     expect(bodies[0].headers.Cookie).toBeUndefined();
 
     expect(bodies[0].body).toMatchObject({
@@ -235,7 +235,7 @@ describe('the search a pasted URL translates to', () => {
 
     // The Italian offer type word asks in Italian, and the slug is the place, not the trailing
     // `lista-annunci` segment.
-    expect(asked[0]).toBe('https://api.homegate.ch/geo/locations?lang=it&name=chiasso');
+    expect(asked[0]).toBe('https://api.re.swissmarketplace.group/geo/locations?lang=it&name=chiasso');
     expect(bodies[0].body.query).toMatchObject({
       offerType: 'RENT',
       propertyType: 'APARTMENT',
@@ -264,7 +264,7 @@ describe('the search a pasted URL translates to', () => {
     await getListings('https://www.homegate.ch/rent/office/city-zurich/matching-list');
 
     expect(asked.find((target) => target.includes('/geo/locations'))).toBe(
-      'https://api.homegate.ch/geo/locations?lang=en&name=zurich',
+      'https://api.re.swissmarketplace.group/geo/locations?lang=en&name=zurich',
     );
     expect(bodies[0].body.query).toMatchObject({
       offerType: 'RENT',
@@ -286,6 +286,25 @@ describe('the search a pasted URL translates to', () => {
     expect(bodies[0].headers['X-App-Id']).toMatch(/^\d{26}$/);
     expect(bodies[0].headers['X-App-Version']).toBe('Homegate/13.3.0(13300000)/Android/37');
     expect(bodies[0].headers['X-App-Time']).toBeTruthy();
+  });
+
+  it('asks the app host first, and falls back to the portal host when it does not answer', async () => {
+    /** @type {string[]} */
+    const hosts = [];
+    globalThis.fetch = async (url) => {
+      const target = String(url);
+      hosts.push(target);
+      if (target.includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
+      if (target.includes('api.re.swissmarketplace.group')) throw new Error('app host down');
+      return answer({ results: [{ id: 'l-1', listing: { id: 'l-1', prices: { rent: { net: 1500 } } } }], maxFrom: 0 });
+    };
+    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+
+    const found = await getListings(SEARCH_URL);
+
+    expect(hosts.some((target) => target.includes('api.re.swissmarketplace.group/search/listings'))).toBe(true);
+    expect(hosts.some((target) => target.includes('api.homegate.ch/search/listings'))).toBe(true);
+    expect(found).toHaveLength(1);
   });
 
   it('sends the filters, the radius, the sort and the start page the query string names', async () => {
@@ -425,14 +444,15 @@ describe('a DataDome refusal', () => {
     globalThis.fetch = async (url, init) => {
       if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
       searches.push(init?.headers?.Cookie ?? null);
-      if (searches.length === 1) return answer(BLOCK_BODY, 403);
+      if (searches.length <= 2) return answer(BLOCK_BODY, 403);
       return answer({ results: [{ id: 'l-1', listing: { id: 'l-1', prices: { rent: { net: 1500 } } } }], maxFrom: 0 });
     };
     const { getListings } = provider.createConfig(providerConfig.homegate, []);
 
     const found = await getListings(SEARCH_URL);
 
-    expect(searches).toEqual([null, 'datadome=SOLVED']);
+    // The app host is asked first with no cookie; the portal host is the fallback that solves.
+    expect(searches).toEqual([null, null, 'datadome=SOLVED']);
     expect(found).toHaveLength(1);
     expect(tokenForBlock).toHaveBeenCalledTimes(1);
     expect(tokenForBlock.mock.calls[0][0]).toMatchObject({ status: 403, host: 'api.homegate.ch' });
