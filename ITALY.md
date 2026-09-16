@@ -7,11 +7,11 @@ covers the differences.
 
 ## Providers
 
--   🏠 Scrapes **25 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭 🇪🇸 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
-    WG-Gesucht, Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox and
-    [14 more](./doc/providers.md)
+-   🏠 Scrapes **27 portals** across 🇩🇪 🇮🇹 🇦🇹 🇨🇭 🇪🇸 🇵🇹: ImmoScout24, Immowelt, Kleinanzeigen,
+    WG-Gesucht, Immobiliare.it, Idealista, Casa.it, Subito, Tecnocasa, willhaben, Flatfox, Homegate
+    and [15 more](./doc/providers.md)
 
-Fredy ships with 25 providers. The German ones are listed in [Providers & scraping](./doc/providers.md);
+Fredy ships with 27 providers. The German ones are listed in [Providers & scraping](./doc/providers.md);
 the rest are offered Italy first:
 
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
