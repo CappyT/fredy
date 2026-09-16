@@ -3,6 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
+import { readFileSync } from 'node:fs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readCategory } from '../../lib/services/immobiliare/web-paths.js';
 import { clearPlaceCache, resolvePlace, toQuery } from '../../lib/services/immobiliare/geography.js';
@@ -594,10 +595,23 @@ describe('the flat app item', () => {
   /**
    * The app id is the number the advert is addressed by, and price is what separates two adverts on
    * one page, so the hash is the same one the website path builds for the same advert - which is
-   * what keeps a switching job from re-notifying a listing it already stored.
+   * what keeps a job that switches path from re-notifying a listing it already stored. Both recipes
+   * are read here, rather than one of them being written out again, so a change to either one fails.
    */
   it('builds the same hash the website path builds for the same advert and price', async () => {
-    const { buildHash } = await import('../../lib/utils.js');
-    expect(normalizeAppListing(ITEM).id).toBe(buildHash('132460266', '1880000'));
+    const website = JSON.parse(
+      readFileSync(new URL('../testFixtures/immobiliare_list.json', import.meta.url), 'utf-8'),
+    );
+    const websiteItem = website.results[0];
+    const { config } = await import('../../lib/provider/immobiliare.js');
+
+    const appItem = {
+      id: websiteItem.realEstate.id,
+      price: { raw: websiteItem.realEstate.price.value, isHidden: false },
+      topology: { typology: { name: 'Appartamento' } },
+      geography: { municipality: { name: 'Roma' } },
+    };
+
+    expect(normalizeAppListing(appItem).id).toBe(config.normalize(websiteItem).id);
   });
 });
