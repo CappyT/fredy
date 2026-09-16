@@ -495,7 +495,7 @@ describe('the structured search it runs', () => {
     });
   });
 
-  it('carries the app user agent, which is the one DataDome answers with a solvable challenge', async () => {
+  it('carries the app user agent, which is the agent of the host it asks', async () => {
     const calls = stubFetch((call) =>
       call.url.includes('/geo/locations') ? answer(LOCATIONS) : answer({ results: [], maxFrom: 0 }),
     );
@@ -505,6 +505,20 @@ describe('the structured search it runs', () => {
 
     const search = calls.find((call) => call.url.includes('/search/listings'));
     expect(search.init.headers['User-Agent']).toBe('immoscout24.ch.nextgen App Android/6.3.0');
+  });
+
+  it('carries a non-empty X-App-Id on every search, which is what keeps the answer honest', async () => {
+    const calls = stubFetch((call) =>
+      call.url.includes('/geo/locations') ? answer(LOCATIONS) : answer({ results: [], maxFrom: 0 }),
+    );
+
+    const runConfig = provider.createConfig({ url: SEARCH_URL }, []);
+    await runConfig.getListings(runConfig.url);
+
+    const search = calls.find((call) => call.url.includes('/search/listings'));
+    expect(search.init.headers['X-App-Id']).toMatch(/^\d{26}$/);
+    expect(search.init.headers['X-App-Version']).toBe('Immoscout24/6.3.0(6300000)/Android/37');
+    expect(search.init.headers['X-App-Time']).toBeTruthy();
   });
 
   it('fails the read when the place resolves nothing, rather than searching the whole country', async () => {
@@ -663,6 +677,10 @@ describe('a search the endpoint refuses', () => {
 
     expect(searches).toHaveLength(2);
     expect(searches[0].init.headers.Cookie).toBeUndefined();
+    // The header rides on the retry too: the request that carries the cookie is the one the server
+    // must see as the app, or the answer it serves stays rewritten.
+    expect(searches[0].init.headers['X-App-Id']).toMatch(/^\d{26}$/);
+    expect(searches[1].init.headers['X-App-Id']).toMatch(/^\d{26}$/);
     expect(searches[1].init.headers.Cookie).toBe('datadome=solved');
   });
 

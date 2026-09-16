@@ -273,13 +273,18 @@ describe('the search a pasted URL translates to', () => {
     expect(bodies[0].body.query.propertyType).toBeUndefined();
   });
 
-  it('carries the app user agent, which is the one DataDome answers with a solvable challenge', async () => {
+  it('carries the app user agent, which is the agent of the host it asks', async () => {
     stubPortal();
     const { getListings } = provider.createConfig(providerConfig.homegate, []);
 
     await getListings(SEARCH_URL);
 
     expect(bodies[0].headers['User-Agent']).toBe('homegate.ch.nextgen App Android/13.3.0');
+    // The request wears the app's own header set. A 26 digit X-App-Id is what keeps the endpoint
+    // on the honest value set.
+    expect(bodies[0].headers['X-App-Id']).toMatch(/^\d{26}$/);
+    expect(bodies[0].headers['X-App-Version']).toBe('Homegate/13.3.0(13300000)/Android/37');
+    expect(bodies[0].headers['X-App-Time']).toBeTruthy();
   });
 
   it('sends the filters, the radius, the sort and the start page the query string names', async () => {
