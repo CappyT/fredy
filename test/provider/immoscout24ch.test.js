@@ -295,6 +295,149 @@ describe('translating the pasted search URL', () => {
   });
 });
 
+describe('translating the query string of a pasted search URL', () => {
+  /**
+   * The filters a query string asks for, on the real Italian search URL. The path is the same one
+   * for every case, so the only thing that changes is the filter under test.
+   *
+   * @param {string} queryString the query string, leading `?` included
+   */
+  const filtersOf = (queryString) =>
+    provider.parseSearchFilters(`https://www.immoscout24.ch/it/appartamento/affittare/luogo-chiasso${queryString}`);
+
+  it('reads the real filter URL into the query the search endpoint wants', () => {
+    expect(provider.parseSearchFilters(REAL_CHIASSO_URL)).toEqual({
+      query: {
+        livingSpace: { from: 80 },
+        numberOfRooms: { from: 3 },
+        monthlyRent: { to: 2000 },
+        hasParkingOrGarage: true,
+      },
+      radius: null,
+      sortBy: null,
+      sortDirection: null,
+      page: null,
+    });
+  });
+
+  it('reads the living space, the lot size and the floor space bounds in the spelling the server honours', () => {
+    expect(filtersOf('?slf=80&slt=150').query).toEqual({ livingSpace: { from: 80, to: 150 } });
+    expect(filtersOf('?spf=200&spt=800').query).toEqual({ lotSize: { from: 200, to: 800 } });
+    expect(filtersOf('?suf=50&sut=120').query).toEqual({ totalFloorSpace: { from: 50, to: 120 } });
+  });
+
+  it('reads the room bounds and keeps the half a room count can carry', () => {
+    expect(filtersOf('?nrf=3&nrt=4.5').query).toEqual({ numberOfRooms: { from: 3, to: 4.5 } });
+  });
+
+  it('sends the one price pair to the field the offer type names', () => {
+    expect(filtersOf('?pf=1000&pt=2000').query).toEqual({ monthlyRent: { from: 1000, to: 2000 } });
+
+    const buy = provider.parseSearchFilters(
+      'https://www.immoscout24.ch/it/casa/acquistare/luogo-chiasso?pf=300000&pt=900000',
+    );
+    expect(buy.query).toEqual({ purchasePrice: { from: 300000, to: 900000 } });
+  });
+
+  it('scales a price by the unit letter the client accepts', () => {
+    // `t` is a thousand and `m` a million; a price without a letter stays francs.
+    expect(filtersOf('?pt=2t').query).toEqual({ monthlyRent: { to: 2000 } });
+    expect(filtersOf('?pf=1m').query).toEqual({ monthlyRent: { from: 1000000 } });
+    expect(filtersOf('?pt=2000').query).toEqual({ monthlyRent: { to: 2000 } });
+  });
+
+  it('drops the price pair rather than guess its target when the URL names no offer type', () => {
+    expect(provider.parseSearchFilters('https://www.immoscout24.ch/it/immobili/luogo-chiasso?pt=2000').query).toEqual(
+      {},
+    );
+  });
+
+  it('reads the radius as kilometres under a thousand and as metres above', () => {
+    expect(filtersOf('?r=5').radius).toBe(5000);
+    expect(filtersOf('?r=1200').radius).toBe(1200);
+    expect(filtersOf('').radius).toBeNull();
+  });
+
+  it('reads the comma-separated object type codes into API categories', () => {
+    expect(filtersOf('?pty=1,21').query).toEqual({ categories: ['APARTMENT', 'ROOF_FLAT'] });
+    expect(filtersOf('?pty=24').query).toEqual({ categories: ['MAISONETTE', 'DUPLEX'] });
+    expect(filtersOf('?pty=26').query).toEqual({ categories: ['BUNGALOW', 'SINGLE_HOUSE', 'ENGADINE_HOUSE'] });
+    // The client folds FURNISHED_FLAT onto APARTMENT, which would widen the search to every
+    // apartment. The API has the exact category, and it narrows.
+    expect(filtersOf('?pty=62').query).toEqual({ categories: ['FURNISHED_FLAT'] });
+  });
+
+  it('ignores an object type code the document does not name', () => {
+    expect(filtersOf('?pty=2,999').query).toEqual({});
+    expect(filtersOf('?pty=2,1').query).toEqual({ categories: ['APARTMENT'] });
+  });
+
+  it('decodes the an bitmask, five bits per character, read right to left', () => {
+    // The three values the document decodes with the client's own decoder.
+    expect(filtersOf('?an=8000').query).toEqual({ hasParkingOrGarage: true });
+    expect(filtersOf('?an=4000').query).toEqual({ isChildFriendly: true });
+    expect(filtersOf('?an=1').query).toEqual({ isWheelchairAccessible: true });
+    // Bit 4 is the last bit the rightmost character carries.
+    expect(filtersOf('?an=G').query).toEqual({ isNewBuilding: true });
+    // Two characters: the left one carries bits 5 to 9, so `8` there is bit 8.
+    expect(filtersOf('?an=8G').query).toEqual({ hasElevator: true, isNewBuilding: true });
+  });
+
+  it('ignores the bits of the an mask that the document does not name', () => {
+    // `V` holds 31, so all five bits of the rightmost character. Bits 2 and 3 name no facility.
+    expect(filtersOf('?an=V').query).toEqual({
+      isWheelchairAccessible: true,
+      arePetsAllowed: true,
+      isNewBuilding: true,
+    });
+  });
+
+  it('drops an an value it cannot read rather than half read it', () => {
+    expect(filtersOf('?an=!!!').query).toEqual({});
+    expect(filtersOf('?an=8000!').query).toEqual({});
+  });
+
+  it('reads the sort the URL names, and defaults the direction to desc', () => {
+    expect(filtersOf('?o=nr-asc')).toMatchObject({ sortBy: 'numberOfRooms', sortDirection: 'asc' });
+    expect(filtersOf('?o=nr')).toMatchObject({ sortBy: 'numberOfRooms', sortDirection: 'desc' });
+    expect(filtersOf('?o=resultingsearchableprice-asc')).toMatchObject({
+      sortBy: 'monthlyRent',
+      sortDirection: 'asc',
+    });
+    expect(
+      provider.parseSearchFilters(
+        'https://www.immoscout24.ch/it/casa/acquistare/luogo-chiasso?o=resultingsearchableprice-asc',
+      ).sortBy,
+    ).toBe('purchasePrice');
+  });
+
+  it('ignores a sort name the API does not accept, so the provider keeps its own', () => {
+    expect(filtersOf('?o=nonsense-asc')).toMatchObject({ sortBy: null, sortDirection: null });
+  });
+
+  it('reads the page number as the start of the walk', () => {
+    expect(filtersOf('?pn=3').page).toBe(3);
+    // The first page is where the walk starts anyway, so it asks for nothing.
+    expect(filtersOf('?pn=1').page).toBeNull();
+  });
+
+  it('ignores a parameter it does not know, rather than guess a filter from it', () => {
+    // `nrs` sets the page size, which the endpoint rejects as an unsupported value, and `rr`,
+    // `view` and a made-up name are not filters at all.
+    expect(filtersOf('?nrs=50&rr=1&view=map&unheard=7')).toMatchObject({
+      query: {},
+      radius: null,
+      sortBy: null,
+      sortDirection: null,
+      page: null,
+    });
+  });
+
+  it('reads a malformed bound as absent rather than as zero', () => {
+    expect(filtersOf('?slf=abc&nrf=three&pt=none&spf=').query).toEqual({});
+  });
+});
+
 describe('the structured search it runs', () => {
   it('resolves the place through the geo endpoint and asks for the newest first', async () => {
     const calls = stubFetch((call) =>
@@ -339,10 +482,16 @@ describe('the structured search it runs', () => {
     expect(geo.searchParams.get('lang')).toBe('it');
 
     const search = JSON.parse(calls[1].init.body);
+    // The URL's filters reach the search: living space from 80, rooms from 3, rent to 2000, and
+    // the parking facility the `an=8000` bit asks for.
     expect(search.query).toEqual({
       offerType: 'RENT',
       propertyType: 'APARTMENT',
       location: { geoTags: ['geo-city-chiasso'] },
+      livingSpace: { from: 80 },
+      numberOfRooms: { from: 3 },
+      monthlyRent: { to: 2000 },
+      hasParkingOrGarage: true,
     });
   });
 
@@ -375,6 +524,42 @@ describe('the structured search it runs', () => {
 
     // The search endpoint was never asked: a place that does not resolve fails the read.
     expect(calls.filter((call) => call.url.includes('/search/listings'))).toHaveLength(0);
+  });
+
+  it('asks the search for the sort and the first page the URL names', async () => {
+    const bodies = [];
+    stubFetch((call) => {
+      if (call.url.includes('/geo/locations')) return answer(LOCATIONS);
+      const body = JSON.parse(call.init.body);
+      bodies.push(body);
+      return answer({ results: [], maxFrom: 0 });
+    });
+
+    const url = 'https://www.immoscout24.ch/de/wohnung/mieten/ort-zuerich?o=nr-asc&pn=3';
+    await provider.createConfig({ url }, []).getListings(url);
+
+    expect(bodies).toHaveLength(1);
+    expect(bodies[0].sortBy).toBe('numberOfRooms');
+    expect(bodies[0].sortDirection).toBe('asc');
+    // `pn=3` is the third page of twenty, so the walk starts at forty.
+    expect(bodies[0].from).toBe(40);
+  });
+
+  it('carries the radius next to the place, and drops it for a URL that names no place', async () => {
+    const bodies = [];
+    stubFetch((call) => {
+      if (call.url.includes('/geo/locations')) return answer(LOCATIONS);
+      bodies.push(JSON.parse(call.init.body));
+      return answer({ results: [], maxFrom: 0 });
+    });
+
+    const withPlace = 'https://www.immoscout24.ch/de/wohnung/mieten/ort-zuerich?r=5';
+    await provider.createConfig({ url: withPlace }, []).getListings(withPlace);
+    expect(bodies[0].query.location).toEqual({ geoTags: ['geo-city-zurich'], radius: 5000 });
+
+    const withoutPlace = 'https://www.immoscout24.ch/it/appartamento/affittare?r=5';
+    await provider.createConfig({ url: withoutPlace }, []).getListings(withoutPlace);
+    expect(bodies[1].query.location).toBeUndefined();
   });
 
   it('stops the walk once `from` would pass maxFrom', async () => {

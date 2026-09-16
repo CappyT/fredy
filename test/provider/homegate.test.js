@@ -282,6 +282,28 @@ describe('the search a pasted URL translates to', () => {
     expect(bodies[0].headers['User-Agent']).toBe('homegate.ch.nextgen App Android/13.3.0');
   });
 
+  it('sends the filters, the radius, the sort and the start page the query string names', async () => {
+    stubPortal();
+    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+
+    await getListings(`${SEARCH_URL}?ac=3&o=nr-desc&ah=2000&be=5&ep=2`);
+
+    expect(bodies[0].body).toMatchObject({
+      query: {
+        offerType: 'RENT',
+        numberOfRooms: { from: 3 },
+        monthlyRent: { to: 2000 },
+        location: { geoTags: ['geo-city-zurich'], radius: 5000 },
+      },
+      sortBy: 'numberOfRooms',
+      sortDirection: 'desc',
+      // `ep=2` is the second page, so the walk starts on its offset.
+      from: 20,
+    });
+    // The property type of the path is still sent.
+    expect(bodies[0].body.query.propertyType).toBeUndefined();
+  });
+
   it('answers nothing for a URL it cannot read, rather than searching the wrong thing', async () => {
     stubPortal();
     const { getListings } = provider.createConfig(providerConfig.homegate, []);
@@ -424,12 +446,20 @@ describe('the search a Homegate path spells', () => {
       lang: 'it',
       propertyType: 'APARTMENT',
       locationSlug: 'luogo-chiasso',
+      filters: { numberOfRooms: { from: 3 }, monthlyRent: { to: 2000 } },
+      radius: null,
+      sort: { sortBy: 'numberOfRooms', sortDirection: 'desc' },
+      page: 1,
     });
     expect(provider.parseSearchUrl(SEARCH_URL)).toEqual({
       offerType: 'RENT',
       lang: 'en',
       propertyType: null,
       locationSlug: 'city-zurich',
+      filters: {},
+      radius: null,
+      sort: { sortBy: 'dateCreated', sortDirection: 'desc' },
+      page: 1,
     });
   });
 
@@ -471,13 +501,13 @@ describe('the search a Homegate path spells', () => {
   it('reads the place that follows a property word it does not map', () => {
     // Both are real links on Homegate's own result page. `office` and `commercial` name no type this
     // maps, so the place is the last leftover segment, behind them.
-    expect(provider.parseSearchUrl('https://www.homegate.ch/rent/office/city-zurich/matching-list')).toEqual({
+    expect(provider.parseSearchUrl('https://www.homegate.ch/rent/office/city-zurich/matching-list')).toMatchObject({
       offerType: 'RENT',
       lang: 'en',
       propertyType: null,
       locationSlug: 'city-zurich',
     });
-    expect(provider.parseSearchUrl('https://www.homegate.ch/buy/commercial/city-zurich/matching-list')).toEqual({
+    expect(provider.parseSearchUrl('https://www.homegate.ch/buy/commercial/city-zurich/matching-list')).toMatchObject({
       offerType: 'BUY',
       lang: 'en',
       propertyType: null,
@@ -501,11 +531,141 @@ describe('the search a Homegate path spells', () => {
 
   it('reads a path that names no place as the country-wide search the portal publishes', () => {
     // The portal's own sitemap carries this form, so it states a search rather than a broken URL.
-    expect(provider.parseSearchUrl('https://www.homegate.ch/rent/real-estate')).toEqual({
+    expect(provider.parseSearchUrl('https://www.homegate.ch/rent/real-estate')).toMatchObject({
       offerType: 'RENT',
       lang: 'en',
       propertyType: null,
       locationSlug: null,
     });
+  });
+});
+
+describe('the filters a Homegate query string names', () => {
+  /** The English rent path every case below hangs its query string on. */
+  const RENT_URL = 'https://www.homegate.ch/rent/real-estate/city-zurich/matching-list';
+
+  /**
+   * @param {string} query the query string, `?` included
+   * @returns {any} the parsed search
+   */
+  const rent = (query) => provider.parseSearchUrl(`${RENT_URL}${query}`);
+
+  /**
+   * @param {string} query the query string, `?` included
+   * @returns {Object} the filters the search carries
+   */
+  const filters = (query) => rent(query).filters;
+
+  it('turns the real Italian URL into rooms, rent and sort, and drops the map view', () => {
+    const searched = provider.parseSearchUrl(REAL_CHIASSO_URL);
+
+    expect(searched.filters).toEqual({ numberOfRooms: { from: 3 }, monthlyRent: { to: 2000 } });
+    expect(searched.sort).toEqual({ sortBy: 'numberOfRooms', sortDirection: 'desc' });
+    // `view=map` selects the presentation, so it names no query field at all.
+    expect(searched.filters.view).toBeUndefined();
+    expect(searched.filters.livingSpace).toBeUndefined();
+  });
+
+  it('reads the room pair', () => {
+    expect(filters('?ac=3')).toEqual({ numberOfRooms: { from: 3 } });
+    expect(filters('?ad=3')).toEqual({ numberOfRooms: { to: 3 } });
+    expect(filters('?ac=2.5&ad=4.5')).toEqual({ numberOfRooms: { from: 2.5, to: 4.5 } });
+  });
+
+  it('reads the rent price pair, and the magnitude suffix the page writes', () => {
+    expect(filters('?ag=1000&ah=2000')).toEqual({ monthlyRent: { from: 1000, to: 2000 } });
+    expect(filters('?ah=2t')).toEqual({ monthlyRent: { to: 2000 } });
+  });
+
+  it('reads the buy price pair on a buy search', () => {
+    const buy = provider.parseSearchUrl('https://www.homegate.ch/buy/real-estate/city-zurich?ai=800000&aj=1000000');
+
+    expect(buy.filters).toEqual({ purchasePrice: { from: 800000, to: 1000000 } });
+  });
+
+  it('drops the buy price pair on a rent search, and the rent pair on a buy search', () => {
+    expect(filters('?ai=800000&aj=1000000')).toEqual({});
+    expect(
+      provider.parseSearchUrl('https://www.homegate.ch/buy/real-estate/city-zurich?ag=1000&ah=2000').filters,
+    ).toEqual({});
+  });
+
+  it('reads the remaining size and year pairs', () => {
+    expect(filters('?ak=70&al=80')).toEqual({ livingSpace: { from: 70, to: 80 } });
+    expect(filters('?ay=200&az=500')).toEqual({ lotSize: { from: 200, to: 500 } });
+    expect(filters('?bc=100&bd=200')).toEqual({ cubage: { from: 100, to: 200 } });
+    expect(filters('?bf=1990&bg=2010')).toEqual({ yearBuilt: { from: 1990, to: 2010 } });
+    expect(filters('?jd=200&jz=400')).toEqual({ yearlyRentPerSqm: { from: 200, to: 400 } });
+  });
+
+  it('reads the usable floor space as one field for a home', () => {
+    expect(filters('?ba=100&bb=200')).toEqual({ totalFloorSpace: { from: 100, to: 200 } });
+  });
+
+  it('splits the usable floor space across two fields for a commercial category', () => {
+    expect(rent('?aa=rentoffice&ba=100&bb=200').filters).toEqual({
+      totalFloorSpace: { from: 100 },
+      singleFloorSpace: { to: 200 },
+    });
+  });
+
+  it('reads the floor, the published-price flag and the radius', () => {
+    expect(filters('?ax=eg')).toEqual({ floor: { from: 0, to: 0.5 } });
+    expect(filters('?ax=1')).toEqual({ floor: { from: 0, to: 0.5 } });
+    expect(filters('?ax=noteg')).toEqual({ floor: { from: 1 } });
+    expect(filters('?ax=2')).toEqual({ floor: { from: 1 } });
+    expect(filters('?ipd=true')).toEqual({ isPriceDefined: true });
+    // The radius is metres on the wire, kilometres below 1000 in the URL.
+    expect(rent('?be=5').radius).toBe(5000);
+    expect(rent('?be=3000').radius).toBe(3000);
+    expect(rent('?be=abc').radius).toBeNull();
+  });
+
+  it('reads the result page as the page the walk starts on', () => {
+    expect(rent('?ep=3').page).toBe(3);
+    expect(rent('?ep=abc').page).toBe(1);
+    expect(rent('').page).toBe(1);
+  });
+
+  it('reads the sort parameter in both directions and for every usable key', () => {
+    expect(rent('?o=nr-desc').sort).toEqual({ sortBy: 'numberOfRooms', sortDirection: 'desc' });
+    expect(rent('?o=nr-asc').sort).toEqual({ sortBy: 'numberOfRooms', sortDirection: 'asc' });
+    expect(rent('?o=datecreated-desc').sort).toEqual({ sortBy: 'dateCreated', sortDirection: 'desc' });
+    expect(rent('?o=place-asc').sort).toEqual({ sortBy: 'place', sortDirection: 'asc' });
+    expect(rent('?o=exclusive-desc').sort).toEqual({ sortBy: 'exclusive', sortDirection: 'desc' });
+    expect(rent('?o=sorttoplisting-desc').sort).toEqual({ sortBy: 'listingType', sortDirection: 'desc' });
+    // The price sort names a different field by offer type.
+    expect(rent('?o=resultingsearchableprice-asc').sort).toEqual({ sortBy: 'monthlyRent', sortDirection: 'asc' });
+    expect(
+      provider.parseSearchUrl('https://www.homegate.ch/buy/real-estate/city-zurich?o=resultingsearchableprice-asc')
+        .sort,
+    ).toEqual({ sortBy: 'purchasePrice', sortDirection: 'asc' });
+    // `relevance` earns HTTP 500 from the server, and an unknown key names no sort.
+    expect(rent('?o=relevance-desc').sort).toEqual({ sortBy: 'dateCreated', sortDirection: 'desc' });
+    expect(rent('?o=nonsense').sort).toEqual({ sortBy: 'dateCreated', sortDirection: 'desc' });
+  });
+
+  it('lets the category override the offer type the path named', () => {
+    const searched = provider.parseSearchUrl(
+      'https://www.homegate.ch/affittare/appartamento/luogo-chiasso/lista-annunci?aa=purchflat&ai=800000',
+    );
+
+    expect(searched.offerType).toBe('BUY');
+    // The price pair follows the offer type the category set, so the buy pair is the one read.
+    expect(searched.filters).toEqual({ purchasePrice: { from: 800000 } });
+  });
+
+  it('leaves a parameter it cannot read untranslated rather than guessing a field', () => {
+    // The page names `aw` as `objectTypes`, but the endpoint ignored that field.
+    expect(filters('?aw=APPT,1')).toEqual({});
+    // Named in the page's bundle or its robots.txt, never confirmed by a controlled search.
+    expect(filters('?an=1&tt=30&sem=pool&loc=123')).toEqual({});
+    // A value that does not parse changes nothing.
+    expect(filters('?ac=abc&ah=xyz')).toEqual({});
+  });
+
+  it('keeps `view` out of the query, whatever value it carries', () => {
+    expect(filters('?view=map')).toEqual({});
+    expect(filters('?view=list')).toEqual({});
   });
 });
