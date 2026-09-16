@@ -300,8 +300,8 @@ export function buildFetchMock() {
     }
 
     // Immobiliare is read through the android app's own search api first, which answers a place
-    // filtered search over plain http. One recorded page stands for the whole search, so every page
-    // after it comes back empty, which is what stops the walk instead of serving the adverts again.
+    // filtered search over plain http. The recorded page is served by `start`, with the total the
+    // recording carries, so the walk stops where the real one does: once `start` passes the total.
     if (/ws-app\.com\/b2c\/v1\/properties(\?|$)/.test(urlStr)) {
       if (immobiliareAppListData == null) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immobiliare_app_list.json'));
@@ -309,10 +309,7 @@ export function buildFetchMock() {
       }
       const start = Number(new URL(urlStr).searchParams.get('start')) || 0;
       const items = (immobiliareAppListData.list ?? []).slice(start, start + 20);
-      const payload =
-        start === 0
-          ? { ...immobiliareAppListData, offset: 0, count: items.length, list: items }
-          : { ...immobiliareAppListData, offset: start, count: items.length, totalActive: 0, list: items };
+      const payload = { ...immobiliareAppListData, offset: start, count: items.length, list: items };
       return { ok: true, status: 200, json: () => Promise.resolve(payload) };
     }
 
