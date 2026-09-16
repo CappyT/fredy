@@ -127,7 +127,7 @@ describe('#homegate provider testsuite()', () => {
         id: 'listing-1',
         offerType: 'rent',
         characteristics: { livingSpace: 82, numberOfRooms: 3.5 },
-        address: { street: 'Badenerstrasse', houseNumber: '12', zip: '8004', city: 'Zürich' },
+        address: { street: 'Badenerstrasse 12', postalCode: '8004', locality: 'Zürich' },
         localization: { primary: 'de', de: { text: { title: 'Wohnung' } } },
       },
     };
@@ -151,7 +151,7 @@ describe('#homegate provider testsuite()', () => {
         offerType: 'rent',
         prices: { rent: { net: 2100 } },
         characteristics: { livingSpace: 82.5, numberOfRooms: 3.5 },
-        address: { street: 'Langstrasse', houseNumber: '45', zip: '8004', city: 'Zürich' },
+        address: { street: 'Langstrasse 45', postalCode: '8004', locality: 'Zürich' },
         meta: { createdAt: '2026-09-10T08:00:00Z' },
         localization: { primary: 'de', de: { text: { title: 'Helle 3.5-Zimmer-Wohnung' } } },
       },
@@ -162,6 +162,38 @@ describe('#homegate provider testsuite()', () => {
     expect(listing.rooms).toBe(3.5);
     expect(listing.address).toBe('Langstrasse 45, 8004 Zürich');
     expect(listing.publishedAt).toBe(Date.parse('2026-09-10T08:00:00Z'));
+  });
+
+  /**
+   * The address field names are the live ones. All 96 listings of a Chiasso search carried
+   * `street`, `postalCode`, `locality` and `region`, and not one carried `city`, `zip` or
+   * `houseNumber`, so a listing normalized from the invented spelling keeps nothing but the street.
+   */
+  it('reads the address the live response spells', () => {
+    const { normalize } = provider.createConfig(providerConfig.homegate, []);
+    const addressOf = (address) =>
+      normalize({
+        id: 'listing-3',
+        listing: {
+          id: 'listing-3',
+          prices: { rent: { net: 1190 } },
+          address,
+          localization: { primary: 'de', de: { text: { title: 'Wohnung' } } },
+        },
+      }).address;
+
+    expect(addressOf({ street: 'Corso San Gottardo 96', postalCode: '6830', locality: 'Chiasso' })).toBe(
+      'Corso San Gottardo 96, 6830 Chiasso',
+    );
+    // Ten of the 96 carried no street. The town is still worth having.
+    expect(addressOf({ postalCode: '6830', locality: 'Chiasso' })).toBe('6830 Chiasso');
+    // `streetAddition` answered ", Chiasso" live, which is the locality again, so it is left out.
+    expect(
+      addressOf({ street: 'Via Milano 19', streetAddition: ', Chiasso', postalCode: '6830', locality: 'Chiasso' }),
+    ).toBe('Via Milano 19, 6830 Chiasso');
+    expect(addressOf({ street: 'Badenerstrasse', houseNumber: '12', zip: '8004', city: 'Zürich' })).toBe(
+      'Badenerstrasse',
+    );
   });
 });
 

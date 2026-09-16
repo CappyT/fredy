@@ -166,7 +166,7 @@ describe('#immoscout24ch provider testsuite()', () => {
     const { normalize } = provider.createConfig(providerConfig.immoscout24ch, []);
     const base = {
       id: '1',
-      address: { street: 'Seefeldstrasse', streetNumber: '12', zip: '8008', city: 'Zürich' },
+      address: { street: 'Seefeldstrasse 12', postalCode: '8008', locality: 'Zürich' },
       characteristics: { livingSpace: 92, numberOfRooms: 3.5 },
       meta: { createdAt: '2026-09-10T08:15:00Z' },
     };
@@ -186,6 +186,24 @@ describe('#immoscout24ch provider testsuite()', () => {
     expect(listing.image).toBe('https://media.immoscout24.ch/4001234567/living-room.jpg');
     expect(listing.publishedAt).toBe(Date.UTC(2026, 8, 10, 8, 15, 0));
     expect(listing.address).toBe('Seefeldstrasse 12, 8008 Zürich');
+  });
+
+  /**
+   * The address model is the live one, and it is the model Homegate answers too: `street` already
+   * carries the house number, the town is `postalCode` plus `locality`, and `city`, `zip` and
+   * `streetNumber` do not exist in the response.
+   */
+  it('reads the address the live response spells', () => {
+    const { normalize } = provider.createConfig(providerConfig.immoscout24ch, []);
+    const addressOf = (address) => normalize({ id: '1', address, prices: { rent: { net: 1200 } } }).address;
+
+    expect(addressOf({ street: 'Corso San Gottardo 24', postalCode: '6830', locality: 'Chiasso' })).toBe(
+      'Corso San Gottardo 24, 6830 Chiasso',
+    );
+    expect(addressOf({ postalCode: '6830', locality: 'Chiasso' })).toBe('6830 Chiasso');
+    expect(addressOf({ street: 'Seefeldstrasse', streetNumber: '12', zip: '8008', city: 'Zürich' })).toBe(
+      'Seefeldstrasse',
+    );
   });
 
   it('rejects a listing whose title is blacklisted', () => {

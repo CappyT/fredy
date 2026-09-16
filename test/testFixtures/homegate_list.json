@@ -77,10 +77,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -176,10 +176,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -275,10 +275,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -374,10 +374,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -473,10 +473,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -572,10 +572,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -671,10 +671,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -762,10 +762,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -861,10 +861,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -960,10 +960,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1059,10 +1059,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1158,10 +1158,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1257,10 +1257,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1356,10 +1356,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1447,10 +1447,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1546,10 +1546,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1645,10 +1645,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1742,10 +1742,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1841,10 +1841,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -1940,10 +1940,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2039,10 +2039,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2130,10 +2130,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2229,10 +2229,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2328,10 +2328,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2427,10 +2427,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2526,10 +2526,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2625,10 +2625,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2724,10 +2724,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2815,10 +2815,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -2914,10 +2914,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3013,10 +3013,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3112,10 +3112,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3211,10 +3211,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3310,10 +3310,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3407,10 +3407,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3498,10 +3498,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3597,10 +3597,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3696,10 +3696,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3795,10 +3795,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3894,10 +3894,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -3993,10 +3993,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -4092,10 +4092,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Langstrasse",
-          "houseNumber": "45",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Langstrasse 45",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -4183,10 +4183,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Hardturmstrasse",
-          "houseNumber": "3",
-          "zip": "8005",
-          "city": "Zürich",
+          "street": "Hardturmstrasse 3",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -4282,10 +4282,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Zürichstrasse",
-          "houseNumber": "88",
-          "zip": "8700",
-          "city": "Küsnacht",
+          "street": "Zürichstrasse 88",
+          "postalCode": "8700",
+          "locality": "Küsnacht",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417
@@ -4381,10 +4381,10 @@
         "platforms": [],
         "valueAddedServices": [],
         "address": {
-          "street": "Badenerstrasse",
-          "houseNumber": "12",
-          "zip": "8004",
-          "city": "Zürich",
+          "street": "Badenerstrasse 12",
+          "postalCode": "8004",
+          "locality": "Zürich",
+          "region": "ZH",
           "geoCoordinates": {
             "latitude": 47.3769,
             "longitude": 8.5417

@@ -6,7 +6,11 @@
   "query": {
     "offerType": "RENT",
     "propertyType": "APARTMENT",
-    "location": { "geoTags": ["geo-city-zurich"] }
+    "location": {
+      "geoTags": [
+        "geo-city-zurich"
+      ]
+    }
   },
   "sortBy": "dateCreated",
   "sortDirection": "desc",
@@ -14,7 +18,9 @@
     {
       "id": "4001234567",
       "listingType": "PREMIUM",
-      "listingCard": { "size": "LARGE" },
+      "listingCard": {
+        "size": "LARGE"
+      },
       "dateAdded": 1789700000000,
       "isNewItem": true,
       "isFavorite": false,
@@ -24,17 +30,29 @@
         "offerType": "rent",
         "prices": {
           "currency": "CHF",
-          "rent": { "net": 1850, "gross": 2050, "extra": null, "area": "ALL", "interval": "MONTH" },
+          "rent": {
+            "net": 1850,
+            "gross": 2050,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
           "buy": null
         },
         "address": {
-          "country": "CH",
-          "street": "Seefeldstrasse",
-          "streetNumber": "12",
-          "zip": "8008",
-          "city": "Zürich",
-          "geoCoordinates": { "latitude": 47.3549, "longitude": 8.5571 },
-          "geoTags": ["geo-city-zurich", "geo-zipcode-8008", "geo-canton-zurich"]
+          "street": "Seefeldstrasse 12",
+          "postalCode": "8008",
+          "locality": "Zürich",
+          "region": "ZH",
+          "geoCoordinates": {
+            "latitude": 47.3549,
+            "longitude": 8.5571
+          },
+          "geoTags": [
+            "geo-city-zurich",
+            "geo-zipcode-8008",
+            "geo-canton-zurich"
+          ]
         },
         "localization": {
           "primary": "de",
@@ -97,14 +115,22 @@
           "schemaVersion": "1.0",
           "softwareName": "SMG"
         },
-        "lister": { "id": "agency-1", "name": "Seefeld Immobilien AG", "allowToContact": true },
-        "externalIds": { "platformListingId": "4001234567" }
+        "lister": {
+          "id": "agency-1",
+          "name": "Seefeld Immobilien AG",
+          "allowToContact": true
+        },
+        "externalIds": {
+          "platformListingId": "4001234567"
+        }
       }
     },
     {
       "id": "4001234568",
       "listingType": "STANDARD",
-      "listingCard": { "size": "MEDIUM" },
+      "listingCard": {
+        "size": "MEDIUM"
+      },
       "dateAdded": 1789600000000,
       "isNewItem": true,
       "isFavorite": false,
@@ -114,17 +140,28 @@
         "offerType": "rent",
         "prices": {
           "currency": "CHF",
-          "rent": { "net": null, "gross": 2100, "extra": null, "area": "ALL", "interval": "MONTH" },
+          "rent": {
+            "net": null,
+            "gross": 2100,
+            "extra": null,
+            "area": "ALL",
+            "interval": "MONTH"
+          },
           "buy": null
         },
         "address": {
-          "country": "CH",
-          "street": "Hardstrasse",
-          "streetNumber": "43",
-          "zip": "8005",
-          "city": "Zürich",
-          "geoCoordinates": { "latitude": 47.3885, "longitude": 8.5234 },
-          "geoTags": ["geo-city-zurich", "geo-zipcode-8005"]
+          "street": "Hardstrasse 43",
+          "postalCode": "8005",
+          "locality": "Zürich",
+          "region": "ZH",
+          "geoCoordinates": {
+            "latitude": 47.3885,
+            "longitude": 8.5234
+          },
+          "geoTags": [
+            "geo-city-zurich",
+            "geo-zipcode-8005"
+          ]
         },
         "localization": {
           "primary": "de",
@@ -149,7 +186,11 @@
             "urls": []
           }
         },
-        "characteristics": { "numberOfRooms": 2, "livingSpace": 58, "yearBuilt": 2004 },
+        "characteristics": {
+          "numberOfRooms": 2,
+          "livingSpace": 58,
+          "yearBuilt": 2004
+        },
         "availableFrom": "2026-11-01",
         "meta": {
           "created": "2026-09-09",
@@ -158,13 +199,19 @@
           "schemaVersion": "1.0",
           "softwareName": "SMG"
         },
-        "lister": { "id": "agency-2", "name": "Kreis 5 Verwaltung", "allowToContact": true }
+        "lister": {
+          "id": "agency-2",
+          "name": "Kreis 5 Verwaltung",
+          "allowToContact": true
+        }
       }
     },
     {
       "id": "4001234569",
       "listingType": "TOP",
-      "listingCard": { "size": "MEDIUM" },
+      "listingCard": {
+        "size": "MEDIUM"
+      },
       "dateAdded": 1789500000000,
       "isNewItem": true,
       "isFavorite": false,
@@ -175,16 +222,25 @@
         "prices": {
           "currency": "CHF",
           "rent": null,
-          "buy": { "price": 1250000, "extra": null, "area": "ALL" }
+          "buy": {
+            "price": 1250000,
+            "extra": null,
+            "area": "ALL"
+          }
         },
         "address": {
-          "country": "CH",
-          "street": "Zürcherstrasse",
-          "streetNumber": "7",
-          "zip": "8400",
-          "city": "Winterthur",
-          "geoCoordinates": { "latitude": 47.4989, "longitude": 8.7241 },
-          "geoTags": ["geo-city-winterthur", "geo-zipcode-8400"]
+          "street": "Zürcherstrasse 7",
+          "postalCode": "8400",
+          "locality": "Winterthur",
+          "region": "ZH",
+          "geoCoordinates": {
+            "latitude": 47.4989,
+            "longitude": 8.7241
+          },
+          "geoTags": [
+            "geo-city-winterthur",
+            "geo-zipcode-8400"
+          ]
         },
         "localization": {
           "primary": "de",
@@ -217,7 +273,12 @@
             "urls": []
           }
         },
-        "characteristics": { "numberOfRooms": 6, "livingSpace": 180, "lotSize": 620, "yearBuilt": 1975 },
+        "characteristics": {
+          "numberOfRooms": 6,
+          "livingSpace": 180,
+          "lotSize": 620,
+          "yearBuilt": 1975
+        },
         "availableFrom": "2026-12-01",
         "meta": {
           "created": "2026-09-08",
@@ -226,7 +287,11 @@
           "schemaVersion": "1.0",
           "softwareName": "SMG"
         },
-        "lister": { "id": "agency-3", "name": "Winterthur Haus AG", "allowToContact": true }
+        "lister": {
+          "id": "agency-3",
+          "name": "Winterthur Haus AG",
+          "allowToContact": true
+        }
       }
     }
   ]
