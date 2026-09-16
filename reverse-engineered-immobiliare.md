@@ -1,21 +1,24 @@
 # Reverse Engineered Immobiliare.it
 
-Immobiliare.it is Italy's largest property portal. Its pages sit behind DataDome; the endpoint those
-pages call for their results does not. This file records what was measured about both, and about the
-android app, whose geography service is what lets a search url be read without a browser.
+Immobiliare.it is Italy's largest property portal. Its pages sit behind DataDome; the android app's
+search api answers a plain client on most exits. This file records what was measured about both, and
+about the app's geography service, which resolves the place a search url names.
 
-The provider is `lib/provider/immobiliare.js`. The translation from a website search url into a
-search the endpoint answers is in `lib/services/immobiliare/`.
+The provider is `lib/provider/immobiliare.js`. The translation of a website search url into an app
+api query is in `lib/services/immobiliare/appApi.js`; the translation into the website endpoint's own
+criteria is in `lib/services/immobiliare/web-translator.js`.
 
 ## Two hosts
 
 | Host                        | Serves                                                                               | Protected                                   |
 | --------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------- |
 | `www.immobiliare.it`        | the website, and `/api-next/search-list/listings/`, which its pages call for results | the pages and, since 2026-09-15, the endpoint |
-| `android-imm-v4.ws-app.com` | the android app's api: properties, and a geography service                           | the search api is, detail and geography are not |
+| `android-imm-v4.ws-app.com` | the android app's api: properties, and a geography service                           | detail and geography are not; the search api carries a guard whose effect depends on the exit |
 
-The provider searches through the website's own endpoint, and looks places up through the app's
-geography service. That pairing is deliberate, and the section on the app's search api says why.
+The provider searches through the app api first: it answers a place filtered search over plain http
+and costs no browser. The website's own endpoint, read in the run's browser, is the fallback. Places
+are resolved through the app's geography service on the same host, and the ids it answers with are
+the ones the website endpoint filters by.
 
 ## Reading a search url
 
@@ -30,9 +33,11 @@ endpoint filters by `idComune=7369` and the url says `erbusco`, and nothing but 
 carried the number. The rendered page still does, in `__NEXT_DATA__`, under the react-query key
 `real-estate-list`; that route is now the fallback.
 
-Because the filters are passed through rather than translated, a filter this has never seen still
-works: the endpoint reads the very parameter names the website put in the url. Only `pag` is
-removed, being a property of the request rather than of the search.
+The two consumers read this differently. The website endpoint takes the website's own parameter
+names, so a filter this file has never seen still works and only `pag` is removed, being a property
+of the request rather than of the search. The app api has a fixed vocabulary instead, so `appApi.js`
+translates the filters it can express, joins repeated typologies into one value, and refuses the url
+when a place filter names several values, because the api cannot express that either.
 
 ### The filters, and who validates them
 
@@ -94,10 +99,12 @@ The endpoint reads `path` for routing and not for filtering: asking for `/affitt
 `idContratto=1` answers "attici in vendita Roma". The criteria are the search; the path only has to
 be one the portal recognises.
 
-The commercial categories are deliberately absent. `/vendita-uffici/` with the category that seemed
-to fit answered "case in vendita Roma" and a larger count, which is a different search wearing the
-right url. A wrong entry here silently widens somebody's search, so an unconfirmed one is left out
-and its url is rendered instead.
+The commercial categories are in the table too: `palazzi` 20, `magazzini` 21, `garage` 22, `uffici`
+23, `terreni` 24, `capannoni` 25, `negozi` 26. Each was confirmed against the endpoint, because a
+category that only reads as the obvious one is not: offices are 23, while 2 is the whole commercial
+vertical and answers with houses under an office url. The app api accepts these categories as well.
+A wrong entry here silently widens somebody's search, so an unconfirmed one is still left out and its
+url is rendered instead.
 
 The endpoint requires `idNazione`, `idContratto` and `idCategoria`; it will not infer them from
 `path`, and it answers `Bad Request` without them. It validates `path` as well, answering
@@ -106,9 +113,10 @@ how `idMZona[]` was found and `idQuartiere[]` ruled out.
 
 ## The dates
 
-Neither search shape carries a date - read an advert of the endpoint's answer whole and there is
-nothing to find, which is why the site can only show one on the detail page. The android app's
-property detail does carry them, on the same unprotected host its geography service sits on:
+The website's search endpoint carries no date - read an advert of its answer whole and there is
+nothing to find, which is why the site can only show one on the detail page. The app's search payload
+carries `creationDate` and `lastModified`. The android app's property detail carries them too, on the
+same unprotected host its geography service sits on:
 
 ```
 GET https://android-imm-v4.ws-app.com/b2c/v2/properties/<id>
@@ -166,51 +174,66 @@ place as `points: [[lat, lng], ...]`, taking exactly one of `cityId`, `provinceI
 `nationId`. It is not used, because the search endpoint filters by id and an outline is the less
 exact of the two, but it is what a search by drawn area would want.
 
-## The app's own search api, and why it is not used
+## The app's search api
 
-`GET https://android-imm-v4.ws-app.com/b2c/v1/properties` answers a search with no bot wall and no
-credentials - five headers are enough, of which only the user agent is peculiar:
+`GET https://android-imm-v4.ws-app.com/b2c/v1/properties` answers a search without credentials. The
+provider sends the app's whole header set, `immo-id` included (measured 2026-09-16; the api answers
+even without `immo-id`, but a client that looks like the app is the one the guard is meant to pass):
 
 ```
-user-agent: WSCommand3<Furious>|REL|PRD|1080,2410,2.625|26.13.0|ANDROID|Google Pixel 10 Pro|17|PHO|2.0-01/09/2016-16:40|0|0
+user-agent: WSCommand3<Furious>|REL|PRD|1080,2400,2.625|26.14.0|ANDROID|Google Pixel 7a|17|PHO|2.0-01/09/2016-16:40|0|0
 accept-language: it-IT
 x-currency: EUR
 x-measurement-unit: meters
 immo-id: <uuid, one per install>
 ```
 
-The dynatrace and sentry headers the app sends are telemetry and can be dropped. `/count` answers
-the same search with the total alone. `start` is an offset, a page holds 20, and `totalActive` is
-the total.
+The dynatrace and sentry headers the app sends are telemetry and can be dropped. `/count` answers the
+same search with the total alone. `start` is an offset, a page holds 20, and the answer is a
+container, not a bare array:
+
+```json
+{ "list": [ ... ], "offset": 0, "count": 20, "totalActive": 5008 }
+```
 
 Its parameters are short and its filter names come in families - `ac2_*` for the property's own
 attributes, `ac3_*` for what comes with it. The full vocabulary is in the app: unpack the apk, run
 `strings` over `classes*.dex`, and grep for `ac2_`. That is how `ac2_noaste` and `ac3_bauto` were
 found after guessing had failed.
 
-A map search translates into it exactly. `vrt=lat,lng;lat,lng` becomes `points=lat,lng lat,lng`,
+The place filter is `c` (city), `pr` (province), `regionId` (region), `nationId` (nation) and `z2`
+(quarter); an area is `points` (a polygon) or `lt`+`ln`+`radius`. The sort is `of` and `od`, and
+`of=d&od=d` is the newest first. Measured 2026-09-16. A name the api does not read is ignored - a
+probe of `idmc`, `idComune`, `mc`, `idc` for the place and `ord`, `criterio`, `sort` for the order
+answers with all of Italy and an untouched order - and a value it does not read is ignored the same
+way, `t=l` answering what `t=v` answers. Some names are validated instead: an unknown `of` answers
+400.
+
+Repeated keys are read in three different ways, and only one of them is what the website spells.
+`tip` is a single comma-joined list: `tip=12,13` answers both typologies, while `tip=12&tip=13`
+answers 400. `z2` takes one value and no list: `z2=a&z2=b` answers 400 and `z2=a,b` matches nothing.
+The provider joins the typologies and refuses a url that names several quarters, so neither case is
+narrowed in silence.
+
+A map search translates into it exactly. `vrt=lat,lng;lat,lng` becomes a `points` polygon,
 `idContratto` 1 and 2 become `t=v` and `t=a`, `idCategoria` becomes `cat`, `idTipologia[]` becomes
 `tip` with the same numbers, `prezzoMinimo`/`prezzoMassimo` become `pm`/`px`,
-`superficieMinima`/`superficieMassima` become `sm`/`sx`, `noAste` becomes `ac2_noaste` and
-`boxAuto[]` becomes `ac3_bauto`. A search the website reports 27 adverts for answers 27 here.
+`superficieMinima`/`superficieMassima` become `sm`/`sx`, and `localiMinimo`/`localiMassimo` become
+`lm`/`lx`. The api also reads `ac2_noaste` and `ac3_bauto`, which the provider does not translate: a
+filter outside its measured set makes the url fall back to the website, where the website's own
+parameter names travel untouched.
 
-It is not what the provider searches through, for three measured reasons:
+The api does not rewrite the values inside a listing the way the Swiss platform does. Two calls with
+the same query answer the same figures, and they agree with the website.
 
-- It has no location filter. Every id parameter tried - `idmc`, `idComune`, `mc`, `idc` - is
-  ignored in silence and answers with all of Italy, 850071 adverts. An area is a polygon or a centre
-  and a radius, and `geography/polygons` has no quarter level, so a quarter search cannot be
-  expressed at all.
-- It has no sort. `ord`, `criterio` and `sort` leave the order untouched, while the website's
-  endpoint honours `criterio=data&ordine=desc`, which is what puts a new advert on the first page.
-- Every filter would have to be translated, and a name it does not know is ignored rather than
-  refused - a silently wider search.
+The search item is flat, and richer than the website's: `id`, `title`, `price.raw`, `topology` with
+the surface and the rooms, `geography` with `geolocation`, `municipality`, `street`, `microzone` and
+`zipcode`, `media.images` and `media.floorPlans`, and `creationDate` and `lastModified`. It names no
+advert link, so the provider builds it from the id: `https://www.immobiliare.it/annunci/<id>/`, which
+is the url the app's own share answers with.
 
-An unknown value is ignored the same way: `t=l` answers exactly what `t=v` answers rather than
-failing, so only known values may be sent.
-
-The app's search payload is richer than the website's, and worth knowing about: it carries
-`creationDate` and `lastModified` as timestamps, `price.raw`, `geography.geolocation` with a
-`visibilityType`, the street, the zipcode, and both photos and floor plans.
+The provider reads through this api first, and through the website's endpoint or a rendered page only
+when the api cannot express the url or refuses it.
 
 ## DataDome
 
@@ -245,9 +268,14 @@ answers 403 with an interstitial that does not resolve itself, headed or headles
 that has been sent there is answered `t=it` on every later endpoint read. A fresh context is
 answered the listings.
 
-The android app's search api is blocked the same way: `/b2c/v1/properties` answers the ws-app.com
-challenge (`t=bv`) without a cookie. The app earns its cookie from its own DataDome SDK (client key
-above), which stores it in SharedPreferences `datadome_storage_BCBF2FCE4AED082640C3D1753C3381` under
-`PREF_COOKIES`, with `Domain=.ws-app.com`. The detail api (`/b2c/v2/properties/<id>`) and the
-geography service answer plainly, which is why the provider still enriches and resolves through them
-without a token.
+The android app's search api carries a DataDome guard of its own, and its challenge depends on the
+exit. Measured 2026-09-16: one Italian residential exit answered 200, another answered 403 with the
+`it` interstitial, and a datacenter exit answered 403 with the `fe` challenge, the kind capsolver
+solves. A request whose parameter shape is wrong answers 400, not a challenge.
+
+The provider reuses a solved cookie and offers a `fe` challenge to the solver, then falls back to the
+website and its browser when the challenge cannot be solved. `lib/services/datadome.js` owns the
+solve and caps its cost. The app earns its own cookie from its DataDome SDK (client key above), which
+stores it in SharedPreferences `datadome_storage_BCBF2FCE4AED082640C3D1753C3381` under `PREF_COOKIES`,
+with `Domain=.ws-app.com`. The detail api (`/b2c/v2/properties/<id>`) and the geography service
+answer plainly, which is why the provider enriches and resolves through them without a token.

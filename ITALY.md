@@ -33,10 +33,15 @@ See the [provider documentation](./reverse-engineered-idealista.md) for supporte
 
 ### Immobiliare.it
 
-Immobiliare.it uses its search API and geography service to resolve location URLs.
-The search endpoint is read in the job's browser: it answers a plain http client with a DataDome
-`bv` challenge, whatever the exit address. Searches that cannot be translated into API requests use
-the same browser to render the page.
+Immobiliare.it uses the Android app's search API first.
+That API answers a place filtered search over plain HTTP and costs no browser.
+The provider translates the pasted search URL into the API's own query, and resolves the place
+through the app's geography service.
+The API carries a DataDome guard whose challenge depends on the exit: it can answer 403.
+A solvable `fe` challenge goes to the solver, and an unsolvable one falls back to the website.
+The website search endpoint is read in the job's browser: it answers a plain http client with a
+DataDome `bv` challenge, whatever the exit address.
+Searches the API cannot express use the same browser to render the page.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
 
@@ -163,9 +168,11 @@ DataDome challenge on a portal the fork reads through an api is solved with a pa
 - Only DataDome is handled this way. The other guards the fork meets stay unsolved.
 - `lib/services/datadome.js` holds the whole mechanism, and `lib/services/idealista/idealistaSearch.js`
   is what uses it: it hands a token to the browser fallback before it navigates.
-  `lib/provider/immobiliare.js` buys no token at all. Its endpoint answers a plain http client `bv`,
-  whatever the exit address and whatever the user agent, and `bv` is not a challenge capsolver can
-  be paid to solve, so the read is made in the run's browser instead.
+  `lib/services/immobiliare/appApi.js` reuses a solved cookie and offers a `fe` challenge to the
+  solver before the provider renders the website. The website endpoint of Immobiliare.it buys no
+  token: it answers a plain http client `bv`, whatever the exit address and whatever the user agent,
+  and `bv` is not a challenge capsolver can be paid to solve, so that read is made in the run's
+  browser instead.
 
 The challenge has to be the `fe` kind. A `bv` challenge means the asking IP is blocked, which no
 cookie fixes; capsolver refuses it and the read stays failed.
