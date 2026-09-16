@@ -154,8 +154,8 @@ The white label alert endpoints were not tested.
 
 Measured 2026-09-16: `size: 20` is accepted, `size: 1` answers 416 "Page size is not supported".
 Still unknown: the maximum accepted `size` and rate limits. `POST /search/listings-by-url` was
-answered after the user agent discovery: 163 for the bare Chiasso rental URL and 8 with four filters
-(recorded in swiss-providers-report.md).
+answered after the user agent discovery: 163 for the bare Chiasso rental URL and 8 with four
+filters, the same two counts the translated query answers, with identical rows.
 
 The shared SMG platform rewrites the values inside a listing when the request sends no non-empty
 `X-App-Id`: the same id answers an honest value set and a wrong one across identical requests, and

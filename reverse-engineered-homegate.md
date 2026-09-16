@@ -371,9 +371,8 @@ totalFloorSpace singleFloorSpace yearBuilt yearLastRenovated
   `POST /search/listings-by-url` with `{"fieldset":"srp-list","from":0,"size":20}`.
 - The web URL carries its own filters, so the provider needs no parameter translation, unlike the
   ImmoScout24.de provider. A test of eight public `www.homegate.ch` URL forms answered 422 "not a SRP
-  uri", but that test predates the user agent discovery, so its conclusion is unsafe (see
-  swiss-providers-report.md). On ImmoScout24.ch the same endpoint answered after that work (163 bare,
-  8 filtered). Re-test Homegate before relying on either path. The structured `POST /search/listings`
+  uri", but that test predates the user agent discovery, so its conclusion is unsafe. On
+  ImmoScout24.ch the same endpoint answered after that work (163 bare, 8 filtered). Re-test Homegate before relying on either path. The structured `POST /search/listings`
   resolves the user's URL filters into the query and is the path the provider uses.
 - Field mapping, subject to the live results in "Verified on device":
   `price` from `prices.rent.net` (fallback `prices.rent.gross`, matching Flatfox's precedence) or

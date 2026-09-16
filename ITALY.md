@@ -62,7 +62,8 @@ for access. The provider reads every page through `lib/services/smg/poison.js` a
 that carries the rewritten set is requested again, up to a small cap, and is dropped with a log line
 when it stays rewritten, so no row is stored unchecked. See the DataDome data poisoning section in
 [the provider documentation](./reverse-engineered-homegate.md).
-Sorting is `dateCreated desc` and travels in the request body.
+The URL's `o` parameter decides the sort, and `dateCreated desc` is what the provider asks for when
+the URL names none. The sort travels in the request body, beside the query.
 The provider reads up to five pages of twenty listings.
 See the [provider documentation](./reverse-engineered-homegate.md) for the query fields and the response model.
 
