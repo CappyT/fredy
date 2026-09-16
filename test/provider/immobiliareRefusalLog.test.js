@@ -68,9 +68,18 @@ describe('the line a refused endpoint read writes', () => {
   beforeEach(() => {
     logged.length = 0;
     exitBody = JSON.stringify({ ip: '203.0.113.47' });
+    // The app api is asked before the browser and is not what these tests are about: it is made
+    // unreachable so every read falls through to the browser, whose refusal the assertions look at.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('the app api is not reachable in this test');
+      }),
+    );
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 

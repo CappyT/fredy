@@ -1,0 +1,1411 @@
+{
+  "list": [
+    {
+      "id": 132465672,
+      "uuid": "848998fd-6635-5303-bec0-93a1a4fc41a2",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789565084,
+      "creationDate": 1789564534,
+      "enabled": true,
+      "analytics": {
+        "price": "5500",
+        "priceRange": "oltre 2.000 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Centro Storico",
+        "microzone": "Sallustiano",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "1",
+        "heating": "Autonomo",
+        "numBedrooms": "3",
+        "elevator": true,
+        "advertiser": "agenzia",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "sky",
+        "agencyName": "Engel & Völkers Roma",
+        "agencyId": "200835",
+        "otherFeatures": [
+          "fibra ottica",
+          "porta blindata",
+          "impianto tv centralizzato",
+          "arredato",
+          "esposizione doppia"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 160,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "4",
+        "bathrooms": "2",
+        "floor": "1",
+        "lift": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 5.500/mese",
+        "raw": 5500,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.9063,
+          "longitude": 12.492,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2ykkb3"
+        },
+        "zipcode": "00187",
+        "street": "Via Sallustiana",
+        "macrozone": {
+          "id": 10303,
+          "name": "Centro Storico"
+        },
+        "microzone": {
+          "id": 12760,
+          "name": "Sallustiano"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isSky",
+          "label": "Sky",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#13aaec"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503288/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503288/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503284/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503284/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503282/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503282/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503274/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503274/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503270/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503270/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503264/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503264/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503262/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503262/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503258/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503258/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503250/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503250/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503246/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503246/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503238/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503238/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503230/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503230/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503224/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503224/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503220/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503220/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503216/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503216/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503210/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503210/xxl.jpg",
+            "label": "Vista"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503196/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503196/xxl.jpg",
+            "label": "Interno palazzo"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005503184/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005503184/xxl.jpg",
+            "label": "Facciata"
+          }
+        ],
+        "floorPlans": [
+          {
+            "sd": "https://pic.im-cdn.it/plan/134595636/m.jpg",
+            "hd": "https://pic.im-cdn.it/plan/134595636/xxl.jpg",
+            "label": "WhatsApp Image 2026-09-15 at 6.18.33 PM"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "vTel1",
+            "num": "+390697637235"
+          }
+        ],
+        "bookVisitsEnabled": true,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": 200835,
+        "agencyUuid": "c2185426-68e3-5552-9d89-85aea57b645f"
+      },
+      "author": {
+        "logo": "https://pic.im-cdn.it/imagenoresize/1335971180.jpg",
+        "displayName": "Engel & Völkers Roma",
+        "displayAddress": null,
+        "today": null,
+        "type": "agency",
+        "id": 200835,
+        "uuid": "c2185426-68e3-5552-9d89-85aea57b645f"
+      },
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    },
+    {
+      "id": 132465430,
+      "uuid": "bc27670c-e9fb-5649-9dc1-a5d065d4f48a",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789564154,
+      "creationDate": 1789563651,
+      "enabled": true,
+      "analytics": {
+        "price": "1400",
+        "priceRange": "1.001 - 1.500 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Eur, Torrino, Tintoretto",
+        "microzone": "Torrino",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "1",
+        "heating": "Autonomo",
+        "numBedrooms": "2",
+        "elevator": true,
+        "advertiser": "agenzia",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "sky",
+        "agencyName": "GDS Immobiliare SRLS",
+        "agencyId": "167700",
+        "otherFeatures": [
+          "fibra ottica",
+          "videocitofono",
+          "impianto di allarme",
+          "porta blindata",
+          "armadio a muro",
+          "impianto tv con parabola satellitare",
+          "parzialmente arredato",
+          "esposizione doppia"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 100,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "5",
+        "bathrooms": "2",
+        "floor": "1",
+        "lift": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 1.400/mese",
+        "raw": 1400,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.8189,
+          "longitude": 12.4506,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2vgkfh"
+        },
+        "zipcode": "00144",
+        "street": "Via Berna, 25",
+        "macrozone": {
+          "id": 10169,
+          "name": "Eur, Torrino, Tintoretto"
+        },
+        "microzone": {
+          "id": 10880,
+          "name": "Torrino"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isSky",
+          "label": "Sky",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#13aaec"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497570/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497570/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497594/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497594/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497554/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497554/xxl.jpg",
+            "label": "Terrazzo"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497490/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497490/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497504/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497504/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497442/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497442/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497456/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497456/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497540/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497540/xxl.jpg",
+            "label": "Corridoio"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497580/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497580/xxl.jpg",
+            "label": "Ripostiglio"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497472/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497472/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497530/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497530/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005497516/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005497516/xxl.jpg",
+            "label": "Bagno"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "vTel1",
+            "num": "+390697638559"
+          }
+        ],
+        "bookVisitsEnabled": true,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": 167700,
+        "agencyUuid": "33fce683-5355-5218-8679-611b78fa9e77"
+      },
+      "author": {
+        "logo": "https://pic.im-cdn.it/imagenoresize/315483920.jpg",
+        "displayName": "GDS Immobiliare SRLS",
+        "displayAddress": null,
+        "today": null,
+        "type": "agency",
+        "id": 167700,
+        "uuid": "33fce683-5355-5218-8679-611b78fa9e77"
+      },
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    },
+    {
+      "id": 132459406,
+      "uuid": "2e8ec747-365e-59ac-86c9-08ffecf17398",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789547995,
+      "creationDate": 1789546826,
+      "enabled": true,
+      "analytics": {
+        "price": "2100",
+        "priceRange": "oltre 2.000 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Balduina, Medaglie d'Oro",
+        "microzone": "Medaglie d'Oro",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "1",
+        "heating": "Centralizzato",
+        "numBedrooms": "2",
+        "elevator": true,
+        "advertiser": "privato",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "top",
+        "agencyName": "Inserzionista Privato",
+        "otherFeatures": [
+          "reception",
+          "cucina",
+          "terrazzo",
+          "parzialmente arredato"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 118,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "3",
+        "bathrooms": "2",
+        "floor": "1",
+        "lift": true,
+        "terrace": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 2.100/mese",
+        "raw": 2100,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.92366028,
+          "longitude": 12.44633961,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2y7pzp"
+        },
+        "zipcode": null,
+        "street": "Piazzale delle Medaglie d'Oro, 30",
+        "macrozone": {
+          "id": 10281,
+          "name": "Balduina, Medaglie d'Oro"
+        },
+        "microzone": {
+          "id": 12752,
+          "name": "Medaglie d'Oro"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isTop",
+          "label": "Top",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#987703"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364462/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364462/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364492/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364492/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364512/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364512/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364536/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364536/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364558/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364558/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364574/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364574/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364596/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364596/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364628/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364628/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364656/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364656/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364678/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364678/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364694/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364694/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364714/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364714/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364734/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364734/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364758/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364758/xxl.jpg"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005364776/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005364776/xxl.jpg"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "tel1",
+            "num": ""
+          }
+        ],
+        "bookVisitsEnabled": false,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": null,
+        "agencyUuid": null
+      },
+      "author": null,
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    },
+    {
+      "id": 132463760,
+      "uuid": "2a699b14-8a8e-5136-a72e-7ad93213f786",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789570091,
+      "creationDate": 1789553490,
+      "enabled": true,
+      "analytics": {
+        "price": "3500",
+        "priceRange": "oltre 2.000 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Garbatella, Navigatori, Ostiense",
+        "microzone": "Garbatella",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "1",
+        "heating": "Centralizzato",
+        "numBedrooms": "2",
+        "elevator": true,
+        "advertiser": "agenzia",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "premium",
+        "agencyName": "BARNES International Realty Rome",
+        "agencyId": "248769",
+        "otherFeatures": [
+          "impianto di allarme",
+          "porta blindata",
+          "terrazzo",
+          "arredato",
+          "esposizione doppia"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 132,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "4",
+        "bathrooms": "2",
+        "floor": "1",
+        "lift": true,
+        "terrace": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 3.500/mese",
+        "raw": 3500,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.8598,
+          "longitude": 12.4899,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2yhhqf"
+        },
+        "zipcode": "00145",
+        "street": "Via Alessandra Macinghi Strozzi",
+        "macrozone": {
+          "id": 10153,
+          "name": "Garbatella, Navigatori, Ostiense"
+        },
+        "microzone": {
+          "id": 10815,
+          "name": "Garbatella"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isPremium",
+          "label": "Premium",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#666666"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459504/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459504/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459624/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459624/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459662/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459662/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459718/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459718/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459770/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459770/xxl.jpg",
+            "label": "Corridoio"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459816/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459816/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459856/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459856/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459892/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459892/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459914/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459914/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459930/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459930/xxl.jpg",
+            "label": "Disimpegno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459950/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459950/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459964/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459964/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005459988/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005459988/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005460014/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005460014/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005460048/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005460048/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005460076/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005460076/xxl.jpg",
+            "label": "Veranda"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005460118/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005460118/xxl.jpg",
+            "label": "Balcone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005460182/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005460182/xxl.jpg",
+            "label": "Veranda"
+          }
+        ],
+        "floorPlans": [
+          {
+            "sd": "https://pic.im-cdn.it/plan/134596986/m.jpg",
+            "hd": "https://pic.im-cdn.it/plan/134596986/xxl.jpg",
+            "label": "PLANIMETRIA"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "vTel1",
+            "num": "+390697630221"
+          }
+        ],
+        "bookVisitsEnabled": true,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": 248769,
+        "agencyUuid": "178a8cdf-c1fd-5d5b-9ceb-94a2c9703601"
+      },
+      "author": {
+        "logo": "https://pic.im-cdn.it/imagenoresize/1285716627.jpg",
+        "displayName": "BARNES International Realty Rome",
+        "displayAddress": null,
+        "today": null,
+        "type": "agency",
+        "id": 248769,
+        "uuid": "178a8cdf-c1fd-5d5b-9ceb-94a2c9703601"
+      },
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    },
+    {
+      "id": 132460814,
+      "uuid": "da219c94-1a76-5e1e-b4e9-97315f471340",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789556586,
+      "creationDate": 1789556265,
+      "enabled": true,
+      "analytics": {
+        "price": "1500",
+        "priceRange": "1.001 - 1.500 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Centro Storico",
+        "microzone": "Colle Oppio",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "1",
+        "heating": "Autonomo",
+        "numBedrooms": "1",
+        "elevator": true,
+        "advertiser": "agenzia",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "premium",
+        "agencyName": "Concept Home Prati",
+        "agencyId": "385706",
+        "otherFeatures": [
+          "impianto di allarme",
+          "porta blindata",
+          "impianto tv centralizzato",
+          "arredato",
+          "esposizione esterna"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 50,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "2",
+        "bathrooms": "1",
+        "floor": "1",
+        "lift": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 1.500/mese",
+        "raw": 1500,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.8921,
+          "longitude": 12.4932,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2yk61r"
+        },
+        "zipcode": "00184",
+        "street": "Via delle Terme di Tito, 92",
+        "macrozone": {
+          "id": 10303,
+          "name": "Centro Storico"
+        },
+        "microzone": {
+          "id": 13237,
+          "name": "Colle Oppio"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isPremium",
+          "label": "Premium",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#666666"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394394/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394394/xxl.jpg",
+            "label": "Zona"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394416/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394416/xxl.jpg",
+            "label": "Facciata"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394434/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394434/xxl.jpg",
+            "label": "Zona"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394454/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394454/xxl.jpg",
+            "label": "Zona"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394490/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394490/xxl.jpg",
+            "label": "Facciata"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394508/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394508/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394536/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394536/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394566/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394566/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394596/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394596/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394622/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394622/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394646/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394646/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394672/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394672/xxl.jpg",
+            "label": "Disimpegno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394702/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394702/xxl.jpg",
+            "label": "Disimpegno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394738/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394738/xxl.jpg",
+            "label": "Lavanderia"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394762/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394762/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394784/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394784/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394816/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394816/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394852/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394852/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394880/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394880/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394908/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394908/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005394940/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005394940/xxl.jpg",
+            "label": "Camera da letto"
+          }
+        ],
+        "floorPlans": [
+          {
+            "sd": "https://pic.im-cdn.it/plan/134590162/m.jpg",
+            "hd": "https://pic.im-cdn.it/plan/134590162/xxl.jpg",
+            "label": "PLN"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "vTel1",
+            "num": "+390685871895"
+          }
+        ],
+        "bookVisitsEnabled": true,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": 385706,
+        "agencyUuid": "391234b1-0753-5b0b-9d55-293d52596980"
+      },
+      "author": {
+        "logo": "https://pic.im-cdn.it/imagenoresize/1770455332.jpg",
+        "displayName": "Concept Home Prati",
+        "displayAddress": null,
+        "today": null,
+        "type": "agency",
+        "id": 385706,
+        "uuid": "391234b1-0753-5b0b-9d55-293d52596980"
+      },
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    },
+    {
+      "id": 132461856,
+      "uuid": "e2d1b6e2-06e5-5687-b712-901e0d7f7f4d",
+      "rty": "ad",
+      "title": "Appartamento",
+      "lastModified": 1789558749,
+      "creationDate": 1789557755,
+      "enabled": true,
+      "analytics": {
+        "price": "1000",
+        "priceRange": "501 - 1000 &euro;",
+        "country": "Italia",
+        "region": "Lazio",
+        "province": "Roma",
+        "macrozone": "Cassia, San Godenzo, Grottarossa",
+        "microzone": "Tomba di Nerone",
+        "typology": "Appartamento",
+        "category": "Residenziale",
+        "contract": "affitto",
+        "floor": "2",
+        "heating": "Autonomo",
+        "numBedrooms": "2",
+        "elevator": false,
+        "advertiser": "agenzia",
+        "propertyStatus": "Ottimo / Ristrutturato",
+        "adVisibility": "premium",
+        "agencyName": "Immobilvarese",
+        "agencyId": "43234",
+        "otherFeatures": [
+          "fibra ottica",
+          "armadio a muro",
+          "balcone",
+          "terrazzo",
+          "impianto tv centralizzato",
+          "arredato",
+          "esposizione doppia"
+        ]
+      },
+      "contract": {
+        "id": 2,
+        "name": "Affitto",
+        "isHidden": false
+      },
+      "topology": {
+        "typology": {
+          "id": 4,
+          "name": "Appartamento"
+        },
+        "category": {
+          "id": 1,
+          "name": "Residenziale"
+        },
+        "surface": {
+          "size": 80,
+          "unitOfMeasure": "m²"
+        },
+        "isLuxury": false,
+        "rooms": "3",
+        "bathrooms": "1",
+        "floor": "2",
+        "lift": false,
+        "balcony": true,
+        "terrace": true,
+        "furnished": true
+      },
+      "price": {
+        "value": "€ 1.000/mese",
+        "raw": 1000,
+        "currency": "EUR",
+        "isHidden": false,
+        "startPrice": null,
+        "discount": null
+      },
+      "geography": {
+        "municipality": {
+          "id": 6737,
+          "name": "Roma"
+        },
+        "province": {
+          "id": "RM",
+          "name": "Roma"
+        },
+        "geolocation": {
+          "latitude": 41.9663,
+          "longitude": 12.4436,
+          "visibilityType": "exact_location",
+          "geoHash": "sr2yeptp"
+        },
+        "zipcode": "00189",
+        "street": "Via Capena, 20",
+        "macrozone": {
+          "id": 10160,
+          "name": "Cassia, San Godenzo, Grottarossa"
+        },
+        "microzone": {
+          "id": 10836,
+          "name": "Tomba di Nerone"
+        }
+      },
+      "badge": {
+        "visibility": {
+          "key": "isPremium",
+          "label": "Premium",
+          "opt": [
+            {
+              "label": "bgColor",
+              "value": "#666666"
+            }
+          ]
+        },
+        "isNew": true,
+        "isNewConstruction": false
+      },
+      "media": {
+        "placeholder": null,
+        "images": [
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415954/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415954/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415848/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415848/xxl.jpg",
+            "label": "Mappa"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415856/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415856/xxl.jpg",
+            "label": "Mappa"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415860/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415860/xxl.jpg",
+            "label": "Zona"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415878/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415878/xxl.jpg",
+            "label": "Zona"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415914/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415914/xxl.jpg",
+            "label": "Facciata"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415934/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415934/xxl.jpg",
+            "label": "Ingresso"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415946/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415946/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415960/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415960/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415968/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415968/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415976/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415976/xxl.jpg",
+            "label": "Cucina"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415984/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415984/xxl.jpg",
+            "label": "Salone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415990/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415990/xxl.jpg",
+            "label": "Corridoio"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005415996/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005415996/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416010/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416010/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416016/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416016/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416026/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416026/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416036/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416036/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416048/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416048/xxl.jpg",
+            "label": "Camera da letto"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416056/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416056/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416064/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416064/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416072/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416072/xxl.jpg",
+            "label": "Bagno"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416084/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416084/xxl.jpg",
+            "label": "Balcone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416096/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416096/xxl.jpg",
+            "label": "Balcone"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416108/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416108/xxl.jpg",
+            "label": "Vista"
+          },
+          {
+            "sd": "https://pwm.im-cdn.it/image/2005416120/m-c.jpg",
+            "hd": "https://pwm.im-cdn.it/image/2005416120/xxl.jpg",
+            "label": "Vista"
+          }
+        ],
+        "floorPlans": [
+          {
+            "sd": "https://pic.im-cdn.it/plan/134591902/m.jpg",
+            "hd": "https://pic.im-cdn.it/plan/134591902/xxl.jpg",
+            "label": "Immagine 2026-02-26 120839"
+          }
+        ]
+      },
+      "contacts": {
+        "phones": [
+          {
+            "type": "vTel1",
+            "num": "+390685902614"
+          }
+        ],
+        "bookVisitsEnabled": true,
+        "priceProposalEnabled": false,
+        "messageButtonEnabled": true,
+        "agencyId": 43234,
+        "agencyUuid": "8cf5b8b3-c8a0-58f1-9def-00ed53699913"
+      },
+      "author": {
+        "logo": "https://pic.im-cdn.it/imagenoresize/149259941.jpg",
+        "displayName": "Immobilvarese",
+        "displayAddress": null,
+        "today": null,
+        "type": "agency",
+        "id": 43234,
+        "uuid": "8cf5b8b3-c8a0-58f1-9def-00ed53699913"
+      },
+      "soldTransactionDate": null,
+      "isUnread": false,
+      "subProperties": null
+    }
+  ],
+  "offset": 0,
+  "count": 6,
+  "totalActive": 6,
+  "searchName": "Case in affitto a Roma",
+  "markedAds": 0
+}

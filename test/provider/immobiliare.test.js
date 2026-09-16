@@ -311,6 +311,12 @@ describe('#immobiliare provider configuration()', () => {
    */
   it('reads every page the endpoint counts', async () => {
     const { browser, state } = stubBrowser(3);
+    // The app api is asked first and refuses here, so the website endpoint is what answers - the
+    // path this test is about.
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => {
+      throw new Error('the app api is not available in this test');
+    };
 
     // The walk waits between pages, which a real run wants and a test does not.
     vi.useFakeTimers();
@@ -324,6 +330,28 @@ describe('#immobiliare provider configuration()', () => {
       expect(results).toHaveLength(3);
     } finally {
       vi.useRealTimers();
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  /**
+   * An empty app api answer is a real result: a search that matched nothing. The website path would
+   * only render the same empty page behind a bot wall, so the browser must not be opened for it.
+   */
+  it('takes an empty app api answer as the result, without rendering', async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ list: [], totalActive: 0 }) });
+    const browser = {
+      createBrowserContext: async () => {
+        throw new Error('the browser must not be opened for an empty search');
+      },
+    };
+
+    try {
+      const runConfig = provider.createConfig({ url: providerConfig.immobiliare.mapSearchUrl }, []);
+      await expect(runConfig.getListings(runConfig.url, browser)).resolves.toEqual([]);
+    } finally {
+      globalThis.fetch = originalFetch;
     }
   });
 
@@ -380,7 +408,7 @@ describe('#immobiliare provider configuration()', () => {
     const { browser, state } = stubBrowser(2);
     const originalFetch = globalThis.fetch;
     globalThis.fetch = async () => {
-      throw new Error('the endpoint must not be asked over fetch');
+      throw new Error('the app api must not be the one that answers here');
     };
 
     vi.useFakeTimers();

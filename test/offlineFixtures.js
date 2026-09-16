@@ -209,6 +209,7 @@ export function buildFetchMock() {
   let flatfoxListings = null;
   let immoscout24chListings = null;
   let immobiliareListData = null;
+  let immobiliareAppListData = null;
   let homegateListData = null;
 
   return async (url, init) => {
@@ -296,6 +297,23 @@ export function buildFetchMock() {
         status: 200,
         json: () => Promise.resolve({ data: { total: results.length, tiers: [{ tier: 'listings', results }] } }),
       };
+    }
+
+    // Immobiliare is read through the android app's own search api first, which answers a place
+    // filtered search over plain http. One recorded page stands for the whole search, so every page
+    // after it comes back empty, which is what stops the walk instead of serving the adverts again.
+    if (/ws-app\.com\/b2c\/v1\/properties(\?|$)/.test(urlStr)) {
+      if (immobiliareAppListData == null) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immobiliare_app_list.json'));
+        immobiliareAppListData = raw ? JSON.parse(raw) : { list: [], totalActive: 0 };
+      }
+      const start = Number(new URL(urlStr).searchParams.get('start')) || 0;
+      const items = (immobiliareAppListData.list ?? []).slice(start, start + 20);
+      const payload =
+        start === 0
+          ? { ...immobiliareAppListData, offset: 0, count: items.length, list: items }
+          : { ...immobiliareAppListData, offset: start, count: items.length, totalActive: 0, list: items };
+      return { ok: true, status: 200, json: () => Promise.resolve(payload) };
     }
 
     // A town search on immobiliare.it names its town in words, and the endpoint wants the number
