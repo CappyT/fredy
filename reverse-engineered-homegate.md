@@ -33,11 +33,19 @@ server on a rooted device. See "Verified on device" for the live results.
 
 | Host | Purpose |
 |---|---|
-| `https://api.homegate.ch` | production mobile API |
+| `https://api.re.swissmarketplace.group` | primary host; the host the app's own TLS traffic names; answers with no `datadome` cookie |
+| `https://api.homegate.ch` | fallback host; the same API under the portal's name, behind DataDome |
 | `https://apitest.homegate.ch` | test API, the default target of debug builds |
 | `https://homegate.ch` | OAuth token endpoint host (`/oauth/token`, `/oauth/revoke`) |
 
 The debug build reads an override from `SharedPreferences` key `api_base_url`.
+
+Both production hosts answer the same contract, and both need a non-empty `X-App-Id` to answer the
+honest data set (see "DataDome data poisoning"). `POST /search/listings` and `GET /geo/locations`
+answer `api.re.swissmarketplace.group` with 200, no cookie and no challenge, and return the same
+inventory as `api.homegate.ch` (measured 2026-09-16). The provider uses this host first and falls
+back to `api.homegate.ch`, which needs a `datadome` cookie. The TLS connection to this host and to
+`media2.homegate.ch` carries the JA3 fingerprint recorded in "How to verify".
 
 ## Endpoints
 
@@ -92,8 +100,9 @@ native String generateOtp(Context, String ua, String xappVersion, String pathWit
    `AES/CBC/PKCS7Padding`. The first plaintext is `X-App-Id`, the second is `X-App-Time`.
 4. The server receives both in clear. The inputs include the URL and the body, so the tokens are
    per-request. The live server does not enforce the binding: a pair minted for one path was accepted
-   on another path, and a 90s old pair was still accepted. With a valid `datadome` cookie the server
-   also accepts requests with no `X-App-Id` and no `X-App-Time` at all.
+   on another path, and a 90s old pair was still accepted. The server does not validate the signature
+   at all, so the `X-App-Id` value is not checked. The presence of a non-empty `X-App-Id` alone
+   decides whether the search answers honest data (see "DataDome data poisoning").
 
 Fallbacks, when the library fails, are built into the app itself and the request is still sent:
 
@@ -103,8 +112,9 @@ Fallbacks, when the library fails, are built into the app itself and the request
 | library returned empty | `""` | `<deviceId><millis>` |
 
 Both fallbacks were accepted by the live server on `/geo/locations`. On `/search/*` the signature
-headers are optional once a `datadome` cookie is present, so the fallback question does not matter
-there.
+headers are optional for access once a `datadome` cookie is present, but the empty `X-App-Id` of
+both fallbacks triggers the rewritten data set, so a provider must send a non-empty value (see
+"DataDome data poisoning").
 
 ### DataDome
 
@@ -118,6 +128,9 @@ there.
 Live checks found the cookie in `android.webkit.CookieManager` under the `api.homegate.ch` domain.
 The challenge answers from the API carry the same client key in their `hash` parameter, which
 confirms the pairing.
+
+The cookie is required on `api.homegate.ch` only. `api.re.swissmarketplace.group` answers the search
+and the location autocomplete with no cookie and no challenge.
 
 ## Authentication
 
@@ -357,9 +370,11 @@ totalFloorSpace singleFloorSpace yearBuilt yearLastRenovated
 - Input: the user pastes a `www.homegate.ch` search URL. Send it inside
   `POST /search/listings-by-url` with `{"fieldset":"srp-list","from":0,"size":20}`.
 - The web URL carries its own filters, so the provider needs no parameter translation, unlike the
-  ImmoScout24.de provider. Live tests rejected this path: `POST /search/listings-by-url` answered
-  422 "not a SRP uri" for eight public `www.homegate.ch` search URL forms. Use the structured
-  `POST /search/listings` instead and resolve the user's URL filters into the query yourself.
+  ImmoScout24.de provider. A test of eight public `www.homegate.ch` URL forms answered 422 "not a SRP
+  uri", but that test predates the user agent discovery, so its conclusion is unsafe (see
+  swiss-providers-report.md). On ImmoScout24.ch the same endpoint answered after that work (163 bare,
+  8 filtered). Re-test Homegate before relying on either path. The structured `POST /search/listings`
+  resolves the user's URL filters into the query and is the path the provider uses.
 - Field mapping, subject to the live results in "Verified on device":
   `price` from `prices.rent.net` (fallback `prices.rent.gross`, matching Flatfox's precedence) or
   `prices.buy.price`; `size` from `characteristics.livingSpace`; `rooms` from
@@ -402,29 +417,32 @@ Results:
 | Fresh signature after a 90s wait | 200 (control) |
 | The 90s old pair replayed | 200. No staleness rejection at 90s |
 | Signed `POST /search/listings` plus `datadome` cookie | 200, 412 listings |
-| `datadome` cookie only, no X-App headers | 200, 412 listings |
-| `datadome` cookie only, no `User-Agent` | 200, 412 listings |
+| `datadome` cookie only, no X-App headers | 200, 412 listings. Access only: without `X-App-Id` the rows are poisoned |
+| `datadome` cookie only, no `User-Agent` | 200, 412 listings. Access only: without `X-App-Id` the rows are poisoned |
 | Signed `GET /listings/listings` plus cookie | 200, full listing objects |
 | Signed `POST /search/listings-by-url` plus cookie, public web URL | 422 "not a SRP uri" |
 
 Corrections to the claims above:
 
-- The OTP signature is not the gate. `/search/*` and `/listings/*` require a valid `datadome` cookie.
-  With the cookie the server accepts requests with no `X-App-Id`, no `X-App-Time` and no app
-  `User-Agent`. `/geo/locations` accepts plain requests with no cookie, no signature and no app
-  `User-Agent`.
+- The OTP signature is not an access gate. On `api.homegate.ch`, `/search/*` and `/listings/*`
+  require a valid `datadome` cookie; `api.re.swissmarketplace.group` accepts them with no cookie at
+  all. Neither host requires the app `User-Agent`. The signature decides the data, not the access: a
+  non-empty `X-App-Id` gets the honest set and an empty or absent one gets the rewritten set,
+  whatever its content (see "DataDome data poisoning"). `/geo/locations` accepts plain requests with
+  no cookie, no signature and no app `User-Agent`.
 - `Authorization` is not required for the search endpoints without a session.
 - The `datadome` cookie was not tied to the `User-Agent` in this test window. The cookie value comes
   from an app session; a plain HTTP client cannot mint one and gets a 403 challenge with a
   `geo.captcha-delivery.com` URL.
 - The signature binding to path and body is not enforced server side, see the second and tenth rows.
-- `/search/listings-by-url` rejects the public web search URLs. Eight forms were tried: full URLs
-  with and without locale prefix, path only, German slugs, with and without query string. Full URLs
-  answer 422 "not a SRP uri", partial paths answer 422 "Invalid URL". The accepted format was not
-  determined. Build the structured query and use `POST /search/listings`.
+- `/search/listings-by-url` answered 422 "not a SRP uri" for eight public URL forms in this run. That
+  result predates the user agent discovery and is unsafe; on ImmoScout24.ch the same endpoint answered
+  after that work. Re-test before trusting it. The accepted Homegate format was not determined here.
+  Build the structured query and use `POST /search/listings`.
 
-Not run, so still unknown: maximum accepted `size`, rate limits, `from` beyond `maxFrom`, the wire
-spelling of the `Place` sort value.
+Measured 2026-09-16: `size: 20` is accepted, `size: 1` answers 416 "Page size is not supported".
+Still unknown: the maximum accepted `size`, rate limits, `from` beyond `maxFrom`, the wire spelling
+of the `Place` sort value.
 
 ## How to verify
 
@@ -448,6 +466,9 @@ the `frida` CLI (`frida -U -p <pid> -l script.js`).
 Do not sleep on the script thread for staleness tests: the blocking sleep trips the Frida script load
 timeout ("Failed to load script"). Use `setTimeout` for the delayed variants.
 
+The app's TLS ClientHello carries JA3 `1d714db2228763eab228fc28ce7f8e4f`, a Conscrypt/Android
+fingerprint, on both `api.re.swissmarketplace.group` and `media2.homegate.ch` (measured 2026-09-16).
+
 ## Minting the cookie without the app
 
 Measured 2026-09-15 through a Swiss residential proxy, without the app and without the OTP signature.
@@ -469,15 +490,61 @@ Constraints, measured:
   residential IP with one Chrome user agent, the same cookie answered 200 on the minting IP with a
   different Chrome version, on the minting IP with the app `User-Agent`, and on a second Swiss
   residential IP with both user agents. All five combinations answered 200, on both portals.
-  Datacenter IPs and non Swiss IPs were not tested.
+  A datacenter exit was probed on 2026-09-16 for the challenge kind only, and answered `t=fe`.
+  Cookie replay from a datacenter exit and from a non Swiss exit was not tested.
 - One mint is therefore enough for a long time: the cookie carries `Max-Age=31536000`, so the
   on-disk store in `lib/services/datadome.js` holds it for a year and a run pays for a solve only
   when the endpoint refuses again.
-- The mobile API does not check the OTP signature or the app `User-Agent` when the cookie is valid. A
-  cookie minted by the web challenge from a desktop browser user agent is accepted. This is what makes
-  a server-side provider possible, with no device and no app.
+- The mobile API does not check the OTP signature value or the app `User-Agent` when the cookie is
+  valid, and `api.re.swissmarketplace.group` needs no cookie. A cookie minted by the web challenge
+  from a desktop browser user agent is accepted. A non-empty `X-App-Id` of any value still decides
+  the honest data set. This is what makes a server-side provider possible, with no device and no app.
 - `lib/services/datadome.js` already implements this flow: challenge detection, `DatadomeSliderTask`,
   `SOLVE_USER_AGENT`, the on-disk token store and the `t=bv` rejection. The two Swiss providers only
   need to call it and send the `Cookie` header.
 - The listing response carries `address.geoCoordinates` and `address.geoTags` (`geo-city-...`,
   `geo-zipcode-...`, `geo-canton-...`), so the geocoding step can be skipped.
+
+## DataDome data poisoning
+
+Measured 2026-09-16 through IPRoyal residential proxies. `POST /search/listings` and
+`GET /listings/listing/{id}` return two different value sets for the same listing id across identical
+requests. One set is honest and one is rewritten, and the rewritten one answers about 70 to 80 percent
+of the time when `X-App-Id` is missing.
+
+Example, id `4003474009`:
+
+| Field | Honest | Rewritten |
+|---|---|---|
+| rooms | 3 | 1 |
+| living space | 70 m2 | 20 m2 |
+| `prices.rent.net` | 990 | absent |
+| `prices.rent.gross` | | 1220 |
+| title and description | match the honest values | rewritten to match the wrong ones |
+
+The rewrite matches DataDome's data poisoning: a fabricated but self-consistent answer served in
+place of a block, only to a client the guard does not trust. The client sees the effect, not the
+actor, so the attribution rests on the shape and on the `x-datadome: protected` header. The split
+does not follow the `User-Agent`, the TLS fingerprint, the host, the cookie or `X-App-Time`. It
+follows one header: a non-empty `X-App-Id` gets the honest set, an absent or empty one gets the
+rewritten set.
+
+The server does not check the value. `1`, `abc` and a 26 digit random string each answer honest, so
+any non-empty string works and the OTP signature is not validated.
+
+Both `api.homegate.ch` and `api.re.swissmarketplace.group` poison when `X-App-Id` is missing. The app
+on the phone returns honest data, because it sends an `X-App-Id` on every request. The website
+`https://www.homegate.ch/rent/{id}`, carrying a `datadome` cookie, returned the honest set ten times
+out of ten. Four independent surfaces - the agency's own site, ImmoScout24.ch, homematch.ch and the
+Homegate website - agree on the honest values, so the honest set is the real one.
+
+Measured 2026-09-16, two independent runs:
+
+| Host | no `X-App-Id` | non-empty `X-App-Id` |
+|---|---|---|
+| `api.re.swissmarketplace.group` | 2 honest of 12 | 12 honest of 12 |
+| `api.immoscout24.ch` | 1 honest of 12 (the honest row kept `prices.rent.net`) | 12 honest of 12 |
+
+A response must be checked against the request that produced it before it is stored. Re-asking the
+portal does not settle a value. The provider sends a non-empty `X-App-Id` and keeps the check in
+`lib/services/smg/poison.js` as a safety net, not as the mechanism that keeps the data honest.

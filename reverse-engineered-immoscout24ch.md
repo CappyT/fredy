@@ -28,7 +28,7 @@ repeated here. This file lists the Swiss app's own values and the places where i
 
 | What | Homegate | ImmoScout24.ch |
 |---|---|---|
-| API host | `https://api.homegate.ch` | `https://api.immoscout24.ch` |
+| API host | `https://api.re.swissmarketplace.group` (primary), `https://api.homegate.ch` (fallback) | `https://api.immoscout24.ch` |
 | Test host | `https://apitest.homegate.ch` | `https://apitest.immoscout24.ch` |
 | OAuth host | `https://homegate.ch` | `https://immoscout24.ch` |
 | OAuth client id | `lU7SBprOA383MV4TCsRfP9wUPc4JAcy1` | `X2H86FJco6eegQirHhkYd9sZtXqzDyTV` |
@@ -101,6 +101,8 @@ exactly as documented for Homegate.
   flags them in the job form, bounds the map and scopes the geocoder.
 - Both providers can share one response parser: the models are the same Kotlin classes in both apps,
   so the host and the `User-Agent` are the only per-provider values.
+- Both providers send a non-empty `X-App-Id` on every request, so both get the honest data set (see
+  "DataDome data poisoning" in the Homegate file).
 - `price`, `size`, `rooms`, `publishedAt`, `image` map as documented in the Homegate file.
 - Sorting rides in the request body as `sortBy: "dateCreated"`, `sortDirection: "desc"`.
 - The listing's web URL is not in the response. The listing `id` and the language of the search URL
@@ -131,7 +133,7 @@ Results:
 | Fallback headers: `X-App-Id: ""` and plain `X-App-Time` millis | 200 |
 | No `X-App-Id` / `X-App-Time` at all | 200 |
 | Signed `POST /search/listings`, geoTag resolved live, RENT, APARTMENT_OR_HOUSE, `dateCreated desc`, size 20, plus `datadome` cookie | 200, 1252 listings |
-| Same body, `datadome` cookie only, no X-App headers | 200, 1252 listings |
+| Same body, `datadome` cookie only, no X-App headers | 200, 1252 listings. Access only: without `X-App-Id` the rows are poisoned |
 | Signed `POST /search/listings` without cookie | 403, DataDome challenge JSON |
 | Signed `GET /listings/listings?ids=...&fieldset=srp-list` plus cookie | 200 |
 
@@ -139,17 +141,30 @@ The geoTag for the search came from the live `GET /geo/locations` response (`geo
 app's own request used the same query shape with `sortBy: "listingType"`, `sortDirection: "desc"`,
 `size: 0`.
 
-Conclusions, same as Homegate: the `datadome` cookie is the gate for `/search/*` and `/listings/*`,
-the OTP headers are optional once the cookie is present, and `/geo/locations` is unprotected. The
-cookie for `api.immoscout24.ch` sits in the CH app's `android.webkit.CookieManager`. A fresh
-signature was still accepted after 90s, and a pair was accepted on a path it was not minted for, so
-the server does not enforce the signature binding.
+Conclusions, same as Homegate: the `datadome` cookie is the access gate for `/search/*` and
+`/listings/*`, and `/geo/locations` is unprotected. The `X-App-Id` value is not validated, but its
+presence decides the data set: a non-empty value gets the honest set and an empty or absent one gets
+the rewritten set (see "DataDome data poisoning" in the Homegate file). The cookie for
+`api.immoscout24.ch` sits in the CH app's `android.webkit.CookieManager`. A fresh signature was still
+accepted after 90s, and a pair was accepted on a path it was not minted for, so the server does not
+enforce the signature binding.
 
 `X-App-Is-Wl` was not needed for `POST /search/listings`, the one endpoint a Fredy provider calls.
 The white label alert endpoints were not tested.
 
-Not run, so still unknown: maximum accepted `size`, rate limits, and `/search/listings-by-url` with
-Swiss web URLs.
+Measured 2026-09-16: `size: 20` is accepted, `size: 1` answers 416 "Page size is not supported".
+Still unknown: the maximum accepted `size` and rate limits. `POST /search/listings-by-url` was
+answered after the user agent discovery: 163 for the bare Chiasso rental URL and 8 with four filters
+(recorded in swiss-providers-report.md).
+
+The shared SMG platform rewrites the values inside a listing when the request sends no non-empty
+`X-App-Id`: the same id answers an honest value set and a wrong one across identical requests, and
+both `POST /search/listings` and `GET /listings/listing/{id}` do it. A non-empty `X-App-Id` of any
+value gets the honest set. Measured on `api.immoscout24.ch`: without the header the honest set
+answered 1 time out of 12 (the one honest row kept `prices.rent.net`), with a non-empty `X-App-Id` it
+answered 12 times out of 12. The Homegate file records the full measurement under
+"DataDome data poisoning". Both Swiss apps share this platform module, so the same self-referential
+check applies to every ImmoScout24.ch response.
 
 ## Minting the cookie without the app
 
@@ -160,7 +175,9 @@ the same client key `F366DD7CF4DB76FA9B54F971FAB24F`, so one solver covers both 
 Verified: with a Swiss residential proxy, a capsolver `DatadomeSliderTask` on the `t=fe` challenge,
 and a replay through the same proxy session with the same `User-Agent` and `Cookie: datadome=...`,
 `POST /search/listings` for Zurich answered 200 with 1256 listings. The response carries
-`address.geoCoordinates` and `address.geoTags`, so the geocoding step can be skipped.
+`address.geoCoordinates` and `address.geoTags`, so the geocoding step can be skipped. The replay
+carried no `X-App-Id`, so its rows are the rewritten set; a provider must send a non-empty
+`X-App-Id` to get the honest set (see "DataDome data poisoning" in the Homegate file).
 
 The same binding matrix as the Homegate file was measured: the cookie answered 200 on the minting IP
 with a different Chrome version, on the minting IP with the app `User-Agent`, and on a second Swiss

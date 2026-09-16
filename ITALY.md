@@ -14,6 +14,9 @@ covers the differences.
 Fredy ships with 27 providers. The German ones are listed in [Providers & scraping](./doc/providers.md);
 the rest are offered Italy first:
 
+The fork adds Immobiliare.it, Homegate and ImmoScout24.ch to upstream's 24. `README.md` and
+`doc/providers.md` stay identical to upstream, so they still say 24; the fork's count lives here.
+
 **🇮🇹 Italy** · Immobiliare.it · Idealista · Casa.it · Subito · Tecnocasa · Tecnorete  
 **🇪🇸 Spain · 🇵🇹 Portugal** · Idealista  
 **🇦🇹 Austria** · willhaben  
@@ -42,8 +45,18 @@ See the [provider documentation](./reverse-engineered-immobiliare.md) for suppor
 Homegate uses the mobile API of its Android app, because the website refuses a plain client.
 The provider reads the pasted search URL into the API's structured query: the offer type, the
 category and the location slug, which it resolves through the portal's own location autocomplete.
-The location endpoint is open; only the search endpoint sits behind DataDome.
-A `datadome` cookie gets the search in, minted once by the solver and reused.
+The provider uses `api.re.swissmarketplace.group` as its primary host. That host answers the search
+and the location autocomplete with no cookie and no challenge, and returns the same inventory as
+`api.homegate.ch` (measured 2026-09-16). It falls back to `api.homegate.ch`, where a `datadome`
+cookie gets the search in, minted once by the solver and reused.
+The provider sends a non-empty `X-App-Id` on every request. The server does not validate the header,
+so any non-empty value works, and its presence is what keeps the answer honest.
+Without the header, search responses rewrite the values inside a listing and carry the wrong value set
+for about 70 to 80 percent of the requests. On `api.homegate.ch` a `datadome` cookie is still needed
+for access. The provider reads every page through `lib/services/smg/poison.js` as a safety net: a page
+that carries the rewritten set is requested again, up to a small cap, and is dropped with a log line
+when it stays rewritten, so no row is stored unchecked. See the DataDome data poisoning section in
+[the provider documentation](./reverse-engineered-homegate.md).
 Sorting is `dateCreated desc` and travels in the request body.
 The provider reads up to five pages of twenty listings.
 See the [provider documentation](./reverse-engineered-homegate.md) for the query fields and the response model.
@@ -53,9 +66,13 @@ See the [provider documentation](./reverse-engineered-homegate.md) for the query
 ImmoScout24.ch uses the mobile API of its own app, `api.immoscout24.ch`.
 The search URL a user pastes is translated into a structured query, and its place is resolved
 through the portal's location autocomplete.
+The provider sends a non-empty `X-App-Id` on every request. The server does not validate the header,
+so any non-empty value works, and its presence is what keeps the answer honest.
 The search endpoint answers a request without a `datadome` cookie with a challenge, so the cookie
 comes from the fork's solver, `lib/services/datadome.js`.
 Without a capsolver key and a proxy the read stays refused, like any other blocked read.
+ImmoScout24.ch shares the Homegate platform, so a request without the header carries the same rewrite;
+the provider keeps `lib/services/smg/poison.js` as a safety net.
 The provider reads up to five pages.
 See the [provider documentation](./reverse-engineered-immoscout24ch.md) for supported endpoints and
 filters.
