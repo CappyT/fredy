@@ -135,8 +135,9 @@ DataDome challenge on a portal the fork reads through an api is solved with a pa
   the solve is sent the same one, rewritten as the `host:port:user:pass` capsolver reads. It reads it
   as an HTTP proxy, so a socks-only proxy scrapes but cannot solve.
 - The cookie is not bound to the address that earned it: one solved from another exit node is
-  accepted, as measured on the Swiss apps. It is bound to the user agent, which is why the browser is
-  made to use `SOLVE_USER_AGENT` before it navigates.
+  accepted, as measured on the Swiss apps. It is not bound to the user agent either: a cookie minted
+  under a Chrome 141 agent was accepted on a request carrying a different agent (measured
+  2026-09-16). The browser still navigates under `SOLVE_USER_AGENT`, the agent capsolver solves with.
 - The cookie is kept on disk beside the database (`datadome-tokens.json`, or `FREDY_DATADOME_STORE`)
   with the `Max-Age` the challenge stated, so a restart does not pay for a solve twice.
 - A solve is paid for, so a host is asked of capsolver at most once every ten minutes, and two jobs
