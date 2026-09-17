@@ -54,6 +54,7 @@ vi.mock('../lib/services/extractor/puppeteerExtractor.js', async (importOriginal
             const body = typeof answer.json === 'function' ? JSON.stringify(await answer.json()) : await answer.text();
             return { status: () => answer.status ?? 200, text: async () => body };
           },
+          setCookie: async () => {},
           close: async () => {},
         }),
         close: async () => {},

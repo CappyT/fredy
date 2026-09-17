@@ -673,11 +673,32 @@ describe('a search the endpoint refuses', () => {
   });
 
   /**
-   * The refusal has to reach the solver as the DataDome block it is, and the retry has to carry the
-   * cookie it earned. The solver is the real module, so what is stubbed is the capsolver exchange
-   * and the proxy the deployment would have configured.
+   * Run one search with the pause between two refused reads skipped.
+   *
+   * @param {string} url the search to run
+   * @returns {Promise<any[]>} whatever the walk brought back
    */
-  it('retries the search once with the cookie capsolver minted', async () => {
+  async function search(url) {
+    const runConfig = provider.createConfig({ url }, []);
+    vi.useFakeTimers();
+    try {
+      const walk = runConfig.getListings(runConfig.url);
+      await vi.runAllTimersAsync();
+      return await walk;
+    } finally {
+      vi.useRealTimers();
+    }
+  }
+
+  /**
+   * The refusal has to reach the solver as the DataDome block it is, and the read that follows has
+   * to carry the cookie it earned. The solver is the real module, so what is stubbed is the
+   * capsolver exchange and the proxy the deployment would have configured.
+   *
+   * The configured proxy is not an IPRoyal one, so there is no exit to move to: the read is asked
+   * again once from the address it has, and the solve follows that.
+   */
+  it('retries the search with the cookie capsolver minted', async () => {
     process.env.CAPSOLVER_API_KEY = 'offline-key';
     process.env.FREDY_PROXY_URL = 'http://user:pass@proxy.example:8080';
 
@@ -691,20 +712,19 @@ describe('a search the endpoint refuses', () => {
 
       searches.push(call);
       const cookie = call.init.headers?.Cookie;
-      if (cookie == null && searches.length === 1) return answer(DATADOME_CHALLENGE, 403);
+      if (cookie == null) return answer(DATADOME_CHALLENGE, 403);
       return answer({ results: [], maxFrom: 0 });
     });
 
-    const runConfig = provider.createConfig({ url: SEARCH_URL }, []);
-    await runConfig.getListings(runConfig.url);
+    await search(SEARCH_URL);
 
-    expect(searches).toHaveLength(2);
+    expect(searches).toHaveLength(3);
     expect(searches[0].init.headers.Cookie).toBeUndefined();
-    // The header rides on the retry too: the request that carries the cookie is the one the server
+    expect(searches[1].init.headers.Cookie).toBeUndefined();
+    // The header rides on the read that carries the cookie too: that request is the one the server
     // must see as the app, or the answer it serves stays rewritten.
-    expect(searches[0].init.headers['X-App-Id']).toMatch(/^\d{26}$/);
-    expect(searches[1].init.headers['X-App-Id']).toMatch(/^\d{26}$/);
-    expect(searches[1].init.headers.Cookie).toBe('datadome=solved');
+    for (const call of searches) expect(call.init.headers['X-App-Id']).toMatch(/^\d{26}$/);
+    expect(searches[2].init.headers.Cookie).toBe('datadome=solved');
   });
 
   it('fails the read when the deployment cannot solve, rather than searching without a cookie', async () => {
@@ -715,12 +735,12 @@ describe('a search the endpoint refuses', () => {
       return answer(DATADOME_CHALLENGE, 403);
     });
 
-    const runConfig = provider.createConfig({ url: SEARCH_URL }, []);
-    await expect(runConfig.getListings(runConfig.url)).resolves.toEqual([]);
+    await expect(search(SEARCH_URL)).resolves.toEqual([]);
 
-    // Asked once and not repeated: a refused read is a failed read, it is not paid for per page.
-    expect(searches).toHaveLength(1);
-    expect(searches[0].init.headers.Cookie).toBeUndefined();
+    // The one remedy this deployment has is the read itself, and the walk stops there: a refused
+    // read is a failed read, it is not paid for per page.
+    expect(searches).toHaveLength(2);
+    expect(searches.every((call) => call.init.headers.Cookie == null)).toBe(true);
   });
 });
 

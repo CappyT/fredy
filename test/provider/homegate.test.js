@@ -9,6 +9,7 @@ import * as similarityCache from '../../lib/services/similarity-check/similarity
 import { mockFredy, providerConfig } from '../utils.js';
 import * as provider from '../../lib/provider/homegate.js';
 import { tokenForBlock } from '../../lib/services/datadome.js';
+import { resetOutboundProxyForTests, syncOutboundProxy } from '../../lib/services/http/outboundProxy.js';
 import logger from '../../lib/services/logger.js';
 
 /**
@@ -547,43 +548,111 @@ describe('a DataDome refusal', () => {
   /** @type {any[]} */
   let searches;
 
+  /** A sticky IPRoyal proxy: the session id in the password is what pins one exit node. */
+  const STICKY_PROXY = 'http://user:secret_country-ch_session-hFtcrtN8_lifetime-5m@geo.iproyal.com:12321';
+
   beforeEach(() => {
     originalFetch = globalThis.fetch;
     searches = [];
     tokenForBlock.mockClear();
+    vi.spyOn(logger, 'warn').mockImplementation(() => {});
+    vi.spyOn(logger, 'error').mockImplementation(() => {});
+    syncOutboundProxy({ proxyUrl: STICKY_PROXY }, {});
   });
 
   afterEach(() => {
     globalThis.fetch = originalFetch;
+    resetOutboundProxyForTests();
+    vi.restoreAllMocks();
   });
 
-  it('is handed to the solver once, and the retry carries the cookie it answers', async () => {
+  /**
+   * Answer the location lookup, then the search, recording how each search was asked: the host, the
+   * cookie it carried and the dispatcher it was told to leave through.
+   *
+   * @param {(count: number) => any} reply what the search answers, by the count of searches so far
+   * @returns {void}
+   */
+  function stubPortal(reply) {
     globalThis.fetch = async (url, init) => {
       if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
-      searches.push(init?.headers?.Cookie ?? null);
-      if (searches.length <= 2) return answer(BLOCK_BODY, 403);
-      return answer({ results: [{ id: 'l-1', listing: { id: 'l-1', prices: { rent: { net: 1500 } } } }], maxFrom: 0 });
+      searches.push({
+        host: new URL(String(url)).host,
+        cookie: init?.headers?.Cookie ?? null,
+        dispatcher: init?.dispatcher ?? null,
+      });
+      return reply(searches.length);
     };
+  }
+
+  /** Run one search with the pause between two refused reads skipped. */
+  async function search() {
     const { getListings } = provider.createConfig(providerConfig.homegate, []);
+    vi.useFakeTimers();
+    try {
+      const walk = getListings(SEARCH_URL);
+      await vi.runAllTimersAsync();
+      return await walk;
+    } finally {
+      vi.useRealTimers();
+    }
+  }
 
-    const found = await getListings(SEARCH_URL);
+  const LISTING_PAGE = {
+    results: [{ id: 'l-1', listing: { id: 'l-1', prices: { rent: { net: 1500 } } } }],
+    maxFrom: 0,
+  };
 
-    // The app host is asked first with no cookie; the portal host is the fallback that solves.
-    expect(searches).toEqual([null, null, 'datadome=SOLVED']);
+  /**
+   * The app host answers with no cookie and is never solved for, so a refusal there is worth other
+   * exits and nothing else. The portal host is the fallback that may buy a cookie, and only once
+   * every exit has been refused.
+   */
+  it('changes exit on both hosts, and pays for a cookie on the one that is read with one', async () => {
+    stubPortal((count) => (count <= 8 ? answer(BLOCK_BODY, 403) : answer(LISTING_PAGE)));
+
+    const found = await search();
+
     expect(found).toHaveLength(1);
+    // Four reads of the app host, four of the portal host, and the ninth carries the cookie.
+    expect(searches.map((call) => call.host)).toEqual([
+      ...Array(4).fill('api.re.swissmarketplace.group'),
+      ...Array(5).fill('api.homegate.ch'),
+    ]);
+    expect(searches.slice(0, 8).every((call) => call.cookie == null)).toBe(true);
+    expect(searches[8].cookie).toBe('datadome=SOLVED');
+
+    // Only the host that is read with a cookie is ever solved for.
     expect(tokenForBlock).toHaveBeenCalledTimes(1);
     expect(tokenForBlock.mock.calls[0][0]).toMatchObject({ status: 403, host: 'api.homegate.ch' });
   });
 
-  it('stays a failed read when no cookie can be got', async () => {
-    tokenForBlock.mockResolvedValueOnce(null);
-    globalThis.fetch = async (url) => {
-      if (String(url).includes('/geo/locations')) return answer(ZURICH_LOCATIONS);
-      return answer(BLOCK_BODY, 403);
-    };
-    const { getListings } = provider.createConfig(providerConfig.homegate, []);
+  /**
+   * A rotated read leaves through a dispatcher of its own, built for a session IPRoyal has not seen.
+   * It holds an agent open, so it is closed once its answer has been read; the read carrying the
+   * cookie goes back to the configured exit, which is the address that earned it.
+   */
+  it('gives every rotated read a dispatcher of its own, and closes it', async () => {
+    stubPortal((count) => (count <= 8 ? answer(BLOCK_BODY, 403) : answer(LISTING_PAGE)));
 
-    expect(await getListings(SEARCH_URL)).toEqual([]);
+    await search();
+
+    const rotated = [0, 4].flatMap((first) => searches.slice(first + 1, first + 4));
+    expect(rotated).toHaveLength(6);
+    expect(new Set(rotated.map((call) => call.dispatcher)).size).toBe(6);
+    expect(rotated.every((call) => call.dispatcher.closed)).toBe(true);
+
+    expect(searches[0].dispatcher).toBe(null);
+    expect(searches[4].dispatcher).toBe(null);
+    expect(searches[8].dispatcher).toBe(null);
+  });
+
+  it('stays a failed read when no cookie can be got', async () => {
+    tokenForBlock.mockResolvedValue(null);
+    stubPortal(() => answer(BLOCK_BODY, 403));
+
+    expect(await search()).toEqual([]);
+    expect(searches).toHaveLength(8);
   });
 });
 

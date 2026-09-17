@@ -59,6 +59,25 @@ async function tryReadFile(filepath) {
   }
 }
 
+/**
+ * A recorded answer, readable as json and as text.
+ *
+ * The endpoints behind a bot guard are read through `lib/services/http/guardedRead.js`, which takes
+ * the body as text so that a refusal can be shown to the guard, to the log and to the provider.
+ *
+ * @param {any} payload what the endpoint answered
+ * @returns {any} a response-shaped object
+ */
+function jsonAnswer(payload) {
+  return {
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    json: () => Promise.resolve(payload),
+    text: () => Promise.resolve(JSON.stringify(payload)),
+  };
+}
+
 /** The recorded `/geo/locations` answers, keyed by fixture file. The endpoint is an autocomplete,
  * so its answer depends on the name asked for, and each recorded name has a file of its own. */
 const locationRecordings = new Map();
@@ -310,7 +329,7 @@ export function buildFetchMock() {
       const start = Number(new URL(urlStr).searchParams.get('start')) || 0;
       const items = (immobiliareAppListData.list ?? []).slice(start, start + 20);
       const payload = { ...immobiliareAppListData, offset: start, count: items.length, list: items };
-      return { ok: true, status: 200, json: () => Promise.resolve(payload) };
+      return jsonAnswer(payload);
     }
 
     // A town search on immobiliare.it names its town in words, and the endpoint wants the number
@@ -373,7 +392,7 @@ export function buildFetchMock() {
       }
       const from = Number(JSON.parse(init?.body ?? '{}')?.from) || 0;
       const results = (homegateListData.results ?? []).slice(from, from + 20);
-      return { ok: true, status: 200, json: () => Promise.resolve({ ...homegateListData, from, results }) };
+      return jsonAnswer({ ...homegateListData, from, results });
     }
 
     // ImmoScout24.ch reads the mobile api of its own host. A pasted url is turned into a structured
@@ -394,7 +413,7 @@ export function buildFetchMock() {
       }
       const from = Number(JSON.parse(init?.body ?? '{}')?.from) || 0;
       const page = from === 0 ? immoscout24chListings : { ...immoscout24chListings, results: [], maxFrom: 0 };
-      return { ok: true, status: 200, json: () => Promise.resolve(page) };
+      return jsonAnswer(page);
     }
 
     // Immobiliare reads its results out of the endpoint the search page calls, so the fixture is

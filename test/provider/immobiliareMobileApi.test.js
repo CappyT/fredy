@@ -50,6 +50,11 @@ vi.mock('../../lib/services/datadome.js', () => ({
       return false;
     }
   },
+  describeChallenge: (body) => {
+    const kind = /[?&]t=(\w+)/.exec(String(body))?.[1];
+    if (kind == null) return '';
+    return ` (DataDome ${kind}, ${kind === 'fe' ? 'solvable' : 'not solvable, the exit ip is refused'})`;
+  },
 }));
 
 /**
@@ -454,6 +459,22 @@ describe('reading the app api', () => {
 
   const MAP_URL = 'https://www.immobiliare.it/search-list/?idContratto=2&idCategoria=1&idNazione=IT&idComune=6737';
 
+  /**
+   * Walk a search whose reads are all refused, with the pause between them skipped.
+   *
+   * @returns {Promise<any[]|null>} whatever the walk brought back
+   */
+  async function refusedWalk() {
+    vi.useFakeTimers();
+    try {
+      const walk = getAppListings(MAP_URL);
+      await vi.runAllTimersAsync();
+      return await walk;
+    } finally {
+      vi.useRealTimers();
+    }
+  }
+
   it('walks the pages the api counts, by start', async () => {
     const asked = [];
     globalThis.fetch = vi.fn(async (url) => {
@@ -461,7 +482,7 @@ describe('reading the app api', () => {
       return {
         ok: true,
         status: 200,
-        json: async () => ({ list: [{ id: 1 }], totalActive: 45 }),
+        text: async () => JSON.stringify({ list: [{ id: 1 }], totalActive: 45 }),
       };
     });
 
@@ -490,7 +511,7 @@ describe('reading the app api', () => {
       text: async () => JSON.stringify({ url: 'https://geo.captcha-delivery.com/interstitial/?t=it' }),
     }));
 
-    await expect(getAppListings(MAP_URL)).resolves.toBeNull();
+    await expect(refusedWalk()).resolves.toBeNull();
     expect(logged.join('\n')).toMatch(/DataDome it, not solvable/);
     expect(logged.join('\n')).toMatch(/page 1 of the walk/);
   });
@@ -507,34 +528,41 @@ describe('reading the app api', () => {
       text: async () => JSON.stringify({ url: 'https://geo.captcha-delivery.com/captcha/?t=fe' }),
     }));
 
-    await expect(getAppListings(MAP_URL)).resolves.toBeNull();
+    await expect(refusedWalk()).resolves.toBeNull();
     expect(logged.join('\n')).toMatch(/DataDome fe, solvable/);
     expect(logged.join('\n')).toMatch(/page 1 of the walk/);
   });
 
   /**
-   * A `fe` challenge is the kind capsolver answers, so the read is retried once with the solved
-   * cookie instead of paying a browser render for a search the api can still answer.
+   * A `fe` challenge is the kind capsolver answers, so the read is bought back instead of paying a
+   * browser render for a search the api can still answer. The exits come first, and this suite
+   * configures no proxy, so there is one read from the address it has before the solve.
    */
   it('retries with the solved cookie when the guard can be solved', async () => {
     datadome.solved = 'datadome=solved';
     const cookies = [];
     globalThis.fetch = vi.fn(async (url, init) => {
       cookies.push(init?.headers?.cookie ?? null);
-      if (cookies.length === 1) {
+      if (cookies.length <= 2) {
         return {
           ok: false,
           status: 403,
           text: async () => JSON.stringify({ url: 'https://geo.captcha-delivery.com/captcha/?t=fe' }),
         };
       }
-      return { ok: true, status: 200, json: async () => ({ list: [{ id: 9 }], totalActive: 1 }) };
+      return { ok: true, status: 200, text: async () => JSON.stringify({ list: [{ id: 9 }], totalActive: 1 }) };
     });
 
-    const items = await getAppListings(MAP_URL);
+    vi.useFakeTimers();
+    try {
+      const walk = getAppListings(MAP_URL);
+      await vi.runAllTimersAsync();
 
-    expect(cookies).toEqual([null, 'datadome=solved']);
-    expect(items).toHaveLength(1);
+      expect(await walk).toHaveLength(1);
+      expect(cookies).toEqual([null, null, 'datadome=solved']);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   /**
@@ -545,7 +573,7 @@ describe('reading the app api', () => {
     globalThis.fetch = vi.fn(async () => ({
       ok: true,
       status: 200,
-      json: async () => ({ list: [], totalActive: 0 }),
+      text: async () => JSON.stringify({ list: [], totalActive: 0 }),
     }));
 
     await expect(getAppListings(MAP_URL)).resolves.toEqual([]);
@@ -568,7 +596,7 @@ describe('reading the app api', () => {
     let headers = null;
     globalThis.fetch = vi.fn(async (url, init) => {
       headers = init?.headers;
-      return { ok: true, status: 200, json: async () => ({ list: [{ id: 1 }], totalActive: 1 }) };
+      return { ok: true, status: 200, text: async () => JSON.stringify({ list: [{ id: 1 }], totalActive: 1 }) };
     });
 
     await getAppListings(MAP_URL);

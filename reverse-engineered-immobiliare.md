@@ -259,9 +259,23 @@ What decides the challenge type is the client, not the address. Measured from on
 | `fetch` carrying a `datadome` cookie a browser had just earned | the minting exit | 403, `t=bv` |
 | CloakBrowser | residential IT | 200, the listings |
 
-So the endpoint is read in the run's browser (`requestApiPage`). A `bv` challenge is not
-one capsolver can be paid to solve, and the cookie a browser earns does not transfer to an http
-client here, whatever user agent it copies.
+So the endpoint is read in the run's browser (`requestApiPage`). The cookie a browser earns does not
+transfer to an http client here, whatever user agent it copies.
+
+The browser is not always let through either. Measured in production 2026-09-17, on residential
+IPRoyal exits: the browser is answered 403 with `t=fe` on page 1 of a walk, seconds into the run, and
+the exit address differs on every run. `fe` is the challenge capsolver answers, so a refused browser
+read has two remedies and `requestApiPage` tries them in that order:
+
+| Remedy | Cost | Answers |
+|---|---|---|
+| another exit node, up to three times | one navigation | `fe`, `bv` and `it` alike: the address is what the guard is judging |
+| a cookie from capsolver, once | money, capped by `lib/services/datadome.js` | `fe` only |
+
+The solved cookie is bound to the address that earned it, which is the exit capsolver was given -
+the configured one. The read carrying the cookie therefore goes back to the configured credentials
+rather than to a rotated exit, and sets the cookie on the page (`.immobiliare.it`, path `/`, secure)
+before it navigates.
 
 Each read takes a browser context of its own. The website's own search page (`/vendita-case/...`)
 answers 403 with an interstitial that does not resolve itself, headed or headless, and a context
@@ -273,9 +287,11 @@ exit. Measured 2026-09-16: one Italian residential exit answered 200, another an
 `it` interstitial, and a datacenter exit answered 403 with the `fe` challenge, the kind capsolver
 solves. A request whose parameter shape is wrong answers 400, not a challenge.
 
-The provider reuses a solved cookie and offers a `fe` challenge to the solver, then falls back to the
-website and its browser when the challenge cannot be solved. `lib/services/datadome.js` owns the
-solve and caps its cost. The app earns its own cookie from its DataDome SDK (client key above), which
+The app api is read through `fetch`, so its remedies are the same two in the same order, without the
+browser: `lib/services/http/guardedRead.js` asks the read again from another exit up to three times,
+each through a dispatcher of its own, and only then offers a `fe` challenge to the solver. A read
+nothing rescues falls back to the website and its browser. `lib/services/datadome.js` owns the solve
+and caps its cost. The app earns its own cookie from its DataDome SDK (client key above), which
 stores it in SharedPreferences `datadome_storage_BCBF2FCE4AED082640C3D1753C3381` under `PREF_COOKIES`,
 with `Domain=.ws-app.com`. The detail api (`/b2c/v2/properties/<id>`) and the geography service
 answer plainly, which is why the provider enriches and resolves through them without a token.

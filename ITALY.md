@@ -38,9 +38,14 @@ That API answers a place filtered search over plain HTTP and costs no browser.
 The provider translates the pasted search URL into the API's own query, and resolves the place
 through the app's geography service.
 The API carries a DataDome guard whose challenge depends on the exit: it can answer 403.
-A solvable `fe` challenge goes to the solver, and an unsolvable one falls back to the website.
+A refused read is asked again from a new proxy exit, up to three times, and only then is a solvable
+`fe` challenge sent to the solver. A challenge the solver cannot answer falls back to the website.
 The website search endpoint is read in the job's browser: it answers a plain http client with a
 DataDome `bv` challenge, whatever the exit address.
+The browser is refused as well from some exits. A refused read is asked again from a new proxy exit,
+up to three times, and only then is a `fe` challenge sent to the solver.
+The cookie the solver answers is bound to the configured exit, so the read carrying it leaves from
+the configured credentials.
 Searches the API cannot express use the same browser to render the page.
 The provider reads up to twenty pages.
 See the [provider documentation](./reverse-engineered-immobiliare.md) for supported endpoints.
@@ -54,6 +59,8 @@ The provider uses `api.re.swissmarketplace.group` as its primary host. That host
 and the location autocomplete with no cookie and no challenge, and returns the same inventory as
 `api.homegate.ch` (measured 2026-09-16). It falls back to `api.homegate.ch`, where a `datadome`
 cookie gets the search in, minted once by the solver and reused.
+A read either host refuses is asked again from a new proxy exit, up to three times. Only the
+fallback host may then buy a cookie: the primary host is never solved for.
 The provider sends a non-empty `X-App-Id` on every request. The server does not validate the header,
 so any non-empty value works, and its presence is what keeps the answer honest.
 Without the header, search responses rewrite the values inside a listing and carry the wrong value set
@@ -76,6 +83,7 @@ The provider sends a non-empty `X-App-Id` on every request. The server does not 
 so any non-empty value works, and its presence is what keeps the answer honest.
 The search endpoint answers a request without a `datadome` cookie with a challenge, so the cookie
 comes from the fork's solver, `lib/services/datadome.js`.
+A refused read is asked again from a new proxy exit, up to three times, before the solver is asked.
 Without a capsolver key and a proxy the read stays refused, like any other blocked read.
 ImmoScout24.ch shares the Homegate platform, so a request without the header carries the same rewrite;
 the provider keeps `lib/services/smg/poison.js` as a safety net.
@@ -133,6 +141,21 @@ call to a portal, not only the headless browser. This replaces what
   password, and carries through what the form knows nothing about, such as a city or `streaming`. No
   other proxy provider gets this: the same wishes are spelled differently everywhere else, so the
   controls stay hidden rather than writing a password that quietly does nothing.
+- **Rotating an exit mid-run.** A session id IPRoyal has not seen starts a new session on a new exit
+  node, with no lifetime to wait out. Both read paths write one into the password and leave from the
+  new address:
+  - the browser, through `newIsolatedPage(browser, { freshExit: true })` in
+    `lib/services/extractor/puppeteerExtractor.js`, which authenticates one browser context with it;
+  - `fetch`, through `rotatedExitDispatcher()` in `lib/services/http/outboundProxy.js`, which builds
+    a dispatcher for the rewritten url. It carries one request, as `fetch(url, { dispatcher })`, and
+    is closed once that answer has been read; every other call keeps the installed dispatcher.
+
+  A password with no session segment already rotates per request, so a fresh context and a plain
+  resend are each a new exit without a rewrite. Any other proxy, and no proxy, cannot be steered: the
+  read is asked again once from the address it has and the log line says the exit could not be
+  rotated. The backend reads the password with `lib/services/proxy/iproyal.js`, a copy of the form's
+  rules, because the browser may not import out of `lib/`. `test/ui/iproyalInSync.test.js` fails when
+  the two copies disagree.
 
 ## For coding agents
 
@@ -169,14 +192,31 @@ DataDome challenge on a portal the fork reads through an api is solved with a pa
 - Only DataDome is handled this way. The other guards the fork meets stay unsolved.
 - `lib/services/datadome.js` holds the whole mechanism, and `lib/services/idealista/idealistaSearch.js`
   is what uses it: it hands a token to the browser fallback before it navigates.
-  `lib/services/immobiliare/appApi.js` reuses a solved cookie and offers a `fe` challenge to the
-  solver before the provider renders the website. The website endpoint of Immobiliare.it buys no
-  token: it answers a plain http client `bv`, whatever the exit address and whatever the user agent,
-  and `bv` is not a challenge capsolver can be paid to solve, so that read is made in the run's
-  browser instead.
+
+**What a refused read does.** A refusal has two remedies, and they are tried in the order of what
+they cost: another exit node up to three times, then one solve for a `fe` challenge. There are two
+copies of that policy, one per read path, because a read is made either in the run's browser or
+through `fetch`:
+
+- **In the browser.** `requestApiPage` in `lib/provider/immobiliare.js`. The website endpoint of
+  Immobiliare.it answers a plain http client `bv`, whatever the exit address and whatever the user
+  agent, so that read is made in the run's browser. It earns a `fe` from some exits, which is
+  solvable. Each read takes a browser context of its own, and the cookie is set on the page before it
+  navigates.
+- **Through `fetch`.** `readThroughGuard` in `lib/services/http/guardedRead.js`, used by
+  `lib/provider/homegate.js`, `lib/provider/immoscout24ch.js` and
+  `lib/services/immobiliare/appApi.js`. A rotated read leaves through a dispatcher of its own, which
+  is closed once its answer has been read; the read carrying a solved cookie leaves through the
+  configured proxy. A host the caller does not solve for - Homegate's primary host - still gets the
+  exits. A refusal that is not DataDome, a 422 say, is handed back at once: it says the same from
+  every address.
+
+Each refusal is a WARN naming the status, the challenge kind, the page and what is tried next. The
+ERROR is the caller's, once, when nothing rescued the read.
 
 The challenge has to be the `fe` kind. A `bv` challenge means the asking IP is blocked, which no
-cookie fixes; capsolver refuses it and the read stays failed.
+cookie fixes; capsolver refuses it. Only a different exit address helps, which is why both paths
+rotate the exit before they ask the solver anything.
 
 `reverse-engineered-immobiliare.md` and `reverse-engineered-idealista.md` record where each portal's
 challenge was measured.

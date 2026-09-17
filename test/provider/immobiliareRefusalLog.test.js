@@ -36,6 +36,7 @@ vi.mock('../../lib/services/extractor/puppeteerExtractor.js', () => ({
         }
         return { status: () => answer.status, text: async () => answer.body };
       },
+      setCookie: async () => {},
       close: async () => {},
     },
     context: { close: async () => {} },
@@ -64,6 +65,25 @@ const blockBody = (kind) =>
     url: `https://geo.captcha-delivery.com/captcha/?initialCid=AHrl&cid=CID&hash=F366DD7CF4DB76FA9B54F971FAB24F&t=${kind}&s=52458&e=81046c`,
   });
 
+/**
+ * Run one search with its waits skipped. A refused read pauses before it asks again from another
+ * exit, and there are three of those before the line these tests are about is written.
+ *
+ * @param {string} url the search to run
+ * @returns {Promise<any[]>} whatever the walk brought back
+ */
+async function search(url) {
+  const cfg = provider.createConfig({ url }, [], []);
+  vi.useFakeTimers();
+  try {
+    const walk = cfg.getListings(cfg.url, {});
+    await vi.runAllTimersAsync();
+    return await walk;
+  } finally {
+    vi.useRealTimers();
+  }
+}
+
 describe('the line a refused endpoint read writes', () => {
   beforeEach(() => {
     logged.length = 0;
@@ -85,9 +105,7 @@ describe('the line a refused endpoint read writes', () => {
 
   it('names the challenge kind, so a solvable refusal is told from a blocked address', async () => {
     answer = { status: 403, body: blockBody('bv') };
-    const cfg = provider.createConfig({ url: MAP_SEARCH }, [], []);
-
-    await cfg.getListings(cfg.url, {});
+    await search(MAP_SEARCH);
 
     const refusal = logged.find((line) => line.includes('answered 403'));
     expect(refusal).toBeDefined();
@@ -97,9 +115,7 @@ describe('the line a refused endpoint read writes', () => {
 
   it('calls an fe challenge solvable, which is the opposite remedy', async () => {
     answer = { status: 403, body: blockBody('fe') };
-    const cfg = provider.createConfig({ url: MAP_SEARCH }, [], []);
-
-    await cfg.getListings(cfg.url, {});
+    await search(MAP_SEARCH);
 
     const refusal = logged.find((line) => line.includes('answered 403'));
     expect(refusal).toContain('DataDome fe');
@@ -109,9 +125,7 @@ describe('the line a refused endpoint read writes', () => {
 
   it('names the page, the age of the browser and the exit address', async () => {
     answer = { status: 403, body: blockBody('bv') };
-    const cfg = provider.createConfig({ url: MAP_SEARCH }, [], []);
-
-    await cfg.getListings(cfg.url, {});
+    await search(MAP_SEARCH);
 
     const refusal = logged.find((line) => line.includes('answered 403'));
     // The page says whether the search was never allowed or died partway through a walk; the age
@@ -125,9 +139,7 @@ describe('the line a refused endpoint read writes', () => {
   it('still reports the refusal when the address cannot be read', async () => {
     answer = { status: 403, body: blockBody('bv') };
     exitBody = 'not json at all';
-    const cfg = provider.createConfig({ url: MAP_SEARCH }, [], []);
-
-    await cfg.getListings(cfg.url, {});
+    await search(MAP_SEARCH);
 
     // The address is a convenience. Losing it must not cost the refusal itself.
     const refusal = logged.find((line) => line.includes('answered 403'));
@@ -137,9 +149,7 @@ describe('the line a refused endpoint read writes', () => {
 
   it('names a refusal that carries no challenge without inventing one', async () => {
     answer = { status: 422, body: JSON.stringify({ errors: [{ message: 'bad search' }] }) };
-    const cfg = provider.createConfig({ url: MAP_SEARCH }, [], []);
-
-    await cfg.getListings(cfg.url, {});
+    await search(MAP_SEARCH);
 
     const refusal = logged.find((line) => line.includes('answered 422'));
     expect(refusal).toBeDefined();
