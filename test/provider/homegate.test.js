@@ -105,6 +105,7 @@ describe('#homegate provider testsuite()', () => {
       expect(typeof listing.price, `price of ${listing.id}`).toBe('number');
       expect(listing.price, `price of ${listing.id}`).toBeGreaterThan(0);
       expect(listing.address, `address of ${listing.id}`).toBeTruthy();
+      // The search URL of the job is the English one, so its links spell the English word.
       expect(listing.link, `link of ${listing.id}`).toMatch(/^https:\/\/www\.homegate\.ch\/(rent|buy)\/\d+$/);
     }
   });
@@ -398,6 +399,90 @@ describe('the search a pasted URL translates to', () => {
 
     expect(asked.some((target) => target.includes('/geo/locations'))).toBe(false);
     expect(bodies[0].body.query).toEqual({ offerType: 'RENT', propertyType: 'APARTMENT' });
+  });
+});
+
+/**
+ * The portal serves a listing under the offer type word of the language the search URL is written
+ * in, in lower case. The API answers `offerType` in upper case, and `/RENT/4003459485` is a 404 on
+ * the live portal, so the word is rebuilt rather than taken from the answer.
+ */
+describe('the link a listing carries', () => {
+  /** @type {any} */
+  let originalFetch;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+    tokenForBlock.mockClear();
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  /**
+   * One row in the shape the live API answers, `offerType` in upper case included.
+   *
+   * @param {string} id the listing id
+   * @param {string} offerType the offer type the API spells
+   * @param {any} prices the price block
+   * @returns {any} the raw entry
+   */
+  const row = (id, offerType, prices) => ({
+    id,
+    listing: {
+      id,
+      offerType,
+      prices,
+      characteristics: { numberOfRooms: 3, livingSpace: 70 },
+      address: { street: 'Corso San Gottardo 96', postalCode: '6830', locality: 'Chiasso' },
+      localization: { primary: 'it', it: { text: { title: 'Appartamento' } } },
+    },
+  });
+
+  /**
+   * @param {any} locations the answer of the location endpoint
+   * @param {any[]} results the rows the search answers
+   * @returns {void}
+   */
+  function stubPortal(locations, results) {
+    globalThis.fetch = async (url) => {
+      if (String(url).includes('/geo/locations')) return answer(locations);
+      return answer({ results, maxFrom: 0 });
+    };
+  }
+
+  it('spells the offer type in the language of the pasted search URL', async () => {
+    stubPortal(CHIASSO_LOCATIONS, [row('4003459485', 'RENT', { rent: { net: 1190 } })]);
+    const { getListings, normalize } = provider.createConfig(providerConfig.homegate, []);
+
+    const [found] = await getListings('https://www.homegate.ch/affittare/appartamento/luogo-chiasso/lista-annunci');
+
+    expect(normalize(found).link).toBe('https://www.homegate.ch/affittare/4003459485');
+  });
+
+  it('spells a German purchase search in German', async () => {
+    // A purchase page with no numeric filter carries no signal the detector can read, which is one
+    // warning line.
+    vi.spyOn(logger, 'warn').mockImplementation(() => {});
+    stubPortal(ZURICH_LOCATIONS, [row('4003459486', 'BUY', { buy: { price: 890000 } })]);
+    const { getListings, normalize } = provider.createConfig(providerConfig.homegate, []);
+
+    const [found] = await getListings('https://www.homegate.ch/kaufen/wohnung/ort-zuerich');
+
+    expect(normalize(found).link).toBe('https://www.homegate.ch/kaufen/4003459486');
+  });
+
+  it('falls back to the English word when no search is known, never to the upper case one', () => {
+    const { normalize } = provider.createConfig(providerConfig.homegate, []);
+
+    expect(normalize(row('4003459487', 'RENT', { rent: { net: 1190 } })).link).toBe(
+      'https://www.homegate.ch/rent/4003459487',
+    );
+    expect(normalize(row('4003459488', 'BUY', { buy: { price: 890000 } })).link).toBe(
+      'https://www.homegate.ch/buy/4003459488',
+    );
   });
 });
 

@@ -15,7 +15,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000000",
-        "offerType": "buy",
+        "offerType": "BUY",
         "prices": {
           "currency": "CHF",
           "rent": null,
@@ -104,7 +104,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000001",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -203,7 +203,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000002",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -302,7 +302,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000003",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -401,7 +401,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000004",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -500,7 +500,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000005",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -599,7 +599,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000006",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -698,7 +698,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000007",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -789,7 +789,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000008",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -888,7 +888,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000009",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -987,7 +987,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000010",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1086,7 +1086,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000011",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1185,7 +1185,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000012",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1284,7 +1284,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000013",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1383,7 +1383,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000014",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1474,7 +1474,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000015",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1573,7 +1573,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000016",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1672,7 +1672,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000017",
-        "offerType": "buy",
+        "offerType": "BUY",
         "prices": {
           "currency": "CHF",
           "rent": null,
@@ -1769,7 +1769,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000018",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1868,7 +1868,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000019",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -1967,7 +1967,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000020",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2066,7 +2066,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000021",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2157,7 +2157,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000022",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2256,7 +2256,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000023",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2355,7 +2355,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000024",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2454,7 +2454,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000025",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2553,7 +2553,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000026",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2652,7 +2652,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000027",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2751,7 +2751,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000028",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2842,7 +2842,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000029",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -2941,7 +2941,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000030",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3040,7 +3040,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000031",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3139,7 +3139,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000032",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3238,7 +3238,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000033",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3337,7 +3337,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000034",
-        "offerType": "buy",
+        "offerType": "BUY",
         "prices": {
           "currency": "CHF",
           "rent": null,
@@ -3434,7 +3434,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000035",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3525,7 +3525,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000036",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3624,7 +3624,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000037",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3723,7 +3723,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000038",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3822,7 +3822,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000039",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -3921,7 +3921,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000040",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -4020,7 +4020,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000041",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -4119,7 +4119,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000042",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -4210,7 +4210,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000043",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {
@@ -4309,7 +4309,7 @@
       "districtName": null,
       "listing": {
         "id": "1000000044",
-        "offerType": "rent",
+        "offerType": "RENT",
         "prices": {
           "currency": "CHF",
           "rent": {

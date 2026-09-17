@@ -305,7 +305,7 @@ Aliases the converter folds in: `HAS_GARAGE` and `HAS_PARKING_SLOT` become `HAS_
 | Field | Type |
 |---|---|
 | `id` | string |
-| `offerType` | `"buy"` / `"rent"` |
+| `offerType` | `"BUY"` / `"RENT"` |
 | `prices` | Prices, see below |
 | `localization` | `{de, en, fr, it, primary}`, each an L10N block |
 | `characteristics` | see below |
@@ -317,6 +317,12 @@ Aliases the converter folds in: `HAS_GARAGE` and `HAS_PARKING_SLOT` become `HAS_
 | `categories` | array |
 | `platforms` | array |
 | `valueAddedServices` | array |
+
+The answer carries no URL for a listing. Its page is `https://www.homegate.ch/{offer type}/{id}`,
+where the offer type is the word the search path spells in the URL's own language (`rent`, `mieten`,
+`louer`, `affittare`, and the four buy words), in lower case. The upper case `offerType` of the
+answer answers 404: `/RENT/4003459485` is "The requested page cannot be displayed", `/affittare/4003459485`
+is the listing.
 
 `localization.primary` selects the language block. An L10N block holds:
 
