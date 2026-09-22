@@ -128,6 +128,8 @@ call to a portal, not only the headless browser. This replaces what
   connectivity, transit, the version check and telemetry. They use `node-fetch`, which ignores the
   global dispatcher, so a metered residential proxy carries portal traffic only. The HTTP
   notification adapter uses the global `fetch` and asks for the direct dispatcher explicitly.
+- **Tests.** An upstream test that mocks `node-fetch` for a portal call also has to stub the global
+  `fetch`, as `test/services/listings/listingActiveTester.test.js` does.
 - **Schemes.** `http://`, `https://`, `socks4://`, `socks5://`, with optional `user:pass@`. A socks
   proxy is dialed through the `socks` package, because undici's `ProxyAgent` speaks HTTP CONNECT
   only. An unusable url is logged and the previous proxy stays in force: a scrape that fails is
@@ -165,7 +167,7 @@ Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
 
 | Service | Location | Notes |
 |---|---|---|
-| Currency | `lib/utils/currency.js`, `ui/src/services/price/currency.js` | Country to currency table, formatting, and the euro-only checks. The two tables must match, `test/ui/currencyInSync.test.js` enforces it. The pipeline stores `listings.currency` (migration `900.listing-currency.js`); `lib/services/listings/currencyBackfill.js` fills older rows at startup. SQL reads a NULL currency as `EUR` |
+| Currency | `lib/utils/currency.js`, `ui/src/services/price/currency.js` | Country to currency table, formatting, and the euro-only checks. The two tables must match, `test/ui/currencyInSync.test.js` enforces it. The pipeline stores `listings.currency` (migration `900.listing-currency.js`); `lib/services/listings/currencyBackfill.js` fills older rows at startup. SQL reads a NULL currency as `EUR`. The listing detail formats its prices in `ui/src/views/listings/listingFacts.js` and passes the currency to the price history in `components/ListingKeyFacts.jsx`. `formatPricePerSqm` takes the currency as its last argument, after upstream's `withUnit` |
 
 ### Bot protection
 
