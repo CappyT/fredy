@@ -53,7 +53,7 @@ describe('prices in the listing currency', () => {
 
   describe('formatPricePerSqm', () => {
     it('labels a franc quotient in francs', () => {
-      expect(normalize(formatPricePerSqm(38.71, 'de-DE', 'CHF'))).toBe('38,71 CHF/m²');
+      expect(normalize(formatPricePerSqm(38.71, 'de-DE', true, 'CHF'))).toBe('38,71 CHF/m²');
     });
 
     it('keeps euro quotients unchanged when no currency is given', () => {

@@ -256,7 +256,7 @@ export default function Dashboard() {
             value={
               kpis.medianPricePerSqm == null
                 ? '---'
-                : formatPricePerSqm(kpis.medianPricePerSqm.value, locale, kpis.currency)
+                : formatPricePerSqm(kpis.medianPricePerSqm.value, locale, true, kpis.currency)
             }
             icon={<IconExpand />}
             description={
