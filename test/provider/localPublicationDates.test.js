@@ -197,7 +197,7 @@ describe('provider publication date propagation', () => {
     ).map(schwarzesbrett.normalize);
     expect(listings).toHaveLength(10);
     expect(listings.every((listing) => Number.isFinite(listing.publishedAt))).toBe(true);
-    expect(listings[0].publishedAt).toBe(Date.parse('2026-08-24T22:00:00Z'));
+    expect(listings[0].publishedAt).toBe(Date.parse('2026-09-22T22:00:00Z'));
   });
 
   it('matches Kleinanzeigen search dates by ID and preserves every card', async () => {
@@ -228,7 +228,7 @@ describe('provider publication date propagation', () => {
 
   it.each([
     ['Kleinanzeigen', kleinanzeigen, 'kleinanzeigen_detail.html', '2026-08-26T22:00:00Z'],
-    ['Schwarzes Brett', schwarzesbrett, 'schwarzesbrett_detail.html', '2026-08-24T22:00:00Z'],
+    ['Schwarzes Brett', schwarzesbrett, 'schwarzesbrett_detail.html', '2026-09-22T22:00:00Z'],
   ])('recovers the day from %s details', async (_, provider, name, expected) => {
     puppeteerExtractor.mockResolvedValue(fixture(name));
     expect((await provider.fetchDetails({ id: 'test', link: 'https://example.com/1' })).publishedAt).toBe(

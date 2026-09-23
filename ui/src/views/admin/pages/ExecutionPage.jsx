@@ -3,14 +3,18 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { TimePicker, Button, Checkbox, Input, InputNumber, Banner, Select } from '@douyinfe/semi-ui-19';
-import { IconSave } from '@douyinfe/semi-icons';
+import { Button, TimePicker, Checkbox, Input, InputNumber, Select } from '@douyinfe/semi-ui-19';
+import { IconAlertTriangle } from '@douyinfe/semi-icons';
 import { useOutletContext } from 'react-router';
 import { useMemo } from 'react';
 
 import { SegmentPart } from '../../../components/segment/SegmentPart';
-import { timeZoneOptions } from '../../../services/time/timeService';
+import SettingsSaveBar from '../../../components/settingsShell/SettingsSaveBar.jsx';
+import AdminField from '../components/AdminField.jsx';
+import { useUnsavedWarning } from '../../../hooks/useUnsavedWarning.js';
 import { useSelector } from '../../../services/state/store';
+import { relativeTime } from '../../../services/time/relativeTime.js';
+import { timeZoneOptions } from '../../../services/time/timeService';
 import { flagFor } from '../../../services/countryFlags';
 import {
   countriesFromProviders,
@@ -18,6 +22,8 @@ import {
   readIproyalOptions,
   writeIproyalOptions,
 } from '../../../services/proxy/iproyal';
+import './ExecutionPage.less';
+import './iproyalProxy.less';
 
 /** Country names in the reader's own language; the code itself when the browser has no name for it. */
 function countryName(code) {
@@ -59,7 +65,8 @@ function formatFromTBackend(time) {
  * @returns {React.ReactElement}
  */
 export default function ExecutionPage() {
-  const { t, form, setField, setWorkingHour, executionDirty, savingExecution, saveExecution } = useOutletContext();
+  const { t, form, setField, setWorkingHour, executionDirty, savingExecution, saveExecution, discardExecution } =
+    useOutletContext();
   const zones = useMemo(() => timeZoneOptions(form.workingHours.timeZone), [form.workingHours.timeZone]);
   const providers = useSelector((state) => state.provider);
   // Read back out of the url on every render rather than held beside it: the field stays the one
@@ -76,57 +83,103 @@ export default function ExecutionPage() {
   );
   const setIproyal = (patch) => setField('proxyUrl', writeIproyalOptions(form.proxyUrl, { ...iproyal, ...patch }));
 
+  const nextRun = useSelector((state) => state.dashboard.data?.general?.nextRun);
+
+  useUnsavedWarning(executionDirty);
+
+  const summary = useMemo(() => {
+    const { from, to, timeZone } = form.workingHours;
+    const zone = timeZone ?? t('admin.execution.serverZone');
+    const hasFrom = from != null && from !== '';
+    const hasTo = to != null && to !== '';
+    // One edge alone is not "around the clock": it is a window the save will refuse, and saying
+    // otherwise here contradicted the toast that follows.
+    if (hasFrom !== hasTo) {
+      return t('settings.toastWorkingHoursIncomplete');
+    }
+    if (!hasFrom) {
+      return t('admin.execution.summaryAllDay', { minutes: form.interval || '?' });
+    }
+    return t('admin.execution.summaryWindow', { minutes: form.interval || '?', from, to, zone });
+  }, [form.interval, form.workingHours, t]);
+
   return (
     <div className="settingsShell__page">
-      <SegmentPart name={t('settings.searchInterval')} helpText={t('settings.searchIntervalHelp')}>
-        <InputNumber
-          min={5}
-          max={1440}
-          placeholder={t('settings.searchIntervalPlaceholder')}
-          value={form.interval}
-          formatter={(value) => `${value}`.replace(/\D/g, '')}
-          onChange={(value) => setField('interval', value)}
-          suffix={t('settings.searchIntervalSuffix')}
-          style={{ maxWidth: 200 }}
-        />
-      </SegmentPart>
+      <SegmentPart
+        name={t('admin.execution.searchRun')}
+        // The working hours sit in this card too, and theirs is the explanation of what an empty
+        // time zone means (the server's, which in Docker is UTC).
+        helpText={`${t('settings.searchIntervalHelp')} ${t('settings.workingHoursHelp')}`}
+        helpMode="popover"
+        action={
+          nextRun != null && nextRun !== 0 ? (
+            <span className="settingsShell__cardFlag">
+              {/* Green only while the promised run is still ahead. Past it, this is the page an
+                  admin opens to find out why nothing runs, and a green dot beside "3 h ago" said
+                  the opposite of the sidebar's amber one. */}
+              <span
+                className={`settingsShell__cardFlagDot${nextRun > Date.now() ? ' settingsShell__cardFlagDot--ok' : ''}`}
+                aria-hidden="true"
+              />
+              {t('nav.nextRun', { time: relativeTime(nextRun, t) })}
+            </span>
+          ) : null
+        }
+      >
+        <div className="executionPage__line">
+          <span className="executionPage__caption">{t('admin.execution.every')}</span>
+          <span className="adminRow__control">
+            <InputNumber
+              id="interval"
+              min={5}
+              max={1440}
+              aria-label={t('settings.searchInterval')}
+              placeholder={t('settings.searchIntervalPlaceholder')}
+              value={form.interval}
+              formatter={(value) => `${value}`.replace(/\D/g, '')}
+              onChange={(value) => setField('interval', value)}
+              suffix={t('settings.searchIntervalSuffix')}
+            />
+          </span>
+        </div>
 
-      <SegmentPart name={t('settings.workingHours')} helpText={t('settings.workingHoursHelp')}>
-        <div className="settingsShell__timePickerContainer">
+        <div className="executionPage__line">
+          <span className="executionPage__caption">{t('admin.execution.between')}</span>
           <TimePicker
             format={'HH:mm'}
-            insetLabel={t('settings.workingHoursFrom')}
+            className="executionPage__time"
             value={formatFromTBackend(form.workingHours.from)}
-            placeholder=""
+            placeholder={t('settings.workingHoursFrom')}
             onChange={(val) => setWorkingHour('from', val == null ? null : formatFromTimestamp(val))}
           />
+          <span className="executionPage__caption executionPage__caption--inline">{t('admin.execution.and')}</span>
           <TimePicker
             format={'HH:mm'}
-            insetLabel={t('settings.workingHoursUntil')}
+            className="executionPage__time"
             value={formatFromTBackend(form.workingHours.to)}
-            placeholder=""
+            placeholder={t('settings.workingHoursUntil')}
             onChange={(val) => setWorkingHour('to', val == null ? null : formatFromTimestamp(val))}
           />
-          {/*
-            Searchable rather than a plain list: there are well over four hundred zones, and an
-            operator knows the name of theirs. Clearable because an empty value is a real state -
-            it means the window follows the server's own zone, which is what every installation did
-            before this setting existed.
-          */}
+        </div>
+
+        <div className="executionPage__line">
+          <span className="executionPage__caption">{t('settings.workingHoursTimeZone')}</span>
           <Select
             filter
             showClear
+            className="executionPage__zone"
             optionList={zones}
             value={form.workingHours.timeZone ?? undefined}
             placeholder={t('settings.workingHoursTimeZonePlaceholder')}
-            insetLabel={t('settings.workingHoursTimeZone')}
+            aria-label={t('settings.workingHoursTimeZone')}
             onChange={(val) => setWorkingHour('timeZone', val == null || val === '' ? null : val)}
-            style={{ minWidth: 260 }}
           />
         </div>
+
+        <div className="executionPage__summary">{summary}</div>
       </SegmentPart>
 
-      <SegmentPart name={t('settings.proxyUrl')} helpText={t('settings.proxyUrlHelp')}>
+      <SegmentPart name={t('settings.proxyUrl')} helpText={t('settings.proxyUrlHelp')} helpMode="popover">
         <Input
           type="text"
           placeholder={t('settings.proxyUrlPlaceholder')}
@@ -142,7 +195,7 @@ export default function ExecutionPage() {
         */}
         {iproyal != null && (
           <>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
+            <div className="iproyalProxy__controls">
               <Select
                 filter
                 allowCreate
@@ -152,7 +205,7 @@ export default function ExecutionPage() {
                 placeholder={t('settings.proxyIproyalCountryAny')}
                 insetLabel={t('settings.proxyIproyalCountry')}
                 onChange={(value) => setIproyal({ country: value == null || value === '' ? null : value })}
-                style={{ minWidth: 220 }}
+                className="iproyalProxy__country"
               />
               <Select
                 optionList={[
@@ -164,7 +217,7 @@ export default function ExecutionPage() {
                 // Five minutes when the operator has never set one: a sticky session with no
                 // lifetime is held for IPRoyal's own default, which is not what the field then shows.
                 onChange={(value) => setIproyal({ sticky: value === 'sticky', ttlMinutes: iproyal.ttlMinutes ?? 5 })}
-                style={{ minWidth: 200 }}
+                className="iproyalProxy__rotation"
               />
               {iproyal.sticky && (
                 <>
@@ -175,7 +228,7 @@ export default function ExecutionPage() {
                     suffix={t('settings.proxyIproyalTtlSuffix')}
                     value={iproyal.ttlMinutes ?? undefined}
                     onChange={(value) => setIproyal({ ttlMinutes: value })}
-                    style={{ maxWidth: 220 }}
+                    className="iproyalProxy__ttl"
                   />
                   <Button onClick={() => setIproyal({ sessionId: randomSessionId() })}>
                     {t('settings.proxyIproyalNewSession')}
@@ -183,7 +236,7 @@ export default function ExecutionPage() {
                 </>
               )}
             </div>
-            <div style={{ marginTop: 8, opacity: 0.7 }}>{t('settings.proxyIproyalHint')}</div>
+            <div className="iproyalProxy__hint">{t('settings.proxyIproyalHint')}</div>
           </>
         )}
       </SegmentPart>
@@ -202,31 +255,21 @@ export default function ExecutionPage() {
         />
       </SegmentPart>
 
-      {/*
-        One block rather than four. The three dials are meaningless on their own - they only
-        describe how the sweep behaves once it exists - so presenting them as peers of the switch
-        invited reading them as four independent knobs. They stay visible while disabled so an
-        operator can see what turning the feature on would commit them to.
-      */}
-      <SegmentPart name={t('settings.priceTracking')} helpText={t('settings.priceTrackingHelp')}>
-        {/*
-          Above the switch, not below it. Turning this on is the moment the operator takes on the
-          risk, so the warning has to be in front of them beforehand, not revealed as a consequence.
-        */}
-        <Banner
-          fullMode={false}
-          type="warning"
-          closeIcon={null}
-          style={{ marginBottom: '12px' }}
-          title={t('settings.priceTrackingWarningTitle')}
-          description={
-            <>
-              <p style={{ margin: '0 0 8px' }}>{t('settings.priceTrackingWarningBody')}</p>
-              <p style={{ margin: 0 }}>{t('settings.priceTrackingWarningDefaults')}</p>
-            </>
-          }
-        />
-
+      <SegmentPart
+        name={t('settings.priceTracking')}
+        helpText={
+          <>
+            {t('settings.priceTrackingHelp')}
+            <span className="settingsShell__helpWarning">
+              <IconAlertTriangle size="small" />
+              <span>
+                <strong>{t('settings.priceTrackingWarningTitle')}</strong> {t('settings.priceTrackingWarningBody')}{' '}
+                {t('settings.priceTrackingWarningDefaults')}
+              </span>
+            </span>
+          </>
+        }
+      >
         <Checkbox
           checked={form.priceTrackingEnabled}
           onChange={(e) => setField('priceTrackingEnabled', e.target.checked)}
@@ -237,11 +280,11 @@ export default function ExecutionPage() {
         <div
           className={`settingsShell__subSettings${form.priceTrackingEnabled ? '' : ' settingsShell__subSettings--disabled'}`}
         >
-          <div className="settingsShell__subSetting">
-            <label className="settingsShell__subSetting__label" htmlFor="priceCheckIntervalDays">
-              {t('settings.priceCheckInterval')}
-            </label>
-            <p className="settingsShell__subSetting__help">{t('settings.priceCheckIntervalHelp')}</p>
+          <AdminField
+            label={t('settings.priceCheckInterval')}
+            help={t('settings.priceCheckIntervalHelp')}
+            htmlFor="priceCheckIntervalDays"
+          >
             <InputNumber
               id="priceCheckIntervalDays"
               min={1}
@@ -251,15 +294,14 @@ export default function ExecutionPage() {
               formatter={(value) => `${value}`.replace(/\D/g, '')}
               onChange={(value) => setField('priceCheckIntervalDays', value)}
               suffix={t('settings.listingRetentionSuffix')}
-              style={{ maxWidth: 200 }}
             />
-          </div>
+          </AdminField>
 
-          <div className="settingsShell__subSetting">
-            <label className="settingsShell__subSetting__label" htmlFor="priceCheckLimitPerRun">
-              {t('settings.priceCheckLimit')}
-            </label>
-            <p className="settingsShell__subSetting__help">{t('settings.priceCheckLimitHelp')}</p>
+          <AdminField
+            label={t('settings.priceCheckLimit')}
+            help={t('settings.priceCheckLimitHelp')}
+            htmlFor="priceCheckLimitPerRun"
+          >
             <InputNumber
               id="priceCheckLimitPerRun"
               min={1}
@@ -268,15 +310,14 @@ export default function ExecutionPage() {
               value={form.priceCheckLimitPerRun}
               formatter={(value) => `${value}`.replace(/\D/g, '')}
               onChange={(value) => setField('priceCheckLimitPerRun', value)}
-              style={{ maxWidth: 200 }}
             />
-          </div>
+          </AdminField>
 
-          <div className="settingsShell__subSetting">
-            <label className="settingsShell__subSetting__label" htmlFor="priceChangeThresholdPercent">
-              {t('settings.priceChangeThreshold')}
-            </label>
-            <p className="settingsShell__subSetting__help">{t('settings.priceChangeThresholdHelp')}</p>
+          <AdminField
+            label={t('settings.priceChangeThreshold')}
+            help={t('settings.priceChangeThresholdHelp')}
+            htmlFor="priceChangeThresholdPercent"
+          >
             <InputNumber
               id="priceChangeThresholdPercent"
               min={0}
@@ -286,24 +327,17 @@ export default function ExecutionPage() {
               value={form.priceChangeThresholdPercent}
               onChange={(value) => setField('priceChangeThresholdPercent', value)}
               suffix="%"
-              style={{ maxWidth: 200 }}
             />
-          </div>
+          </AdminField>
         </div>
       </SegmentPart>
 
-      <div className="settingsShell__saveRow">
-        <Button
-          type="primary"
-          theme="solid"
-          onClick={saveExecution}
-          disabled={!executionDirty}
-          loading={savingExecution}
-          icon={<IconSave />}
-        >
-          {t('settings.save')}
-        </Button>
-      </div>
+      <SettingsSaveBar
+        dirty={executionDirty}
+        saving={savingExecution}
+        onSave={saveExecution}
+        onDiscard={discardExecution}
+      />
     </div>
   );
 }

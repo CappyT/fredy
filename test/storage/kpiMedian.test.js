@@ -73,18 +73,16 @@ describe('getListingsKpisForJobIds', () => {
   }
 
   it('returns zeros without job ids', () => {
-    expect(kpis([])).toEqual({
+    const empty = {
+      numberOfListings: 0,
       numberOfActiveListings: 0,
       medianPriceOfListings: 0,
+      medianPriceSampleSize: 0,
       medianPricePerSqm: null,
       currency: 'EUR',
-    });
-    expect(listingsStorage.getListingsKpisForJobIds()).toEqual({
-      numberOfActiveListings: 0,
-      medianPriceOfListings: 0,
-      medianPricePerSqm: null,
-      currency: 'EUR',
-    });
+    };
+    expect(kpis([])).toEqual(empty);
+    expect(listingsStorage.getListingsKpisForJobIds()).toEqual(empty);
   });
 
   it('counts only active listings', () => {
@@ -93,6 +91,21 @@ describe('getListingsKpisForJobIds', () => {
     add(1200, { isActive: 0 });
     add(1300, { isActive: null });
     expect(kpis().numberOfActiveListings).toBe(2);
+  });
+
+  it('counts every listing ever found, inactive ones included, but not deleted ones', () => {
+    // The dashboard prints this as "of N ever found" next to the active count.
+    add(1000);
+    add(1100, { isActive: 0 });
+    add(1200, { deleted: 1 });
+    expect(kpis().numberOfListings).toBe(2);
+  });
+
+  it('reports how many priced listings the median price is taken over', () => {
+    add(1000);
+    add(null);
+    add(1200, { isActive: 0 });
+    expect(kpis().medianPriceSampleSize).toBe(2);
   });
 
   it('takes the middle value for an odd number of prices', () => {
@@ -129,8 +142,10 @@ describe('getListingsKpisForJobIds', () => {
     add(1000);
     add(50_000, { deleted: 1 });
     expect(kpis()).toEqual({
+      numberOfListings: 1,
       numberOfActiveListings: 1,
       medianPriceOfListings: 1000,
+      medianPriceSampleSize: 1,
       medianPricePerSqm: null,
       currency: 'EUR',
     });
@@ -144,8 +159,10 @@ describe('getListingsKpisForJobIds', () => {
     add(prices[3], { jobId: 'job-2' });
     add(prices[4], { jobId: 'job-2' });
     expect(kpis(['job-1', 'job-2'])).toEqual({
+      numberOfListings: 5,
       numberOfActiveListings: 5,
       medianPriceOfListings: referenceMedian(prices),
+      medianPriceSampleSize: 5,
       medianPricePerSqm: null,
       currency: 'EUR',
     });
@@ -154,8 +171,10 @@ describe('getListingsKpisForJobIds', () => {
   it('reports a zero median when no listing has a price', () => {
     add(null);
     expect(kpis()).toEqual({
+      numberOfListings: 1,
       numberOfActiveListings: 1,
       medianPriceOfListings: 0,
+      medianPriceSampleSize: 0,
       medianPricePerSqm: null,
       currency: 'EUR',
     });

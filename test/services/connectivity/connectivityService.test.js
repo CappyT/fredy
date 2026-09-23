@@ -153,7 +153,7 @@ describe('services/connectivity/connectivityService', () => {
   it('has no answer for a country no register covers', async () => {
     const service = await loadService();
 
-    expect(await service.getConnectivity(48.21, 16.37, ['at'])).toBeNull();
+    expect(await service.getConnectivity(38.72, -9.14, ['pt'])).toBeNull();
     expect(state.germanCalls).toEqual([]);
     expect(state.swissCalls).toEqual([]);
   });
@@ -254,6 +254,8 @@ describe('services/connectivity/connectivityService', () => {
       'ch-bakom': true,
       'it-navigabene': true,
       'it-fibermap': true,
+      'at-rtr': true,
+      'es-setid': true,
     });
   });
 

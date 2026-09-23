@@ -254,4 +254,12 @@ export const getKnownListingsByLinkForJob = (jobId, links) => {
     created_at,
   }));
 };
+/**
+ * The real one writes what the scam detector finds into each stored row. There is no row behind
+ * these mocks, and nothing the pipeline does afterwards reads the signals, so like the benchmark it
+ * only has to exist. The detector has tests of its own, against a real database.
+ */
+export const applyScamSignals = (listings) => {
+  // noop
+};
 /* eslint-enable no-unused-vars */
