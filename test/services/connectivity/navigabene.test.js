@@ -114,6 +114,19 @@ describe('services/connectivity/navigabeneClient', () => {
       });
     });
 
+    it('keeps the first civic number of a range', () => {
+      expect(parseAddress('Via Statuto 5/A fino i, Levate')).toEqual({
+        street: 'Via Statuto',
+        civic: '5/A',
+        town: 'Levate',
+      });
+      expect(parseAddress('Via Statuto, 5 fino 9, Levate')).toEqual({
+        street: 'Via Statuto',
+        civic: '5',
+        town: 'Levate',
+      });
+    });
+
     it('reads a street whose name a particella also starts, and one that ends in a number', () => {
       // "Belvedere" is on the checker's own list of street prefixes, and a house number that rides
       // on the street is a civic number and not part of the name - a street called "Belvedere 10"
