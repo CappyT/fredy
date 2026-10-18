@@ -6,10 +6,12 @@
 import { Link } from 'react-router';
 import { IconBriefcase, IconMapPin, IconPaperclip } from '@douyinfe/semi-icons';
 import no_image from '../../../assets/no_image.png';
+import { listingPictureSrc } from '../../../services/listings/listingPictures.js';
 import { formatPrice } from '../../../services/price/currency.js';
 import * as timeService from '../../../services/time/timeService.js';
 import StatusControl from '../../listings/StatusControl.jsx';
 import AffordabilityChip from '../../listings/AffordabilityChip.jsx';
+import { rentIncludesCharges } from '../../../services/finance/rentBasis.js';
 import PriceChangeBadge from '../../listings/PriceChangeBadge.jsx';
 import PricePerSqmBadge from '../../listings/PricePerSqmBadge.jsx';
 import ScamBadge from '../../listings/ScamBadge.jsx';
@@ -57,7 +59,7 @@ const ListingsGrid = ({
             {/* Decorative: the title says the same thing one line below, and alt={item.title} made
                 a screen reader read every headline twice. */}
             <img
-              src={item.image_url ? `/api/listings/${item.id}/image` : no_image}
+              src={listingPictureSrc(item) ?? no_image}
               alt=""
               onError={(e) => {
                 e.target.src = no_image;
@@ -87,7 +89,11 @@ const ListingsGrid = ({
                 {/* Next to the price rather than on a line of its own: it is the same figure said
                     a second way, and reading the two together is the whole point. */}
                 <PricePerSqmBadge listing={item} />
-                <AffordabilityChip verdict={item.affordabilityVerdict} dealType={item.dealType} />
+                <AffordabilityChip
+                  verdict={item.affordabilityVerdict}
+                  dealType={item.dealType}
+                  chargesIncluded={rentIncludesCharges(item)}
+                />
                 <PriceChangeBadge
                   price={item.price}
                   previousPrice={item.previous_price}

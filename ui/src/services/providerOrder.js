@@ -23,7 +23,7 @@
  *
  * @type {string[]}
  */
-export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch', 'es', 'pt'];
+export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch', 'es', 'fr', 'pt'];
 
 /**
  * Providers by size within their market, largest first.
@@ -72,6 +72,10 @@ export const PROVIDER_SIZE_ORDER = [
   'tecnocasa',
   'tecnorete',
   'subito',
+  // France
+  'leboncoin',
+  'seloger',
+  'bienici',
 ];
 
 /** Sorts anything unranked or unknown behind everything ranked or known. */

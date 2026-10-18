@@ -168,6 +168,7 @@ Additions to [AGENTS.md](./AGENTS.md), which applies here unchanged.
 | Service | Location | Notes |
 |---|---|---|
 | Currency | `lib/utils/currency.js`, `ui/src/services/price/currency.js` | Country to currency table, formatting, and the euro-only checks. The two tables must match, `test/ui/currencyInSync.test.js` enforces it. The pipeline stores `listings.currency` (migration `900.listing-currency.js`); `lib/services/listings/currencyBackfill.js` fills older rows at startup. SQL reads a NULL currency as `EUR`. The listing detail formats its prices in `ui/src/views/listings/listingFacts.js` and passes the currency to the price history in `components/ListingKeyFacts.jsx`. `formatPricePerSqm` takes the currency as its last argument, after upstream's `withUnit` |
+| Listing pictures | `lib/services/listings/lapsedPictureUrl.js` | Upstream keeps the first picture in `listing_media` (`previewCaptureQueue.js`). The fork adds one hook there: idealista signs its picture urls for about a day, so a failed download of an idealista listing asks the advert for a fresh url, stores it on the row and tries once more. Migration `901.listing-images-to-media.js` moved the pictures the fork used to keep in `listing_images` into `listing_media` |
 
 ### Bot protection
 

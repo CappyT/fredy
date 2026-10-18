@@ -59,12 +59,12 @@ describe('the pipeline labels new listings with their currency', () => {
   it('tags a Swiss provider listing as francs and notifies it in francs', async () => {
     const listing = await run('flatfox');
     expect(listing.currency).toBe('CHF');
-    expect(mockNotification.get().payload?.[0]?.price).toBe('CHF 2710');
+    expect(mockNotification.get().payload?.[0]?.price).toBe("CHF 2'710");
   });
 
   it('tags a listing of any other provider as euros', async () => {
     const listing = await run('immoscout');
     expect(listing.currency).toBe('EUR');
-    expect(mockNotification.get().payload?.[0]?.price).toBe('2710 €');
+    expect(mockNotification.get().payload?.[0]?.price).toBe('2.710 €');
   });
 });

@@ -6,10 +6,12 @@
 import { Link } from 'react-router';
 import { IconMapPin } from '@douyinfe/semi-icons';
 import no_image from '../../assets/no_image.png';
+import { listingPictureSrc } from '../../services/listings/listingPictures.js';
 import { formatPrice } from '../../services/price/currency.js';
 import * as timeService from '../../services/time/timeService.js';
 import StatusControl from '../listings/StatusControl.jsx';
 import AffordabilityChip from '../listings/AffordabilityChip.jsx';
+import { rentIncludesCharges } from '../../services/finance/rentBasis.js';
 import PriceChangeBadge from '../listings/PriceChangeBadge.jsx';
 import PricePerSqmBadge from '../listings/PricePerSqmBadge.jsx';
 import ScamBadge from '../listings/ScamBadge.jsx';
@@ -68,7 +70,7 @@ const ListingsTable = ({
         >
           <div className="listingsTable__row__thumb">
             <img
-              src={item.image_url ? `/api/listings/${item.id}/image` : no_image}
+              src={listingPictureSrc(item) ?? no_image}
               alt=""
               onError={(e) => {
                 e.target.src = no_image;
@@ -102,7 +104,11 @@ const ListingsTable = ({
                 <span className="listingsTable__row__amount">{formatPrice(item.price, locale, item.currency)}</span>
                 <span className="listingsTable__row__perSqm">
                   <PricePerSqmBadge listing={item} />
-                  <AffordabilityChip verdict={item.affordabilityVerdict} dealType={item.dealType} />
+                  <AffordabilityChip
+                    verdict={item.affordabilityVerdict}
+                    dealType={item.dealType}
+                    chargesIncluded={rentIncludesCharges(item)}
+                  />
                   <PriceChangeBadge
                     price={item.price}
                     previousPrice={item.previous_price}

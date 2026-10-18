@@ -72,13 +72,18 @@ describe('lib/utils/currency', () => {
   });
 
   describe('formatAmount', () => {
-    it('keeps the shape euro notifications have always had', () => {
-      expect(formatAmount(1200, 'EUR')).toBe('1200 €');
-      expect(formatAmount(1200, null)).toBe('1200 €');
+    it('groups euros the way upstream writes them', () => {
+      expect(formatAmount(1200, 'EUR')).toBe('1.200 €');
+      expect(formatAmount(1200000, null)).toBe('1.200.000 €');
     });
 
     it('leads with the code for any other currency, the way a Swiss advert writes it', () => {
-      expect(formatAmount(2710, 'CHF')).toBe('CHF 2710');
+      expect(formatAmount(2710, 'CHF')).toBe("CHF 2'710");
+      expect(formatAmount(2710, 'USD')).toBe('USD 2.710');
+    });
+
+    it('writes an amount that is not a number as it came', () => {
+      expect(formatAmount('on request', 'EUR')).toBe('on request €');
     });
 
     it('has nothing to say without an amount', () => {

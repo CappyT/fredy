@@ -85,8 +85,8 @@ describe('pipeline - an advert the job knows by link is a price change, not a ne
     expect(notifications[0].priceChanges).toHaveLength(1);
     // The adapter receives the change already formatted for the job owner's language.
     expect(notifications[0].priceChanges[0]).toMatchObject({
-      oldPrice: '249000 €',
-      newPrice: '239000 €',
+      oldPrice: '249.000 €',
+      newPrice: '239.000 €',
       direction: 'down',
     });
   });

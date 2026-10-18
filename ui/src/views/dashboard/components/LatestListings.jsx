@@ -5,6 +5,7 @@
 
 import { formatPrice } from '../../../services/price/currency.js';
 import { formatPricePerSqm } from '../../../services/listings/marketBenchmark.js';
+import { listingPictureSrc } from '../../../services/listings/listingPictures.js';
 import { formatDecimal } from '../../../services/number/numberService.js';
 import { relativeTime } from '../../../services/time/relativeTime.js';
 
@@ -92,7 +93,7 @@ export default function LatestListings({ listings = [], locale = 'de-DE', t, onO
                 {THUMB_PLACEHOLDER}
                 {row.image_url && (
                   <img
-                    src={`/api/listings/${row.id}/image`}
+                    src={listingPictureSrc(row)}
                     alt=""
                     loading="lazy"
                     onError={(event) => {

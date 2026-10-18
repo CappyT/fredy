@@ -29,7 +29,7 @@ import { initPriceTrackingCron } from './lib/services/crons/price-tracking-cron.
 import { initTravelTimeCron } from './lib/services/crons/travel-time-cron.js';
 import { initConnectivityCron } from './lib/services/crons/connectivity-cron.js';
 import { initListingDetailCron, runDetailBackfill } from './lib/services/crons/listing-detail-cron.js';
-import { runImageBackfill } from './lib/services/listings/imageBackfillService.js';
+import { initTourCleanupCron } from './lib/services/crons/tour-cleanup-cron.js';
 
 // Ensure the CloakBrowser stealth Chromium binary is present and complete before
 // jobs run.  ensureValidBinary() also detects and auto-heals partial extractions
@@ -131,6 +131,9 @@ await initDemoCleanupCron();
 await initSessionCleanupCron();
 await initMcpOAuthCleanupCron();
 await initListingRetentionCron();
+// Runs on start as well: an onboarding tour abandoned while the process was down left example
+// listings in somebody's account, and nothing but this sweep will ever take them away.
+initTourCleanupCron();
 // Schedules only. Unlike the others this one is never run on start: it renders a browser page per
 // listing, and a restart is the worst moment to begin doing that.
 initPriceTrackingCron();
@@ -143,21 +146,14 @@ initTravelTimeCron();
 initConnectivityCron();
 // Schedule only; the pass that repairs an upgrade's back catalogue is fired below.
 initListingDetailCron();
-// Fired, not awaited, and one sweep after the other rather than all at once. Both walk the same
-// back catalogue against the same handful of portals, one polite request at a time, which on an
-// instance with many rows takes minutes - starting them together simply doubles the traffic Fredy
-// opens with, at the hosts it is pacing itself for. The image sweep has no schedule of its own:
-// the scrape keeps every photograph as the listing is stored, so its work list empties for good
-// once it has caught up.
-// The `catch` is not decoration. Both sweeps write to SQLite per row, and a single SQLITE_BUSY
-// escaping this chain is an unhandled rejection - which, on Node, takes the whole process down
-// seconds after it finished starting. A startup sweep that fails is a back catalogue repaired
-// tomorrow night instead of tonight; it is never a reason not to be running.
-void (async () => {
-  await runDetailBackfill();
-  await runImageBackfill();
-})().catch((error) => {
-  logger.error('The startup backfill sweeps did not finish.', error);
+// Fired, not awaited. The sweep walks the back catalogue against the same handful of portals, one
+// polite request at a time, which on an instance with many rows takes minutes.
+// The `catch` is not decoration. The sweep writes to SQLite per row, and a single SQLITE_BUSY
+// escaping it is an unhandled rejection - which, on Node, takes the whole process down seconds
+// after it finished starting. A startup sweep that fails is a back catalogue repaired tomorrow
+// night instead of tonight; it is never a reason not to be running.
+runDetailBackfill().catch((error) => {
+  logger.error('The startup backfill sweep did not finish.', error);
 });
 
 logger.info(`Started Fredy successfully. Ui can be accessed via http://localhost:${settings.port}`);

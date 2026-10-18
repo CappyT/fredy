@@ -11,7 +11,6 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 vi.mock('../../lib/services/storage/listingsStorage.js', () => ({
   queryListings: vi.fn(() => ({ totalNumber: 0, page: 1, result: [] })),
   getListingById: vi.fn(() => null),
-  getListingImage: vi.fn(() => null),
 }));
 vi.mock('../../lib/services/storage/settingsStorage.js', () => ({
   getUserSettings: vi.fn(() => ({})),
@@ -138,7 +137,7 @@ describe('finance for listings priced in francs', () => {
 describe('MCP listings in their currency', () => {
   it('prints the currency next to the price in get_listing', () => {
     const md = normalizeGetListing(listing('chf', 2710, { dealType: 'rent', currency: 'CHF' })).content[0].text;
-    expect(md).toContain('- **Price:** CHF 2710 (monthly rent)');
+    expect(md).toContain("- **Price:** CHF 2'710 (monthly rent)");
   });
 
   it('prints the currency in every price cell of list_listings', () => {
@@ -147,7 +146,7 @@ describe('MCP listings in their currency', () => {
       result: [listing('chf', 2710, { currency: 'CHF' }), listing('eur', 900)],
     };
     const md = normalizeListListings(rows, { page: 1, pageSize: 50 }).content[0].text;
-    expect(md).toContain('| CHF 2710 |');
+    expect(md).toContain("| CHF 2'710 |");
     expect(md).toContain('| 900 € |');
   });
 });

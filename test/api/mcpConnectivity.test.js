@@ -10,7 +10,6 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 vi.mock('../../lib/services/storage/listingsStorage.js', () => ({
   queryListings: vi.fn(() => ({ totalNumber: 0, page: 1, result: [] })),
   getListingById: vi.fn(),
-  getListingImage: vi.fn(() => null),
   setListingNotes: vi.fn(() => 1),
 }));
 vi.mock('../../lib/services/storage/watchListStorage.js', () => ({

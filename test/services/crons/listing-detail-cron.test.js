@@ -311,7 +311,7 @@ describe('services/crons/listing-detail-cron', () => {
     expect(state.detailCalls).toHaveLength(2);
   });
 
-  it('only schedules - the startup pass is sequenced against the image sweep by index.js', async () => {
+  it('only schedules - the startup pass is fired by index.js', async () => {
     const cron = await loadCron();
 
     cron.initListingDetailCron();
@@ -339,12 +339,11 @@ describe('services/crons/listing-detail-cron - the declarations and the startup 
     expect(idealistaConfig.detailFields).toEqual(['publishedAt']);
   });
 
-  it('never lets the startup sweeps reject, because an unhandled one ends the process', async () => {
+  it('never lets the startup sweep reject, because an unhandled one ends the process', async () => {
     const source = await readFile(new URL('../../../index.js', import.meta.url), 'utf-8');
-    const chain = source.slice(source.indexOf('await runDetailBackfill()'));
 
-    // Every row of both sweeps writes to SQLite, so one SQLITE_BUSY used to escape as an unhandled
+    // Every row of the sweep writes to SQLite, so one SQLITE_BUSY used to escape as an unhandled
     // rejection seconds after Fredy finished starting - and take it down with it.
-    expect(chain).toMatch(/\}\)\(\)\s*\.catch\(/);
+    expect(source).toMatch(/runDetailBackfill\(\)\.catch\(/);
   });
 });

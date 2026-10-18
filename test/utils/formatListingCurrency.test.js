@@ -14,12 +14,12 @@ describe('notification prices in the listing currency', () => {
   const listing = { id: 'l1', title: 'Wohnung', price: 2710, size: 70, rooms: 3 };
 
   it('labels a franc listing in francs', () => {
-    expect(formatListing({ ...listing, currency: 'CHF' }, 'en').price).toBe('CHF 2710');
+    expect(formatListing({ ...listing, currency: 'CHF' }, 'en').price).toBe("CHF 2'710");
   });
 
   it('leaves a euro listing, and one with no currency, exactly as before', () => {
-    expect(formatListing({ ...listing, currency: 'EUR' }, 'en').price).toBe('2710 €');
-    expect(formatListing(listing, 'en').price).toBe('2710 €');
+    expect(formatListing({ ...listing, currency: 'EUR' }, 'en').price).toBe('2.710 €');
+    expect(formatListing(listing, 'en').price).toBe('2.710 €');
   });
 
   it('writes both halves of a price change in the listing currency', () => {
@@ -31,15 +31,15 @@ describe('notification prices in the listing currency', () => {
       direction: 'down',
     };
     const formatted = formatPriceChange(change, 'en');
-    expect(formatted.oldPrice).toBe('CHF 2900');
-    expect(formatted.newPrice).toBe('CHF 2710');
-    expect(formatted.price).toBe('CHF 2710');
+    expect(formatted.oldPrice).toBe("CHF 2'900");
+    expect(formatted.newPrice).toBe("CHF 2'710");
+    expect(formatted.price).toBe("CHF 2'710");
   });
 
   it('keeps euro price changes unchanged', () => {
     const change = { listing, oldPrice: 1200, newPrice: 1100, changePercent: -8.3, direction: 'down' };
     const formatted = formatPriceChange(change, 'en');
-    expect(formatted.oldPrice).toBe('1200 €');
-    expect(formatted.newPrice).toBe('1100 €');
+    expect(formatted.oldPrice).toBe('1.200 €');
+    expect(formatted.newPrice).toBe('1.100 €');
   });
 });

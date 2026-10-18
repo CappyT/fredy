@@ -41,7 +41,6 @@ export const resetListings = () => {
   recordedPriceObservations.length = 0;
   appliedPriceChanges.length = 0;
   renamedHashes.length = 0;
-  storedImages.length = 0;
   updatedImages.length = 0;
 };
 
@@ -121,22 +120,6 @@ export const deleteListingsByHash = (hashes) => {
 export const applyMarketBenchmark = (jobId, listings) => {
   // noop
 };
-
-/**
- * Every photograph the pipeline kept, in order.
- *
- * The image step runs after the store, keyed on the row id `storeListings` propagated onto each
- * listing; a test that cares whether the scrape downloaded the photograph asserts on these.
- * @type {{listingId: string, mimeType: string, size: number}[]}
- */
-export const storedImages = [];
-export const storeListingImage = (listingId, mimeType, bytes) => {
-  storedImages.push({ listingId, mimeType, size: bytes?.length ?? 0 });
-};
-
-export const getListingImage = () => null;
-
-export const getListingsMissingStoredImage = () => [];
 
 /**
  * The nightly sweeps' work lists and their attempt marker.
