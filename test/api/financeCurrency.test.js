@@ -137,7 +137,7 @@ describe('finance for listings priced in francs', () => {
 describe('MCP listings in their currency', () => {
   it('prints the currency next to the price in get_listing', () => {
     const md = normalizeGetListing(listing('chf', 2710, { dealType: 'rent', currency: 'CHF' })).content[0].text;
-    expect(md).toContain("- **Price:** CHF 2'710 (monthly rent)");
+    expect(md).toContain('- **Price:** 2.710 CHF (monthly rent)');
   });
 
   it('prints the currency in every price cell of list_listings', () => {
@@ -146,7 +146,7 @@ describe('MCP listings in their currency', () => {
       result: [listing('chf', 2710, { currency: 'CHF' }), listing('eur', 900)],
     };
     const md = normalizeListListings(rows, { page: 1, pageSize: 50 }).content[0].text;
-    expect(md).toContain("| CHF 2'710 |");
+    expect(md).toContain('| 2.710 CHF |');
     expect(md).toContain('| 900 € |');
   });
 });

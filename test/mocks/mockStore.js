@@ -28,6 +28,13 @@ export const getKnownListingHashesForJob = (jobKey) => {
     .map((listing) => listing?.id)
     .filter((id) => id != null);
 };
+// Upstream's tests read what one provider stored through the per-provider name the fork's job-wide
+// lookup replaced; like upstream's mock, it hands back the stored listings.
+export const getKnownListingHashesForJobAndProvider = (jobKey, providerId) => db[`${jobKey}|${providerId}`] || [];
+/** Nothing here is stored under a link, so no fixture run is ever mistaken for a price change. */
+export const getListingsByLinkForJobAndProvider = () => [];
+export const setListingHash = () => undefined;
+export const markListingsPriceChecked = () => undefined;
 
 /**
  * Forget every stored listing.

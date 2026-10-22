@@ -43,9 +43,9 @@ On top of the listing itself, Fredy answers the three questions a portal will no
   <a href="https://trendshift.io/repositories/43464?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-43464" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/43464/daily?language=JavaScript" alt="orangecoding%2Ffredy | Trendshift" width="250" height="55"/></a>
 </p>
 
-| Fredy Maps View                                  | Dashboard                                               | Found Listings                                                              |
-|--------------------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| ![Screenshot showing Fredy](doc/screenshot1.png) | ![Screenshot showing job configuration in Fredy](doc/screenshot3.png) | ![Screenshot showing found listings in Fredy](doc/screenshot2.png) |
+| Fredy Maps View                                  | Dashboard                                               | Listings Overview                                                             | Detail View                                                             |
+|--------------------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| ![Screenshot showing Fredy](doc/screenshot1.png) | ![Screenshot showing job configuration in Fredy](doc/screenshot3.png) | ![Screenshot showing found listings in Fredy](doc/screenshot2.png) | ![Screenshot showing listing details in Fredy](doc/screenshot4.png) |
 
 > This fork adds Italian providers and more: see [ITALY.md](./ITALY.md).
 ------------------------------------------------------------------------
@@ -288,6 +288,12 @@ Fredy is backed by the **JetBrains Open Source Support Program**.
   <img alt="JetBrains Open Source Support Program" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" width="200">
 </picture>
 </a>
+
+### Much love goes out to...   
+
+I cannot thank the following people enough for generously donating through one of the options above. You guys keep me rollin'!   
+
+Markus Schneider,  @RaminGe, Thomas Müller, Stefan Weber, Andreas Fischer, Michael Wagner, Daniel Becker, Christian Hoffmann, Sebastian Schäfer, Martin Koch, Alexander Bauer, Jan Richter, Tobias Klein, Florian Wolf, Patrick Schröder, Dennis Neumann, Benjamin Schwarz, Matthias Zimmermann, Oliver Braun, Simon Krüger, Philipp Hartmann, Lukas Lange, Felix Werner, Nico Schmitz, Johannes Krause
 
 ------------------------------------------------------------------------
 

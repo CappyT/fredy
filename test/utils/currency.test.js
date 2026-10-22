@@ -77,9 +77,9 @@ describe('lib/utils/currency', () => {
       expect(formatAmount(1200000, null)).toBe('1.200.000 €');
     });
 
-    it('leads with the code for any other currency, the way a Swiss advert writes it', () => {
-      expect(formatAmount(2710, 'CHF')).toBe("CHF 2'710");
-      expect(formatAmount(2710, 'USD')).toBe('USD 2.710');
+    it('names any other currency by its code, as upstream writes francs', () => {
+      expect(formatAmount(2710, 'CHF')).toBe('2.710 CHF');
+      expect(formatAmount(2710, 'USD')).toBe('2.710 USD');
     });
 
     it('writes an amount that is not a number as it came', () => {
