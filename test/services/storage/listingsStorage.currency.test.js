@@ -72,6 +72,7 @@ describe('listing currency in the listings table', () => {
         market_sample_size INTEGER,
         market_radius_km REAL,
         last_price_check_at INTEGER,
+        added_manually INTEGER NOT NULL DEFAULT 0,
         UNIQUE (job_id, hash)
       );
       CREATE TABLE watch_list (id TEXT PRIMARY KEY, listing_id TEXT, user_id TEXT);
