@@ -324,6 +324,23 @@ export const useFredyState = create(
               return { jobsData: { ...state.jobsData, jobs: Object.freeze(updated), result: Object.freeze(result) } };
             });
           },
+          async addJobBlacklistWord(jobId, word) {
+            const response = await xhrPost(`/api/jobs/${jobId}/blacklist`, { word });
+            if (response.status === 200) {
+              set((state) => {
+                const updateList = (list) =>
+                  (list || []).map((j) => (j.id === jobId ? { ...j, blacklist: response.json.blacklist } : j));
+                return {
+                  jobsData: {
+                    ...state.jobsData,
+                    jobs: Object.freeze(updateList(state.jobsData.jobs)),
+                    result: Object.freeze(updateList(state.jobsData.result)),
+                  },
+                };
+              });
+            }
+            return response.json;
+          },
         },
         user: {
           async getUsers() {
@@ -385,6 +402,18 @@ export const useFredyState = create(
               }));
             } catch (Exception) {
               console.error('Error while trying to get resource for api/version. Error:', Exception);
+            }
+          },
+        },
+        news: {
+          async getReleases() {
+            try {
+              const response = await xhrGet('/api/version/releases');
+              set((state) => ({
+                news: { ...state.news, releases: Array.isArray(response.json) ? response.json : [] },
+              }));
+            } catch (Exception) {
+              console.error('Error while trying to get resource for api/version/releases. Error:', Exception);
             }
           },
         },
@@ -616,6 +645,26 @@ export const useFredyState = create(
               }));
             } catch (Exception) {
               console.error('Error while trying to update the last seen news version. Error:', Exception);
+              throw Exception;
+            }
+          },
+          /**
+           * Remember that the toast announcing this available version has been seen.
+           *
+           * @param {string} version
+           * @returns {Promise<void>}
+           */
+          async setUpdateNoticeSeenVersion(version) {
+            try {
+              await xhrPost('/api/user/settings/update-notice-seen-version', { update_notice_seen_version: version });
+              set((state) => ({
+                userSettings: {
+                  ...state.userSettings,
+                  settings: { ...state.userSettings.settings, update_notice_seen_version: version },
+                },
+              }));
+            } catch (Exception) {
+              console.error('Error while trying to remember the update notice. Error:', Exception);
               throw Exception;
             }
           },
@@ -874,6 +923,7 @@ export const useFredyState = create(
         userSettings: { settings: {}, loaded: false },
         demoMode: { demoMode: false },
         versionUpdate: {},
+        news: { releases: [] },
         tracking: { pois: {} },
         provider: [],
         jobsData: {
@@ -895,6 +945,7 @@ export const useFredyState = create(
         generalSettings: { ...effects.generalSettings },
         demoMode: { ...effects.demoMode },
         versionUpdate: { ...effects.versionUpdate },
+        news: { ...effects.news },
         tracking: { ...effects.tracking },
         listingsData: { ...effects.listingsData },
         provider: { ...effects.provider },
