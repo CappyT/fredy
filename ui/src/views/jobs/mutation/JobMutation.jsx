@@ -135,6 +135,7 @@ function JobMutator({ source }) {
   const isEdit = source.mode === 'edit';
 
   const defaultBlacklist = sourceJob?.blacklist || [];
+  const defaultExcludedLocations = sourceJob?.excludedLocations ?? [];
   const defaultName = source.mode === 'clone' ? `Copy of - ${sourceJob?.name}` : sourceJob?.name || null;
   const defaultProviderData = sourceJob?.provider || [];
   // The job stores references, and a read hands back the hydrated adapter shape carrying the
@@ -159,6 +160,7 @@ function JobMutator({ source }) {
   const [providerData, setProviderData] = useState(defaultProviderData);
   const [name, setName] = useState(defaultName);
   const [blacklist, setBlacklist] = useState(defaultBlacklist);
+  const [excludedLocations, setExcludedLocations] = useState(defaultExcludedLocations);
   const [selectedChannelIds, setSelectedChannelIds] = useState(sourceChannelIds);
   const [shareWithUsers, setShareWithUsers] = useState(defaultShareWithUsers);
   const [enabled, setEnabled] = useState(defaultEnabled);
@@ -240,6 +242,7 @@ function JobMutator({ source }) {
     if (draft.providerData !== undefined) setProviderData(draft.providerData);
     if (draft.selectedChannelIds !== undefined) setSelectedChannelIds(draft.selectedChannelIds);
     if (draft.blacklist !== undefined) setBlacklist(draft.blacklist);
+    if (draft.excludedLocations !== undefined) setExcludedLocations(draft.excludedLocations);
     if (draft.shareWithUsers !== undefined) setShareWithUsers(draft.shareWithUsers);
     if (draft.enabled !== undefined) setEnabled(draft.enabled);
     if (draft.spatialFilter !== undefined) setSpatialFilter(draft.spatialFilter);
@@ -258,6 +261,7 @@ function JobMutator({ source }) {
       providerData,
       selectedChannelIds,
       blacklist,
+      excludedLocations,
       shareWithUsers,
       enabled,
       spatialFilter,
@@ -279,6 +283,7 @@ function JobMutator({ source }) {
     providerData,
     selectedChannelIds,
     blacklist,
+    excludedLocations,
     shareWithUsers,
     enabled,
     spatialFilter,
@@ -318,6 +323,7 @@ function JobMutator({ source }) {
     providerData: defaultProviderData,
     selectedChannelIds: sourceChannelIds,
     blacklist: defaultBlacklist,
+    excludedLocations: defaultExcludedLocations,
     shareWithUsers: defaultShareWithUsers,
     enabled: defaultEnabled,
     spatialFilter: defaultSpatialFilter,
@@ -333,6 +339,7 @@ function JobMutator({ source }) {
     setProviderData(baseline.providerData);
     setSelectedChannelIds(baseline.selectedChannelIds);
     setBlacklist(baseline.blacklist);
+    setExcludedLocations(baseline.excludedLocations);
     setShareWithUsers(baseline.shareWithUsers);
     setEnabled(baseline.enabled);
     setSpatialFilter(baseline.spatialFilter);
@@ -348,6 +355,7 @@ function JobMutator({ source }) {
     providerData,
     selectedChannelIds,
     blacklist,
+    excludedLocations,
     shareWithUsers,
     enabled,
     spatialFilter,
@@ -405,7 +413,7 @@ function JobMutator({ source }) {
 
   // What the collapsed section holds, so it does not have to be opened to find out.
   const refinementSummary = summariseJobRefinements(
-    { blacklist, specFilter, spatialFilter, commuteFilter },
+    { blacklist, excludedLocations, specFilter, spatialFilter, commuteFilter },
     { t, formatPrice: (value) => formatPriceInCurrencies(value, locale, priceCurrencies) },
   );
 
@@ -427,6 +435,7 @@ function JobMutator({ source }) {
         shareWithUsers,
         name,
         blacklist,
+        excludedLocations,
         spatialFilter,
         specFilter,
         commuteFilter,
@@ -793,6 +802,19 @@ function JobMutator({ source }) {
                 value={blacklist || []}
                 placeholder={t('jobs.mutation.blacklistPlaceholder')}
                 onChange={(v) => setBlacklist([...v])}
+              />
+            </SegmentPart>
+
+            <SegmentPart
+              name={t('jobs.mutation.excludedLocations')}
+              helpText={t('jobs.mutation.excludedLocationsHelp')}
+              helpMode="popover"
+            >
+              <TagInput
+                aria-label={t('jobs.mutation.excludedLocations')}
+                value={excludedLocations}
+                placeholder={t('jobs.mutation.excludedLocationsPlaceholder')}
+                onChange={(value) => setExcludedLocations([...value])}
               />
             </SegmentPart>
 
