@@ -32,7 +32,7 @@ describe('scam signals and overrides in the listings table', () => {
         provider TEXT,
         job_id TEXT,
         price REAL,
-        currency TEXT,
+        currency TEXT NOT NULL DEFAULT 'EUR',
         charges_included INTEGER,
         charges REAL,
         size REAL,
@@ -155,6 +155,7 @@ describe('scam signals and overrides in the listings table', () => {
       {
         id: 'portal-hash',
         price: 500,
+        currency: 'EUR',
         size: 100,
         rooms: 3,
         title: 'Wohnung',

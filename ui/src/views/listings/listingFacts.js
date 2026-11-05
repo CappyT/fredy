@@ -3,7 +3,7 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import { DEFAULT_CURRENCY, formatPrice } from '../../services/price/currency.js';
+import { formatListingPrice } from '../../services/price/priceService.js';
 import { formatDecimal } from '../../services/number/numberService.js';
 import { formatPricePerSqm, readMarketBenchmark } from '../../services/listings/marketBenchmark.js';
 import { rentIncludesCharges, verdictExplanation } from '../../services/finance/rentBasis.js';
@@ -68,7 +68,7 @@ export function buildObjectFacts(listing, ctx) {
   const isRental = row.dealType === 'rent';
 
   const price = {
-    text: row.price != null ? formatPrice(row.price, locale, row.currency) : na,
+    text: row.price != null ? formatListingPrice(row.price, locale, row.currency) : na,
     // Split so the page can set the digits large and leave the currency symbol at reading size.
     // A 40px euro sign is louder than the sum it belongs to, and every listing has the same one.
     ...splitPrice(row.price, locale, na, row.currency),
@@ -97,7 +97,7 @@ export function buildObjectFacts(listing, ctx) {
       label: t('listing.detail.fieldPricePerSqm'),
       // Without the unit: the tile's own label already says "per m²", and repeating it there is
       // what pushed the figure past the width of a third of the rail.
-      value: benchmark != null ? formatPricePerSqm(benchmark.pricePerSqm, locale, false, benchmark.currency) : null,
+      value: benchmark != null ? formatPricePerSqm(benchmark.pricePerSqm, locale, false, row.currency) : null,
       // Two different explanations. With a benchmark the interesting part is the comparison and
       // where it came from; without one it is why no comparison is shown, which is a question the
       // page would otherwise leave the reader to guess at.
@@ -133,16 +133,16 @@ function priceReferenceKey(row, isRental) {
  * @param {number|null|undefined} value
  * @param {string} locale
  * @param {string} fallback - Shown when there is no price at all.
- * @param {string|null} [currency] - The listing's currency; missing means euros.
+ * @param {string} [currency='EUR'] ISO 4217 code.
  * @returns {{amount: string, currency: string|null}}
  */
-function splitPrice(value, locale, fallback, currency = null) {
+function splitPrice(value, locale, fallback, currency = 'EUR') {
   if (value == null) return { amount: fallback, currency: null };
 
   try {
     const parts = new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: currency ?? DEFAULT_CURRENCY,
+      currency,
       maximumFractionDigits: 0,
     }).formatToParts(value);
 
@@ -155,7 +155,7 @@ function splitPrice(value, locale, fallback, currency = null) {
     };
   } catch {
     // An unknown locale is not worth an empty price; the joined form is still readable.
-    return { amount: formatPrice(value, locale, currency), currency: null };
+    return { amount: formatListingPrice(value, locale, currency), currency: null };
   }
 }
 

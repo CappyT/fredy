@@ -45,9 +45,7 @@ export default function PricePerSqmBadge({ listing, withTooltip = true }) {
 
   const badge = (
     <span className="pricePerSqmBadge">
-      <span className="pricePerSqmBadge__value">
-        {formatPricePerSqm(pricePerSqm, locale, true, benchmark.currency)}
-      </span>
+      <span className="pricePerSqmBadge__value">{formatPricePerSqm(pricePerSqm, locale, true, listing.currency)}</span>
       {verdict != null && (
         <span className={`pricePerSqmBadge__deviation pricePerSqmBadge__deviation--${verdict}`}>
           {formatDeviation(percent, locale)}

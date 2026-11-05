@@ -6,8 +6,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 
-import { CHART_COLORS, registerFinanceCharts } from '../../../components/cards/chartTheme.js';
-import { formatWholePrice } from '../../../services/price/currency.js';
+import { CHART_COLORS, formatEuro, registerFinanceCharts } from '../../../components/cards/chartTheme.js';
 
 registerFinanceCharts();
 
@@ -28,11 +27,11 @@ registerFinanceCharts();
  * @param {Object} props
  * @param {Array<{price: number, observed_at: number}>} props.data Oldest first.
  * @param {string} [props.locale]
- * @param {string|null} [props.currency] The listing's currency; missing means euros.
  * @param {number} [props.height=120]
+ * @param {string} [props.currency='EUR'] ISO 4217 code of the prices.
  * @returns {React.ReactElement|null}
  */
-export default function PriceHistoryChart({ data = [], locale = 'de-DE', height = 120, currency = null }) {
+export default function PriceHistoryChart({ data = [], locale = 'de-DE', height = 120, currency = 'EUR' }) {
   const rows = React.useMemo(() => (Array.isArray(data) ? data : []), [data]);
 
   const chartData = React.useMemo(
@@ -73,7 +72,7 @@ export default function PriceHistoryChart({ data = [], locale = 'de-DE', height 
             color: CHART_COLORS.MUTED,
             font: { family: CHART_COLORS.FONT_UI, size: 12 },
             maxTicksLimit: 4,
-            callback: (value) => formatWholePrice(value, locale, currency),
+            callback: (value) => formatEuro(value, locale, currency),
           },
         },
       },
@@ -91,7 +90,7 @@ export default function PriceHistoryChart({ data = [], locale = 'de-DE', height 
           bodyFont: { family: CHART_COLORS.FONT_UI, size: 13, weight: '600' },
           callbacks: {
             title: (items) => new Date(Number(items[0].label)).toLocaleDateString(locale),
-            label: (ctx) => formatWholePrice(ctx.parsed.y, locale, currency),
+            label: (ctx) => formatEuro(ctx.parsed.y, locale, currency),
           },
         },
       },

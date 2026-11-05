@@ -46,7 +46,7 @@ describe('the dashboard listing reads', () => {
         title TEXT,
         address TEXT,
         price REAL,
-        currency TEXT,
+        currency TEXT NOT NULL DEFAULT 'EUR',
         size REAL,
         rooms REAL,
         price_per_sqm REAL,

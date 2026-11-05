@@ -139,9 +139,7 @@ export default function AffordabilityPanel({ profile }) {
     [t, locale, navigate],
   );
 
-  const skippedCount = data
-    ? data.skipped.noPrice + data.skipped.incompleteProfile + (data.skipped.otherCurrency ?? 0)
-    : 0;
+  const skippedCount = data ? data.skipped.noPrice + data.skipped.incompleteProfile : 0;
   // The scatter plots price against payoff term, which only exists for a purchase. Rentals are
   // in the table and the counters; putting them on this chart would just pile them on the axis.
   const buyItems = React.useMemo(() => (data?.items ?? []).filter((item) => item.dealType !== 'rent'), [data]);

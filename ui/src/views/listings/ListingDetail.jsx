@@ -12,7 +12,6 @@ import maplibregl from '../../components/map/maplibre.js';
 import { MARKER_COLORS } from '../../components/map/markerColors.js';
 import { useProviderCountries } from '../../hooks/useProviderCountries.js';
 import { PHONE_BREAKPOINT, useScreenWidth } from '../../hooks/screenWidth.js';
-import { isDefaultCurrency } from '../../services/price/currency.js';
 import { getBoundsFromCoords } from './mapUtils.js';
 import { escapeHtml } from './listingPopupContent.jsx';
 import { applyRouteLayers, buildRouteData, placeTargets } from './detailMapLayers.js';
@@ -502,9 +501,9 @@ export default function ListingDetail() {
   if (!listing) return null;
 
   const isRental = listing.dealType === 'rent';
-  // The finance model lends in euros, so only a euro price has a costing to offer or to set up for.
+  // Not offered outside the euro: the calculator would take the listing's price for euros.
   const financeIncomplete =
-    !(isRental ? rentComplete : buyComplete) && listing.price != null && isDefaultCurrency(listing.currency);
+    listing.currency === 'EUR' && !(isRental ? rentComplete : buyComplete) && listing.price != null;
 
   return (
     <div className={`listing-detail${phone ? ' listing-detail--phone' : ''}`}>
