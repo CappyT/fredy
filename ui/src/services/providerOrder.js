@@ -23,7 +23,7 @@
  *
  * @type {string[]}
  */
-export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch', 'es', 'fr', 'pt'];
+export const COUNTRY_ORDER = ['de', 'it', 'at', 'ch', 'es', 'fr', 'pt', 'pl'];
 
 /**
  * Providers by size within their market, largest first.

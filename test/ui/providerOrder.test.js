@@ -110,7 +110,7 @@ describe('the flag of a country', () => {
 });
 
 describe('the providers Fredy actually ships', () => {
-  it('come out German first, then Italian, Austrian, Swiss and French', async () => {
+  it('come out German first, then Italian, Austrian, Swiss, French and Polish', async () => {
     const metas = (await getProviders()).map((p) => p.metaInformation);
     const countries = sortProviders(metas).map(groupCountryOf);
     const ranks = countries.map((code) => COUNTRY_ORDER.indexOf(code));
@@ -119,7 +119,7 @@ describe('the providers Fredy actually ships', () => {
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
     // The group is one country per provider, and every provider Fredy ships is grouped under one of
     // the markets that have a portal of their own.
-    expect(new Set(countries)).toEqual(new Set(['de', 'it', 'at', 'ch', 'fr']));
+    expect(new Set(countries)).toEqual(new Set(['de', 'it', 'at', 'ch', 'fr', 'pl']));
   });
 
   /**
@@ -130,7 +130,7 @@ describe('the providers Fredy actually ships', () => {
   it('rank every country a shipped provider searches in', async () => {
     const declared = (await getProviders()).flatMap((p) => p.metaInformation.countries ?? []);
 
-    expect(new Set(declared)).toEqual(new Set(['de', 'it', 'at', 'ch', 'es', 'fr', 'pt']));
+    expect(new Set(declared)).toEqual(new Set(['de', 'it', 'at', 'ch', 'es', 'fr', 'pt', 'pl']));
     for (const code of new Set(declared)) {
       expect(COUNTRY_ORDER, `${code} is searched in but not ranked`).toContain(code);
     }
