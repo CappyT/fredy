@@ -7,7 +7,7 @@ platform into Fredy.
 > Always make sure the search results are sorted by **date**, so Fredy picks up the newest listings
 > first.
 
-## The 32 built-in providers
+## The 33 built-in providers
 
 **🇩🇪 Germany**
 
@@ -26,7 +26,7 @@ platform into Fredy.
 **🇪🇸 Spain · 🇮🇹 Italy · 🇵🇹 Portugal** · idealista
 **🇮🇹 Italy** · Subito · Tecnocasa · Tecnorete · Casa.it
 **🇫🇷 France** · leboncoin · SeLoger · Bien'ici
-**🇵🇱 Poland** · Otodom · Gratka
+**🇵🇱 Poland** · Otodom · Gratka · Domiporta
 
 If you run a portal Fredy does not cover yet, contributions are very welcome, see
 [CONTRIBUTING.md](../CONTRIBUTING.md).
@@ -234,7 +234,7 @@ search. EUR financing does not score PLN listings; see [Currencies](#currencies)
 
 ## Gratka
 
-Polish flat and house searches are supported, for sale and for rent, for example:
+Polish house-sale and apartment-rental searches, for example:
 
 ```
 https://gratka.pl/nieruchomosci/domy/krakow
@@ -254,6 +254,28 @@ other categories are refused until their payloads have test coverage.
 
 Morizon is not a separate provider: it belongs to the same group and shows the same adverts from the
 same database, so watching both would report every advert twice.
+
+## Domiporta
+
+Polish flat and house searches are supported, for sale and for rent, for example:
+
+```
+https://www.domiporta.pl/dom/sprzedam/malopolskie/krakow
+https://www.domiporta.pl/mieszkanie/wynajme/malopolskie/krakow?Price.To=4000
+```
+
+Fredy reads the adverts from the search page's schema.org data through a direct HTTPS request. Every
+filter stays in the URL; sorting is set to "Od najnowszych" (`SortingOrderDirection=InsertionDateDescending`),
+newest on the portal first. The portal's unlabelled default order is not by date. Each run reads at
+most five pages. Adverts beyond that limit are not fetched; narrow the search if important results
+fall outside the pages Fredy reads.
+
+Prices are stored in PLN. An advert explicitly priced in another currency is skipped. A price change
+does not announce the advert again because Fredy keys it by its Domiporta id. Domiporta appends a
+place to many headlines, so the provider moves that place into the address when it can identify it.
+A flat in a new development (`/nowe/ogloszenie/...`) is kept like any other advert. Searches for
+plots, commercial property or whole developments are not supported. Detail enrichment, adding an
+advert by URL, activity checks and price tracking are not supported either.
 
 ## Countries and the map
 
@@ -289,9 +311,16 @@ purchase-cost assumptions: it does not score non-EUR listings.
 ## 🛡️ Bot detection & proxies
 
 Most browser-based providers (kleinanzeigen, wg-gesucht, ohnemakler, ...) are scraped through a
-hardened headless browser ([CloakBrowser](https://www.npmjs.com/package/cloakbrowser)). It makes the
-**browser fingerprint** indistinguishable from a real Chrome, which is enough when you run Fredy on
-a normal home connection.
+hardened headless browser. It makes the **browser fingerprint** indistinguishable from a real
+Chrome, which is enough when you run Fredy on a normal home connection.
+
+Which browser that is depends on the machine. On Linux x64 (the amd64 Docker image), Windows x64 and
+Apple Silicon Macs it is the open build of [Clearcote](https://github.com/clearcotelabs/clearcote-browser).
+Clearcote does not build for Linux arm64 (the arm64 Docker image, a Raspberry Pi) or Intel Macs, so
+those run [CloakBrowser](https://www.npmjs.com/package/cloakbrowser) instead, on its last release
+that works without a licence key. Neither needs an account or a key, and the binary downloads by
+itself on the first start (the Docker image ships it). Some portals behind DataDome (SeLoger) block
+CloakBrowser in a Linux container, so on arm64 those can fail where amd64 gets through.
 
 On a **server / VPS the requests usually originate from a datacenter IP**, and providers behind
 anti-bot systems (e.g. AWS CloudFront/WAF) block those based on **IP reputation alone**, no matter
