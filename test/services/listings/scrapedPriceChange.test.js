@@ -7,6 +7,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import Database from 'better-sqlite3';
 
 import { up } from '../../../lib/services/storage/migrations/sql/28.price-history.js';
+import { up as addCharges } from '../../../lib/services/storage/migrations/sql/46.listing-charges.js';
 
 /**
  * The link lane's price change, run against a real SQLite: the price change and the hash rename land
@@ -48,6 +49,7 @@ describe('services/listings/scrapedPriceChange', () => {
       CREATE TABLE watch_list (id TEXT PRIMARY KEY, listing_id TEXT, user_id TEXT);
     `);
     up(db);
+    addCharges(db);
     db.prepare(
       `INSERT INTO listings (id, hash, job_id, provider, title, link, price, created_at)
        VALUES (?,?,?,?,?,?,?,?)`,
