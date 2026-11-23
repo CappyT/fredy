@@ -185,7 +185,7 @@ describe('provider publication date propagation', () => {
     ).map(einsA.normalize);
     expect(listings).toHaveLength(10);
     expect(listings.filter((listing) => listing.publishedAt != null)).toHaveLength(9);
-    expect(listings[0].publishedAt).toBe(Date.parse('2026-08-30T22:00:00Z'));
+    expect(listings[0].publishedAt).toBe(Date.parse('2026-09-05T22:00:00Z'));
   });
 
   it('reads Schwarzes Brett dates without detail requests', () => {

@@ -53,7 +53,7 @@ index.js (startup)
 scheduler (every N minutes) or manual trigger via POST /api/jobs/:id/run
   └── FredyPipelineExecutioner.execute()
       1. queryStringMutator(url)           # inject sort-by-date param
-      2. provider.getListings()            # API or Puppeteer+Cheerio
+      2. provider.getListings()            # API or Puppeteer+Cheerio, once per result page the job reads
       3. provider.normalize(listing)       # raw → ParsedListing
       4. provider.filter(listing)          # blacklist + required fields
       5. filter to hashes not yet in DB; for price-tracked providers, a stored row with the same
@@ -87,6 +87,25 @@ scheduler (every N minutes) or manual trigger via POST /api/jobs/:id/run
   every writer has to set it
 - `config` - the **static** `ProviderConfig` template: `requiredFieldNames`, `crawlContainer`, `crawlFields`, `sortByDateParam`, `normalize()`, optional `getListings()`, `fetchDetails()`, `activityProbe()`, and `needsBrowser: false` on a provider whose search and details never touch the browser (ImmoScout's mobile API, flatfox, the tecnocasa network), so a job run or detail fetch with only such providers starts no Chromium. `url` is `null` here and there is no bound `filter`. A portal whose pages only answer a browser session (DataDome answers node with 403 whether an advert is online or not - immowelt, SeLoger) declares `browserActivityProbe(link, browser)` and `priceTracking.browserProbe(listing, browser)` instead; the alive-checker and the price tracker start one browser per run for them, and only when a due listing needs it.
 - `createConfig(sourceConfig, blacklist)` - returns a **fresh** `ProviderConfig` per job run: the template plus this run's `url`, `enabled`, and a `filter` closed over this run's blacklist.
+- `pageUrl(url, page)` on the static template - how result page N of a search is addressed, so a
+  job's page count reaches the provider. A job reads one page unless its owner raises
+  `jobs.paging` (`{ pages, waitSeconds, jitterSeconds }`, NULL = one page, bounds in
+  `lib/utils/paging.js`). The pipeline owns the walk (`_readPages` in `FredyPipelineExecutioner`):
+  it waits the job's wait plus jitter before each further page, stops at a page that brings nothing
+  or nothing new to this run, and ends the walk without a retry when a later page fails. A provider
+  only says how to reach page N and reads one page per call: `queryPageUrl(param)` in
+  `lib/utils/pageUrl.js` covers a page number in a query parameter; path schemes (kleinanzeigen
+  `seite:N`, wg-gesucht's last number, imaxx `/page/N/`, idealista `lista-N.htm`) bring their own.
+  A body-driven API reads the page back out of the URL it is handed (leboncoin's offset, bienici's
+  `from`, the casa/idealista apis). A later page past the end must come back as `[]`, not as an
+  error or as a redirect followed to somewhere else (imaxx redirects to its unfiltered list, so it
+  refuses redirects there). `readPages(url, browser)`, an async iterator, is the alternative for a
+  pager that can only be clicked; no provider needs it today. A provider declaring neither always
+  reads one page, because its answer already is the whole result: tecnocasa, tecnorete,
+  deutscheWohnen and inberlinwohnen cannot sort by date and walk every page themselves, betterhomes
+  and zvgPortal answer the whole search at once. `test/provider/providerPaging.test.js` keeps that
+  list, so a new provider has to choose. `/api/jobs/provider` reports `pagesConfigurable` per
+  provider for the job form.
 - Optional `fetchListingByUrl(url, browser)` on the static template - reads one advert's page into a complete `ParsedListing`, or `null` when the page is no single advert or could not be read. It is what "Add listing" in the listings view calls. Build the provider's own search-card shape from the exposé and pass it through its `normalize`, so `link` and hash come out as a search run would produce them: a later run of the job recognises the stored row by both, and a different spelling stores the advert twice. The `/api/jobs/provider` response carries `addByUrl` per provider so the dialog can say "not supported yet" before anything is sent.
 
 Providers are **stateless**. Nothing run-specific may live at module scope: two jobs can execute
@@ -289,8 +308,8 @@ Two transports:
 1. **stdio** (`lib/mcp/stdio.js`) - for Claude Desktop/LM Studio; opens its own DB connection (main process need not be running)
 2. **HTTP** (`/api/mcp`) - authenticated via Bearer token (`mcp_token` column in `users` table)
 
-Read tools: `list_jobs`, `get_job`, `list_listings`, `get_listing`, `get_photo_for_listing`, `calculate_financing`, `get_current_date_time`.
-Write tools: `add_listing_note`, `set_listing_notes`, `watch_listing`, `unwatch_listing`, and the four that create a job.
+Read tools: `list_jobs`, `get_job`, `list_listings`, `get_listing`, `get_photo_for_listing`, `get_application_letter`, `calculate_financing`, `get_current_date_time`, plus the administration reads `list_channels`, `list_adapters`, `get_user_settings`.
+Write tools: `add_listing_note`, `set_listing_notes`, `watch_listing`, `unwatch_listing`, the four that create a job (`start_job_draft` … `discard_job_draft`), and the administration writes - `run_job`/`run_all_jobs` (queued on the event bus, so they answer "not running" over stdio, where no execution service is attached), `set_job_enabled`, `update_job` (an edit runs the interview's own validation over the stored job as the draft, preserves the drawn area filter, refuses anything that would leave the job without name, search, deal type or channel, and is then stored through `saveJob` like a form save), `delete_job`, `create_channel`/`update_channel`/`delete_channel`/`test_channel` (channel secrets are never serialised back, so `update_channel` merges the fields it is sent instead of replacing the bag as the web route does; unknown field names and empty required ones are refused by the save both use; `delete_channel` names the jobs still using it), `set_listing_status` (watches the listing, as the web route does), `add_listing_by_url` (the `manualListingService`, imported on call so the stdio server does not load the browser stack), `delete_listing` (soft by default, `hard: true` for the row, which also finds a listing already hidden), and `update_user_settings` (language, theme, home addresses through the shared `homeAddressService`, and the finance and applicant profiles merged key by key into what is stored, which `get_user_settings` shows in full). The rule behind those choices: a model can only change what it can read back, so every list a tool replaces whole is shown in full by the matching read tool (`get_job` prints each search URL), and what a model cannot be shown, or would only change part of, is merged. The REST routes and the MCP tools call the same services for every change - `jobService.js` (run, switch, delete, save), `channelService.js` (list, save, delete, test), `listingActionService.js` (status, notes, watch, delete), `userSettingsService.js` and `homeAddressService.js` (settings), `manualListingService.js` (add by URL). All but the last answer a refusal as `{ ok: false, reason, error, code? }` (`lib/services/serviceResult.js`): a route answers it with `sendFailure`, which maps `reason` to a status code through `httpStatusOf`, and a tool turns `error` into its answer and may add a hint by `code`. `manualListingService.js` predates that shape and answers with a `status`, which each caller words for itself. The one thing a home-address save does that the MCP tool does not is the geocoding retry sweep (#418): it stays in the `/home-address` route, because the stdio server is a second process with a Nominatim throttle and backoff of its own. A rule goes into the service, never into one caller. What differs between the two callers is passed in as an option (`mergeFields`, `mergeProfiles`) or stays in the tool (confirmation, `dryRun` checks before it, answers for a model).
 Responses are Markdown via `lib/mcp/mcpNormalizer.js`.
 
 Each user can switch the server off, or single tools, under Settings → MCP server (user setting `mcp_server`, `{ enabled, disabledTools }`, read through `lib/mcp/mcpUserSettings.js`). `authenticateToolCall` enforces both on every call; `applyMcpToolSettings` trims `tools/list` per request. The settings page gets its tool list from `GET /api/user/mcp-server`, which reads it off the registered tools (`mcpToolCatalog`), so a new tool needs no UI change. Register tools through `server.tool()` inside `createMcpServer`: that is what records them.
