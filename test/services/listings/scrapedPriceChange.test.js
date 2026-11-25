@@ -34,6 +34,8 @@ describe('services/listings/scrapedPriceChange', () => {
         address TEXT,
         link TEXT,
         price INTEGER,
+        size INTEGER,
+        price_per_sqm REAL,
         created_at INTEGER,
         is_active INTEGER DEFAULT 1,
         manually_deleted INTEGER DEFAULT 0
